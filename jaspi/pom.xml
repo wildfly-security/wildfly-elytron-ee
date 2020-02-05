@@ -34,6 +34,54 @@
 
     <name>WildFly Elytron - JASPI</name>
     <description>WildFly Security JASPI Implementation</description>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.siom79.japicmp</groupId>
+                <artifactId>japicmp-maven-plugin</artifactId>
+                <version>0.13.0</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <oldVersion>
+                        <dependency>
+                            <groupId>org.wildfly.security</groupId>
+                            <artifactId>wildfly-elytron-jaspi</artifactId>
+                            <version>${compatibility-version}</version> <!-- When updating to next release, clear all exclusions. -->
+                            <type>jar</type>
+                        </dependency>
+                    </oldVersion>
+                    <parameter>
+                        <ignoreMissingClasses>true</ignoreMissingClasses>
+                        <skipPomModules>false</skipPomModules>
+                        <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+                        <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+                        <overrideCompatibilityChangeParameters>
+                            <overrideCompatibilityChangeParameter> allowing new method in interface if default impl provided
+                                <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
+                                <binaryCompatible>true</binaryCompatible>
+                                <sourceCompatible>true</sourceCompatible>
+                            </overrideCompatibilityChangeParameter>
+                        </overrideCompatibilityChangeParameters>
+                        <includes>
+                            <include>org.wildfly.security.auth.jaspi</include>
+                        </includes>
+                        <excludes>
+                        </excludes>
+                        <includeExclusively>true</includeExclusively>
+                    </parameter>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>cmp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+           </plugin>        
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>

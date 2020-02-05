@@ -56,6 +56,8 @@
 
     <properties>
         <jdk.min.version>11</jdk.min.version>
+        
+        <compatibility-version>1.11.2.Final</compatibility-version>
 
         <version.jmockit>1.33</version.jmockit>
         <version.junit.junit>4.12</version.junit.junit>
