@@ -60,7 +60,7 @@
         <compatibility-version>1.11.2.Final</compatibility-version>
 
         <version.jmockit>1.33</version.jmockit>
-        <version.junit.junit>4.12</version.junit.junit>
+        <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.jboss.logging>3.4.1.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
         <version.org.jboss.spec.javax.security.auth.message.jboss-jaspi-api_1.1_spec>2.0.1.Final</version.org.jboss.spec.javax.security.auth.message.jboss-jaspi-api_1.1_spec>
