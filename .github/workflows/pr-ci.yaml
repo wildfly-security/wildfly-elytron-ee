@@ -1,10 +1,9 @@
 name: Pull Request CI
 on:
+  workflow_dispatch:
   pull_request:
     branches:
-      - 1.15.x
       - 1.x
-      - master
 
 jobs:
   build:
