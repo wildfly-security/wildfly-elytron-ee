@@ -16,9 +16,9 @@
 
 package org.wildfly.security.auth.jaspi;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -31,13 +31,9 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.message.callback.CallerPrincipalCallback;
-import javax.security.auth.message.callback.GroupPrincipalCallback;
-import javax.security.auth.message.callback.PasswordValidationCallback;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.wildfly.security.password.WildFlyElytronPasswordProvider;
 import org.wildfly.security.auth.jaspi.impl.JaspiAuthenticationContext;
 import org.wildfly.security.auth.permission.LoginPermission;
 import org.wildfly.security.auth.realm.SimpleMapBackedSecurityRealm;
@@ -51,9 +47,14 @@ import org.wildfly.security.authz.RoleMapper;
 import org.wildfly.security.authz.Roles;
 import org.wildfly.security.credential.PasswordCredential;
 import org.wildfly.security.password.PasswordFactory;
+import org.wildfly.security.password.WildFlyElytronPasswordProvider;
 import org.wildfly.security.password.interfaces.ClearPassword;
 import org.wildfly.security.password.spec.ClearPasswordSpec;
 import org.wildfly.security.permission.PermissionVerifier;
+
+import jakarta.security.auth.message.callback.CallerPrincipalCallback;
+import jakarta.security.auth.message.callback.GroupPrincipalCallback;
+import jakarta.security.auth.message.callback.PasswordValidationCallback;
 
 /**
  * Test case testing the {@link JaspiAuthenticationContext} implementation.

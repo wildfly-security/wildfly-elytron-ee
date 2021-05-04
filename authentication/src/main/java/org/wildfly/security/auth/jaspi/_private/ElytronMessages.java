@@ -20,9 +20,6 @@ package org.wildfly.security.auth.jaspi._private;
 
 import java.io.IOException;
 
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.AuthStatus;
-
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
@@ -30,6 +27,9 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
 import org.jboss.logging.annotations.ValidIdRanges;
+
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.AuthStatus;
 
 /**
  * Log messages and exceptions for Elytron.

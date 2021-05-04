@@ -19,12 +19,12 @@ package org.wildfly.security.auth.jaspi.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.message.MessageInfo;
+import jakarta.security.auth.message.MessageInfo;
 
 /**
  * An implementation of the {@link MessageInfo} interface.
  *
- * @see javax.security.auth.message.MessageInfo
+ * @see jakarta.security.auth.message.MessageInfo
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public class ElytronMessageInfo implements MessageInfo {
@@ -40,7 +40,7 @@ public class ElytronMessageInfo implements MessageInfo {
     private State state = State.NEW;
 
     /**
-     * @see javax.security.auth.message.MessageInfo#getMap()
+     * @see jakarta.security.auth.message.MessageInfo#getMap()
      */
     @Override
     public Map getMap() {
@@ -48,7 +48,7 @@ public class ElytronMessageInfo implements MessageInfo {
     }
 
     /**
-     * @see javax.security.auth.message.MessageInfo#getRequestMessage()
+     * @see jakarta.security.auth.message.MessageInfo#getRequestMessage()
      */
     @Override
     public Object getRequestMessage() {
@@ -56,7 +56,7 @@ public class ElytronMessageInfo implements MessageInfo {
     }
 
     /**
-     * @see javax.security.auth.message.MessageInfo#getResponseMessage()
+     * @see jakarta.security.auth.message.MessageInfo#getResponseMessage()
      */
     @Override
     public Object getResponseMessage() {
@@ -64,7 +64,7 @@ public class ElytronMessageInfo implements MessageInfo {
     }
 
     /**
-     * @see javax.security.auth.message.MessageInfo#setRequestMessage(java.lang.Object)
+     * @see jakarta.security.auth.message.MessageInfo#setRequestMessage(java.lang.Object)
      */
     @Override
     public void setRequestMessage(Object requestMessage) {
@@ -72,7 +72,7 @@ public class ElytronMessageInfo implements MessageInfo {
     }
 
     /**
-     * @see javax.security.auth.message.MessageInfo#setResponseMessage(java.lang.Object)
+     * @see jakarta.security.auth.message.MessageInfo#setResponseMessage(java.lang.Object)
      */
     @Override
     public void setResponseMessage(Object responseMessage) {

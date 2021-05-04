@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.security.auth.message.config.AuthConfigProvider;
-import javax.security.auth.message.config.RegistrationListener;
-
 import org.wildfly.security.manager.action.GetContextClassLoaderAction;
+
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.security.auth.message.config.AuthConfigProvider;
+import jakarta.security.auth.message.config.RegistrationListener;
 
 /**
  * The WildFly Elytron implementation of {@link AuthConfigFactory}.
@@ -48,7 +48,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     private final Map<LayerContextKey, Registration> layerContextRegistration = new HashMap<>();
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#getConfigProvider(java.lang.String, java.lang.String, javax.security.auth.message.config.RegistrationListener)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#getConfigProvider(java.lang.String, java.lang.String, jakarta.security.auth.message.config.RegistrationListener)
      */
     @Override
     public AuthConfigProvider getConfigProvider(String layer, String appContext, RegistrationListener listener) {
@@ -130,7 +130,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#registerConfigProvider(javax.security.auth.message.config.AuthConfigProvider, java.lang.String, java.lang.String, java.lang.String)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#registerConfigProvider(jakarta.security.auth.message.config.AuthConfigProvider, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public String registerConfigProvider(AuthConfigProvider provider, String layer, String appContext, String description) {
@@ -140,7 +140,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#registerConfigProvider(java.lang.String, java.util.Map, java.lang.String, java.lang.String, java.lang.String)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#registerConfigProvider(java.lang.String, java.util.Map, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
     public String registerConfigProvider(String className, Map properties, String layer, String appContext, String description) {
@@ -195,7 +195,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#removeRegistration(java.lang.String)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#removeRegistration(java.lang.String)
      */
     @Override
     public boolean removeRegistration(String registrationId) {
@@ -231,7 +231,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#detachListener(javax.security.auth.message.config.RegistrationListener, java.lang.String, java.lang.String)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#detachListener(jakarta.security.auth.message.config.RegistrationListener, java.lang.String, java.lang.String)
      */
     @Override
     public String[] detachListener(RegistrationListener listener, String layer, String appContext) {
@@ -252,7 +252,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#getRegistrationContext(java.lang.String)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#getRegistrationContext(java.lang.String)
      */
     @Override
     public RegistrationContext getRegistrationContext(String registrationID) {
@@ -268,7 +268,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#getRegistrationIDs(javax.security.auth.message.config.AuthConfigProvider)
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#getRegistrationIDs(jakarta.security.auth.message.config.AuthConfigProvider)
      */
     @Override
     public String[] getRegistrationIDs(AuthConfigProvider provider) {
@@ -295,7 +295,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigFactory#refresh()
+     * @see jakarta.security.auth.message.config.AuthConfigFactory#refresh()
      */
     @Override
     public void refresh() {

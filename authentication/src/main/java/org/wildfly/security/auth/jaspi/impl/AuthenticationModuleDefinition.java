@@ -19,9 +19,9 @@ package org.wildfly.security.auth.jaspi.impl;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.security.auth.message.module.ServerAuthModule;
-
 import org.wildfly.security.auth.jaspi.Flag;
+
+import jakarta.security.auth.message.module.ServerAuthModule;
 
 /**
  * A definition for a single {@link ServerAuthModule}.

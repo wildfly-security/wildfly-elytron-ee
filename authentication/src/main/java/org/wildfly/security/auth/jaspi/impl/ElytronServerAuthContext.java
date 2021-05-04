@@ -26,14 +26,15 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.AuthStatus;
-import javax.security.auth.message.MessageInfo;
-import javax.security.auth.message.config.ServerAuthContext;
-import javax.security.auth.message.module.ServerAuthModule;
 
 import org.wildfly.security.auth.jaspi.Flag;
 import org.wildfly.security.auth.jaspi.impl.ElytronMessageInfo.State;
+
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.AuthStatus;
+import jakarta.security.auth.message.MessageInfo;
+import jakarta.security.auth.message.config.ServerAuthContext;
+import jakarta.security.auth.message.module.ServerAuthModule;
 /**
  * The WildFly Elytron implementation of {@link ServerAuthContext}.
  *
@@ -63,8 +64,8 @@ class ElytronServerAuthContext implements ServerAuthContext {
     }
 
     /**
-     * @see javax.security.auth.message.ServerAuth#validateRequest(javax.security.auth.message.MessageInfo,
-     *      javax.security.auth.Subject, javax.security.auth.Subject)
+     * @see jakarta.security.auth.message.ServerAuth#validateRequest(jakarta.security.auth.message.MessageInfo,
+     *      jakarta.security.auth.Subject, jakarta.security.auth.Subject)
      */
     @Override
     public AuthStatus validateRequest(MessageInfo messageInfo, Subject clientSubject, Subject serviceSubject) throws AuthException {
@@ -142,7 +143,7 @@ class ElytronServerAuthContext implements ServerAuthContext {
     }
 
     /**
-     * @see javax.security.auth.message.ServerAuth#secureResponse(javax.security.auth.message.MessageInfo, javax.security.auth.Subject)
+     * @see jakarta.security.auth.message.ServerAuth#secureResponse(jakarta.security.auth.message.MessageInfo, jakarta.security.auth.Subject)
      */
     @Override
     public AuthStatus secureResponse(MessageInfo messageInfo, Subject serviceSubject) throws AuthException {
@@ -170,7 +171,7 @@ class ElytronServerAuthContext implements ServerAuthContext {
     }
 
     /**
-     * @see javax.security.auth.message.ServerAuth#cleanSubject(javax.security.auth.message.MessageInfo, javax.security.auth.Subject)
+     * @see jakarta.security.auth.message.ServerAuth#cleanSubject(jakarta.security.auth.message.MessageInfo, jakarta.security.auth.Subject)
      */
     @Override
     public void cleanSubject(MessageInfo messageInfo, Subject subject) throws AuthException {

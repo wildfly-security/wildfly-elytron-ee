@@ -56,13 +56,15 @@
 
     <properties>
         <jdk.min.version>11</jdk.min.version>
-                
+
+        <version.jakarta.authentication>2.0.0</version.jakarta.authentication>
+        <version.jakarta.servlet>5.0.0</version.jakarta.servlet>
+
         <version.jmockit>1.33</version.jmockit>
         <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.jboss.logging>3.4.1.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
-        <version.org.jboss.spec.javax.security.auth.message.jboss-jaspi-api_1.1_spec>2.0.1.Final</version.org.jboss.spec.javax.security.auth.message.jboss-jaspi-api_1.1_spec>
-        <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.2.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
+
         <version.org.jboss.spec.org.jboss.spec.javax.security.jacc>2.0.0.Final</version.org.jboss.spec.org.jboss.spec.javax.security.jacc>
         <version.org.wildfly.checkstyle-config>1.0.8.Final</version.org.wildfly.checkstyle-config>
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
@@ -365,9 +367,9 @@
             
             <!-- Jakarta EE APIs -->
             <dependency>
-                <groupId>org.jboss.spec.javax.security.auth.message</groupId>
-                <artifactId>jboss-jaspi-api_1.1_spec</artifactId>
-                <version>${version.org.jboss.spec.javax.security.auth.message.jboss-jaspi-api_1.1_spec}</version>
+                <groupId>jakarta.authentication</groupId>
+                <artifactId>jakarta.authentication-api</artifactId>
+                <version>${version.jakarta.authentication}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -375,14 +377,14 @@
                 <artifactId>jboss-jacc-api_1.5_spec</artifactId>
                 <version>${version.org.jboss.spec.org.jboss.spec.javax.security.jacc}</version>
                 <scope>provided</scope>
-            </dependency>                    
+            </dependency>
             <dependency>
-                <groupId>org.jboss.spec.javax.servlet</groupId>
-                <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-                <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec}</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+               <version>${version.jakarta.servlet}</version>
                 <scope>provided</scope>
             </dependency>
-                    
+
             <!-- Other Modules -->
             <dependency>
                 <groupId>org.jboss.logging</groupId>
@@ -419,9 +421,9 @@
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-realm</artifactId>
-                <version>${version.org.wildfly.security.elytron}</version>                
+                <version>${version.org.wildfly.security.elytron}</version>
                 <scope>test</scope>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.jmockit</groupId>
                 <artifactId>jmockit</artifactId>

@@ -18,9 +18,9 @@ package org.wildfly.security.auth.jaspi;
 
 import static java.util.Collections.EMPTY_MAP;
 
-import javax.security.auth.message.AuthStatus;
-
 import org.junit.Test;
+
+import jakarta.security.auth.message.AuthStatus;
 
 /**
  * Testing interaction between ServerAuthModules with different results and different flags.

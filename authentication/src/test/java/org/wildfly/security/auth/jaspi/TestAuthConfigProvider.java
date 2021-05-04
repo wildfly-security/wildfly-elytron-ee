@@ -19,11 +19,12 @@ package org.wildfly.security.auth.jaspi;
 import java.util.Map;
 
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.security.auth.message.config.AuthConfigProvider;
-import javax.security.auth.message.config.ClientAuthConfig;
-import javax.security.auth.message.config.ServerAuthConfig;
+
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.security.auth.message.config.AuthConfigProvider;
+import jakarta.security.auth.message.config.ClientAuthConfig;
+import jakarta.security.auth.message.config.ServerAuthConfig;
 
 /**
  * A test {@link AuthConfigProvider} implementation that can be used when testing the APIs.

@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.security.auth.message.module.ServerAuthModule;
-
 import org.wildfly.security.auth.jaspi.impl.AuthenticationModuleDefinition;
 import org.wildfly.security.auth.jaspi.impl.ElytronAuthConfigProvider;
+
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.security.auth.message.module.ServerAuthModule;
 
 /**
  * A builder API to assemble JASPIC configuration.

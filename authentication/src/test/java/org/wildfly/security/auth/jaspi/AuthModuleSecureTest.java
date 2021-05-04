@@ -18,10 +18,10 @@ package org.wildfly.security.auth.jaspi;
 
 import static java.util.Collections.EMPTY_MAP;
 
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.AuthStatus;
-
 import org.junit.Test;
+
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.AuthStatus;
 
 /**
  * Test case covering secureResponse handling.

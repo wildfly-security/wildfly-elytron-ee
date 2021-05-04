@@ -26,11 +26,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
-import javax.security.auth.message.config.RegistrationListener;
-
 import org.junit.Test;
+
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.security.auth.message.config.AuthConfigFactory.RegistrationContext;
+import jakarta.security.auth.message.config.RegistrationListener;
 
 /**
  * A test case for the {@link ElytronAuthConfigFactory}.

@@ -21,11 +21,11 @@ import static org.wildfly.common.Assert.checkNotNullParam;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import javax.security.auth.message.config.AuthConfigFactory;
-import javax.security.auth.message.config.AuthConfigProvider;
-import javax.security.auth.message.config.RegistrationListener;
-
 import org.wildfly.security.auth.server.SecurityDomain;
+
+import jakarta.security.auth.message.config.AuthConfigFactory;
+import jakarta.security.auth.message.config.AuthConfigProvider;
+import jakarta.security.auth.message.config.RegistrationListener;
 
 /**
  * An {@link AuthConfigFactory} implementation that can delegate to a backup AuthConfigFactory if the Elytron factory is unable

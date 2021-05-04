@@ -23,14 +23,15 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.MessageInfo;
-import javax.security.auth.message.config.AuthConfig;
-import javax.security.auth.message.config.AuthConfigProvider;
-import javax.security.auth.message.config.ClientAuthConfig;
-import javax.security.auth.message.config.ClientAuthContext;
-import javax.security.auth.message.config.ServerAuthConfig;
-import javax.security.auth.message.config.ServerAuthContext;
+
+import jakarta.security.auth.message.AuthException;
+import jakarta.security.auth.message.MessageInfo;
+import jakarta.security.auth.message.config.AuthConfig;
+import jakarta.security.auth.message.config.AuthConfigProvider;
+import jakarta.security.auth.message.config.ClientAuthConfig;
+import jakarta.security.auth.message.config.ClientAuthContext;
+import jakarta.security.auth.message.config.ServerAuthConfig;
+import jakarta.security.auth.message.config.ServerAuthContext;
 
 /**
  * The WildFly Elytron implementation of {@link AuthConfigProvider}.
@@ -73,7 +74,7 @@ public class ElytronAuthConfigProvider implements AuthConfigProvider {
      */
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigProvider#getClientAuthConfig(java.lang.String, java.lang.String, javax.security.auth.callback.CallbackHandler)
+     * @see jakarta.security.auth.message.config.AuthConfigProvider#getClientAuthConfig(java.lang.String, java.lang.String, jakarta.security.auth.callback.CallbackHandler)
      */
     @Override
     public ClientAuthConfig getClientAuthConfig(String layer, String appContext, CallbackHandler handler) throws AuthException, SecurityException {
@@ -82,8 +83,8 @@ public class ElytronAuthConfigProvider implements AuthConfigProvider {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigProvider#getServerAuthConfig(java.lang.String, java.lang.String,
-     *      javax.security.auth.callback.CallbackHandler)
+     * @see jakarta.security.auth.message.config.AuthConfigProvider#getServerAuthConfig(java.lang.String, java.lang.String,
+     *      jakarta.security.auth.callback.CallbackHandler)
      */
     @Override
     public ServerAuthConfig getServerAuthConfig(String layer, String appContext, CallbackHandler callbackHandler) throws AuthException, SecurityException {
@@ -102,7 +103,7 @@ public class ElytronAuthConfigProvider implements AuthConfigProvider {
     }
 
     /**
-     * @see javax.security.auth.message.config.AuthConfigProvider#refresh()
+     * @see jakarta.security.auth.message.config.AuthConfigProvider#refresh()
      */
     @Override
     public void refresh() {
