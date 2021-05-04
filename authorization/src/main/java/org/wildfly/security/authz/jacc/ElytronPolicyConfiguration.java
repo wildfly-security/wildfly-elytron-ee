@@ -17,8 +17,9 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyContextException;
+import static org.wildfly.common.Assert.checkNotNullParam;
+import static org.wildfly.security.authz.jacc.ElytronMessages.log;
+
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.Permissions;
@@ -29,11 +30,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.wildfly.common.Assert.checkNotNullParam;
-import static org.wildfly.security.authz.jacc.ElytronMessages.log;
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyContextException;
 
 /**
- * {@link javax.security.jacc.PolicyConfiguration} implementation.
+ * {@link jakarta.security.jacc.PolicyConfiguration} implementation.
  *
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
  * @see org.wildfly.security.authz.jacc.ElytronPolicyConfigurationFactory

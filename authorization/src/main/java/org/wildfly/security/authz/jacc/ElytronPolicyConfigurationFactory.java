@@ -17,22 +17,23 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyConfigurationFactory;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
-import java.security.PrivilegedAction;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import static java.lang.System.getSecurityManager;
 import static java.security.AccessController.doPrivileged;
 import static org.wildfly.common.Assert.checkNotNullParam;
 import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 import static org.wildfly.security.authz.jacc.ElytronPolicyConfiguration.State.OPEN;
 
+import java.security.PrivilegedAction;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyContextException;
+
 /**
- * <p>A {@link javax.security.jacc.PolicyConfigurationFactory} implementation.
+ * <p>A {@link jakarta.security.jacc.PolicyConfigurationFactory} implementation.
  *
  * <p>Accordingly with the JACC specification, a {@link PolicyConfigurationFactory} is a singleton, instantiate once during
  * the application server startup. Thus, there is only one instance of this class for a given JRE of an application server.
@@ -50,14 +51,14 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
     public static final PrivilegedAction<String> GET_CONTEXT_ID = () -> PolicyContext.getContextID();
 
     /**
-     * Holds all {@link javax.security.jacc.PolicyConfiguration} created in runtime.
+     * Holds all {@link jakarta.security.jacc.PolicyConfiguration} created in runtime.
      */
     private static final Map<String, ElytronPolicyConfiguration> configurationRegistry = new ConcurrentHashMap<>();
 
     /**
-     * <p>Returns the {@link javax.security.jacc.PolicyConfiguration} associated with the current policy context identifier.
+     * <p>Returns the {@link jakarta.security.jacc.PolicyConfiguration} associated with the current policy context identifier.
      *
-     * <p>This method only returns {@link javax.security.jacc.PolicyConfiguration} transitioned to the <i>in service</i> state.
+     * <p>This method only returns {@link jakarta.security.jacc.PolicyConfiguration} transitioned to the <i>in service</i> state.
      * If the configuration associated with the current policy context identifier is in a different state, a exception is thrown.
      *
      * @return this method always returns a configuration instance transitioned with the <i>in service</i> state and associated

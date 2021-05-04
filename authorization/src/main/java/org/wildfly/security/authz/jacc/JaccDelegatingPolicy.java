@@ -17,18 +17,10 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import org.wildfly.common.Assert;
-import org.wildfly.security.auth.server.SecurityDomain;
-import org.wildfly.security.auth.server.SecurityIdentity;
-import org.wildfly.security.authz.Roles;
+import static java.lang.System.getSecurityManager;
+import static java.security.AccessController.doPrivileged;
+import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 
-import javax.security.jacc.EJBMethodPermission;
-import javax.security.jacc.EJBRoleRefPermission;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
-import javax.security.jacc.WebResourcePermission;
-import javax.security.jacc.WebRoleRefPermission;
-import javax.security.jacc.WebUserDataPermission;
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
@@ -42,9 +34,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.System.getSecurityManager;
-import static java.security.AccessController.doPrivileged;
-import static org.wildfly.security.authz.jacc.ElytronMessages.log;
+import org.wildfly.common.Assert;
+import org.wildfly.security.auth.server.SecurityDomain;
+import org.wildfly.security.auth.server.SecurityIdentity;
+import org.wildfly.security.authz.Roles;
+
+import jakarta.security.jacc.EJBMethodPermission;
+import jakarta.security.jacc.EJBRoleRefPermission;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.WebResourcePermission;
+import jakarta.security.jacc.WebRoleRefPermission;
+import jakarta.security.jacc.WebUserDataPermission;
 
 /**
  * <p>A {@link Policy} implementation that knows how to process JACC permissions.

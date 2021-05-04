@@ -17,28 +17,9 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.wildfly.security.password.WildFlyElytronPasswordProvider;
-import org.wildfly.security.auth.permission.RunAsPrincipalPermission;
-import org.wildfly.security.auth.realm.SimpleMapBackedSecurityRealm;
-import org.wildfly.security.auth.realm.SimpleRealmEntry;
-import org.wildfly.security.auth.server.SecurityDomain;
-import org.wildfly.security.authz.MapAttributes;
-import org.wildfly.security.authz.RoleDecoder;
-import org.wildfly.security.credential.Credential;
-import org.wildfly.security.credential.PasswordCredential;
-import org.wildfly.security.password.PasswordFactory;
-import org.wildfly.security.password.interfaces.ClearPassword;
-import org.wildfly.security.password.spec.ClearPasswordSpec;
-import org.wildfly.security.permission.PermissionUtil;
-import org.wildfly.security.permission.PermissionVerifier;
-
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
-import javax.security.jacc.WebResourcePermission;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.security.PermissionCollection;
 import java.security.Policy;
@@ -49,9 +30,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.wildfly.security.auth.permission.RunAsPrincipalPermission;
+import org.wildfly.security.auth.realm.SimpleMapBackedSecurityRealm;
+import org.wildfly.security.auth.realm.SimpleRealmEntry;
+import org.wildfly.security.auth.server.SecurityDomain;
+import org.wildfly.security.authz.MapAttributes;
+import org.wildfly.security.authz.RoleDecoder;
+import org.wildfly.security.credential.Credential;
+import org.wildfly.security.credential.PasswordCredential;
+import org.wildfly.security.password.PasswordFactory;
+import org.wildfly.security.password.WildFlyElytronPasswordProvider;
+import org.wildfly.security.password.interfaces.ClearPassword;
+import org.wildfly.security.password.spec.ClearPasswordSpec;
+import org.wildfly.security.permission.PermissionUtil;
+import org.wildfly.security.permission.PermissionVerifier;
+
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.WebResourcePermission;
 
 /**
  * <p>This test case provides policy enforcement tests based on the JACC specification as well relying on Elytron's Permission
@@ -66,7 +66,7 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
 
     @BeforeClass
     public static void onBeforeClass() {
-        System.setProperty("javax.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
+        System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
         Policy.setPolicy(new JaccDelegatingPolicy());
         Security.addProvider(provider);
     }

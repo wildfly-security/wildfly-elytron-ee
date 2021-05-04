@@ -21,11 +21,11 @@ import static org.wildfly.security.authz.jacc.SubjectUtil.fromSecurityIdentity;
 
 import java.security.PrivilegedAction;
 
-import javax.security.jacc.PolicyContextException;
-import javax.security.jacc.PolicyContextHandler;
-
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
+
+import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.PolicyContextHandler;
 
 /**
  * A {@code PolicyContextHandler} to return a {@code Subject} from the current {@code SecurityIdentity}.

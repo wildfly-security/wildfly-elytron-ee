@@ -21,11 +21,11 @@ import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
 
 import java.security.PrivilegedAction;
 
-import javax.security.jacc.PolicyContextException;
-import javax.security.jacc.PolicyContextHandler;
-
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
+
+import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.PolicyContextHandler;
 
 /**
  * <p>A {@link PolicyContextHandler} that obtains the {@code SecurityIdentity} from the current {@code SecurityDomain}.

@@ -24,8 +24,6 @@ import static org.jboss.logging.Logger.Level.ERROR;
 import java.security.Permission;
 import java.security.ProtectionDomain;
 
-import javax.security.jacc.PolicyContextException;
-
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
@@ -34,6 +32,8 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
 import org.jboss.logging.annotations.ValidIdRanges;
+
+import jakarta.security.jacc.PolicyContextException;
 
 /**
  * Log messages and exceptions for Elytron.

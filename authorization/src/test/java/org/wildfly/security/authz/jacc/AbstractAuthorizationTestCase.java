@@ -23,10 +23,6 @@ import java.security.Principal;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyConfigurationFactory;
-import javax.security.jacc.PolicyContextException;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.wildfly.security.auth.permission.RunAsPrincipalPermission;
@@ -36,6 +32,10 @@ import org.wildfly.security.auth.server.SecurityRealm;
 import org.wildfly.security.authz.Roles;
 import org.wildfly.security.permission.PermissionVerifier;
 
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContextException;
+
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
  */
@@ -44,7 +44,7 @@ public abstract class AbstractAuthorizationTestCase {
 
     @BeforeClass
     public static void onBeforeClass() {
-        System.setProperty("javax.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
+        System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
         Policy.setPolicy(new JaccDelegatingPolicy());
     }
 

@@ -17,25 +17,26 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static java.security.AccessController.doPrivileged;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.security.PermissionCollection;
+import java.security.Policy;
+import java.security.PrivilegedAction;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.hamcrest.core.IsSame;
 import org.junit.Assert;
 import org.junit.Test;
 import org.wildfly.security.auth.principal.NamePrincipal;
 
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyConfigurationFactory;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.WebResourcePermission;
-import java.security.PermissionCollection;
-import java.security.Policy;
-import java.security.PrivilegedAction;
-
-import static java.security.AccessController.doPrivileged;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.WebResourcePermission;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>

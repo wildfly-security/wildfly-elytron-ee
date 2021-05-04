@@ -58,6 +58,7 @@
         <jdk.min.version>11</jdk.min.version>
 
         <version.jakarta.authentication>2.0.0</version.jakarta.authentication>
+        <version.jakarta.authorization>2.0.0</version.jakarta.authorization>
         <version.jakarta.servlet>5.0.0</version.jakarta.servlet>
 
         <version.jmockit>1.33</version.jmockit>
@@ -364,7 +365,7 @@
                 <version>${version.org.wildfly.security.elytron}</version>
                 <scope>provided</scope>            
             </dependency>
-            
+
             <!-- Jakarta EE APIs -->
             <dependency>
                 <groupId>jakarta.authentication</groupId>
@@ -373,9 +374,9 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.jboss.spec.javax.security.jacc</groupId>
-                <artifactId>jboss-jacc-api_1.5_spec</artifactId>
-                <version>${version.org.jboss.spec.org.jboss.spec.javax.security.jacc}</version>
+                <groupId>jakarta.authorization</groupId>
+                <artifactId>jakarta.authorization-api</artifactId>
+                <version>${version.jakarta.authorization}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

@@ -17,16 +17,17 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.security.Policy;
+
 import org.junit.Test;
 import org.wildfly.security.auth.principal.NamePrincipal;
 
-import javax.security.jacc.PolicyConfiguration;
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.WebResourcePermission;
-import java.security.Policy;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.WebResourcePermission;
 
 /**
  * <p>This test case provides policy enforcement tests solely based on the JACC specification.
