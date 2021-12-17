@@ -1,7 +1,7 @@
 WildFly Elytron
 ===============
 
-WildFly Elytron is a new WildFly sub-project which is completely replacing the combination of PicketBox and JAAS as the WildFly client and  server security mechanism.
+[WildFly Elytron](https://wildfly-security.github.io/wildfly-elytron/) is a new WildFly sub-project which is completely replacing the combination of PicketBox and JAAS as the WildFly client and  server security mechanism.
  
 An "elytron" (ĕl´·ĭ·trŏn, plural "elytra") is the hard, protective casing over a wing of certain flying insects (e.g. beetles).
 
@@ -35,5 +35,6 @@ Contributions
 -------------
 
 All new features and enhancements should be submitted to 1.x branch only.
-
-https://wildfly-security.github.io/wildfly-elytron/getting-started-for-developers/
+Our [contribution guide](https://github.com/wildfly-security/wildfly-elytron/blob/1.x/CONTRIBUTING.md) will guide you through the steps for getting started on the WildFly Elytron project and will go through how to format and submit your first PR.
+ 
+For more details, check out our [getting started guide](https://wildfly-security.github.io/wildfly-elytron/getting-started-for-developers/) for developers.

@@ -63,7 +63,7 @@
 
         <version.jmockit>1.33</version.jmockit>
         <version.junit.junit>4.13.1</version.junit.junit>
-        <version.org.jboss.logging>3.4.1.Final</version.org.jboss.logging>
+        <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
 
         <version.org.jboss.spec.org.jboss.spec.javax.security.jacc>2.0.0.Final</version.org.jboss.spec.org.jboss.spec.javax.security.jacc>
@@ -417,7 +417,6 @@
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-password-impl</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
