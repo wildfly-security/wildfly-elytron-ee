@@ -73,9 +73,9 @@
         <version.org.wildfly.checkstyle-config>1.0.8.Final</version.org.wildfly.checkstyle-config>
         <version.org.wildfly.client.config>1.0.1.Final</version.org.wildfly.client.config>
         <version.org.wildfly.common>1.5.4.Final</version.org.wildfly.common>
-        <version.org.wildfly.security.elytron>1.15.3.Final</version.org.wildfly.security.elytron>
-
-        <compatibility-version>${version.org.wildfly.security.elytron}</compatibility-version>
+        <version.org.wildfly.security.elytron>2.0.0.Beta1</version.org.wildfly.security.elytron>
+        <!-- wildfly-elytron-jaspi was removed in Elytron 2.x so need to compare against 1.x -->
+        <compatibility-version>1.18.1.Final</compatibility-version>
                 
         <test.level>INFO</test.level>
         <!-- Checkstyle configuration -->
