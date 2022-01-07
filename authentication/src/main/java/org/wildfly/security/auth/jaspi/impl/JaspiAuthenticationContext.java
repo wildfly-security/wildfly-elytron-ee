@@ -152,11 +152,11 @@ public class JaspiAuthenticationContext {
                             authorizedIdentity =  securityIdentity.createRunAsIdentity(callerPrincipal, authorizationRequired);
                         } else if (integrated) {
                             // Authorize as the authenticated identity.
-                            ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext();
-                            sac.importIdentity(securityIdentity);
-                            sac.authorize();
-                            authorizedIdentity = sac.getAuthorizedIdentity();
-                            sac.close();
+                            try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
+                                sac.importIdentity(securityIdentity);
+                                sac.authorize();
+                                authorizedIdentity = sac.getAuthorizedIdentity();
+                            }
                         } else {
                             authorizedIdentity = securityIdentity;
                         }
@@ -167,12 +167,12 @@ public class JaspiAuthenticationContext {
                             return;
                         } else {
                             if (integrated) {
-                                ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext();
-                                sac.setAuthenticationPrincipal(callerPrincipal);
-                                if (sac.authorize()) {
-                                    authorizedIdentity = sac.getAuthorizedIdentity();
+                                try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
+                                    sac.setAuthenticationPrincipal(callerPrincipal);
+                                    if (sac.authorize()) {
+                                        authorizedIdentity = sac.getAuthorizedIdentity();
+                                    }
                                 }
-                                sac.close();
                             } else {
                                 authorizedIdentity = securityDomain.createAdHocIdentity(callerPrincipal);
                             }
