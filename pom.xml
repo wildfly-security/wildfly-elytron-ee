@@ -61,7 +61,6 @@
         <version.jakarta.authorization>2.0.0</version.jakarta.authorization>
         <version.jakarta.servlet>5.0.0</version.jakarta.servlet>
 
-        <version.jmockit>1.33</version.jmockit>
         <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
@@ -216,7 +215,9 @@
                         </includes>
                         <childDelegation>true</childDelegation>
                         <reuseForks>false</reuseForks>
-                        <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${version.jmockit}/jmockit-${version.jmockit}.jar ${modular.jdk.args} ${modular.jdk.props}</argLine>
+                        <!-- If jmockit is needed, update the argLine to include it as shown below -->
+                        <!-- argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${version.jmockit}/jmockit-${version.jmockit}.jar ${modular.jdk.args} ${modular.jdk.props}</argLine -->
+                        <argLine>${modular.jdk.args} ${modular.jdk.props}</argLine>
                         <!-- See also excludedGroups property in profiles -->
                     </configuration>
                 </plugin>
@@ -467,12 +468,6 @@
                 <version>${version.org.wildfly.security.elytron}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${version.jmockit}</version>
-                <scope>test</scope>
-            </dependency>        
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

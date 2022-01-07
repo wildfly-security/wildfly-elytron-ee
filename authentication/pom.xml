@@ -95,11 +95,7 @@
         <dependency>
             <groupId>org.wildfly.security</groupId>
             <artifactId>wildfly-elytron-auth-server</artifactId>
-        </dependency>            
-<!--         <dependency> -->
-<!--             <groupId>org.wildfly.security</groupId> -->
-<!--             <artifactId>wildfly-elytron-base</artifactId> -->
-<!--         </dependency> -->
+        </dependency>
         <dependency>
             <groupId>org.wildfly.security</groupId>
             <artifactId>wildfly-elytron-credential</artifactId>
@@ -155,11 +151,6 @@
             <artifactId>wildfly-elytron-password-impl</artifactId>
             <scope>test</scope>
         </dependency>
-<!--         <dependency> -->
-<!--             <groupId>org.jmockit</groupId> -->
-<!--             <artifactId>jmockit</artifactId> -->
-<!--             <scope>test</scope> -->
-<!--         </dependency>         -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
