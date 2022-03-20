@@ -463,12 +463,6 @@
                 <version>${version.org.wildfly.security.elytron}</version>
             </dependency>
             <dependency>
-                <groupId>org.wildfly.security</groupId>
-                <artifactId>wildfly-elytron-realm</artifactId>
-                <version>${version.org.wildfly.security.elytron}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${version.junit.junit}</version>
