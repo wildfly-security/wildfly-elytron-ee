@@ -16,6 +16,7 @@
 
 package org.wildfly.security.auth.jaspi.impl;
 
+import static org.wildfly.security.auth.jaspi._private.ElytronEEMessages.log;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -25,7 +26,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.wildfly.common.function.ExceptionSupplier;
 
 /**
- * A {@code CallbackHanlder} implementation which always delegates to one associated
+ * A {@code CallbackHandler} implementation which always delegates to one associated
  * with a {@code ThreadLocal}.
  *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
@@ -42,7 +43,7 @@ class ThreadLocalCallbackHandler implements CallbackHandler {
         if (delegate == null) {
             // This could only happen if there is an attempt to use the CallbackHandler from
             // a different thread.
-            throw new IllegalStateException("No ThreadLocal CallbackHandler available.");
+            throw log.noThreadLocalCallbackHandler();
         }
 
         delegate.handle(callbacks);
