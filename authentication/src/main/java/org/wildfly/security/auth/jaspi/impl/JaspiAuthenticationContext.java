@@ -46,9 +46,12 @@ import org.wildfly.security.evidence.Evidence;
 import org.wildfly.security.evidence.PasswordGuessEvidence;
 import org.wildfly.security.permission.ElytronPermission;
 
+import jakarta.security.auth.message.AuthException;
 import jakarta.security.auth.message.callback.CallerPrincipalCallback;
 import jakarta.security.auth.message.callback.GroupPrincipalCallback;
 import jakarta.security.auth.message.callback.PasswordValidationCallback;
+import jakarta.security.auth.message.config.AuthConfigProvider;
+import jakarta.security.auth.message.config.ServerAuthConfig;
 
 /**
  *
@@ -85,6 +88,11 @@ public class JaspiAuthenticationContext {
             sm.checkPermission(CREATE_AUTH_CONTEXT);
         }
         return new JaspiAuthenticationContext(checkNotNullParam("securityDomain", securityDomain), integrated);
+    }
+
+    public ServerAuthConfig getServerAuthConfig(AuthConfigProvider authConfigProvider, String layer, String appContext)
+            throws AuthException {
+        return WrappingServerAuthConfig.getServerAuthConfig(authConfigProvider, layer, appContext, createCallbackHandler());
     }
 
     public CallbackHandler createCallbackHandler() {
