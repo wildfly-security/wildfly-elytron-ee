@@ -57,7 +57,7 @@
     <properties>
         <jdk.min.version>11</jdk.min.version>
 
-        <version.jakarta.authentication>2.0.0</version.jakarta.authentication>
+        <version.jakarta.authentication>3.0.0</version.jakarta.authentication>
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
         <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
 
