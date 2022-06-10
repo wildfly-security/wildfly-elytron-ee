@@ -96,15 +96,14 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
         }
     }
 
-    @Override
-    public PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws PolicyContextException {
+    private PolicyConfiguration getPolicyConfiguration(String contextID, boolean create, boolean remove) throws PolicyContextException {
         checkNotNullParam("contextID", contextID);
 
         synchronized (configurationRegistry) {
             ElytronPolicyConfiguration policyConfiguration = configurationRegistry.get(contextID);
 
             if (policyConfiguration == null) {
-                return createPolicyConfiguration(contextID);
+                return create ? createPolicyConfiguration(contextID) : null;
             }
 
             if (remove) {
@@ -114,6 +113,32 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
             policyConfiguration.transitionTo(OPEN);
 
             return policyConfiguration;
+        }
+    }
+
+    @Override
+    public PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws PolicyContextException {
+        return getPolicyConfiguration(contextID, true, remove);
+    }
+
+    @Override
+    public PolicyConfiguration getPolicyConfiguration(String contextID) {
+        try {
+            return getPolicyConfiguration(contextID, false, false);
+        } catch (PolicyContextException e) {
+            // This is unexpected as the exception would only be thrown if removal fails.
+            log.trace("Unexpected exception caught", e);
+            return null;
+        }
+    }
+
+    @Override
+    public PolicyConfiguration getPolicyConfiguration() {
+        try {
+            return getCurrentPolicyConfiguration();
+        } catch (PolicyContextException e) {
+            log.trace("Unable to obtain current policy configuration.", e);
+            return null;
         }
     }
 
@@ -135,4 +160,5 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
     private ElytronPolicyConfiguration createPolicyConfiguration(String contextID) {
         return configurationRegistry.computeIfAbsent(contextID, ElytronPolicyConfiguration::new);
     }
+
 }
