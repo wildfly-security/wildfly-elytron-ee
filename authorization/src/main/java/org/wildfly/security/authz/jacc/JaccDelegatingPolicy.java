@@ -24,7 +24,6 @@ import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
-import java.security.Permissions;
 import java.security.Policy;
 import java.security.Principal;
 import java.security.PrivilegedAction;
@@ -211,11 +210,11 @@ public class JaccDelegatingPolicy extends Policy {
 
         roles.add(ANY_AUTHENTICATED_USER_ROLE);
 
-        Map<String, Permissions> rolePermissions = policyConfiguration.getRolePermissions();
+        Map<String, PermissionCollection> rolePermissions = policyConfiguration.getPerRolePermissions();
 
         synchronized (rolePermissions) {
             for (String roleName : roles) {
-                Permissions permissions = rolePermissions.get(roleName);
+                PermissionCollection permissions = rolePermissions.get(roleName);
 
                 if (permissions != null) {
                     if (permissions.implies(permission)) {
@@ -229,7 +228,7 @@ public class JaccDelegatingPolicy extends Policy {
     }
 
     private boolean impliesUncheckedPermission(Permission permission, ElytronPolicyConfiguration policyConfiguration) {
-        Permissions uncheckedPermissions = policyConfiguration.getUncheckedPermissions();
+        PermissionCollection uncheckedPermissions = policyConfiguration.getUncheckedPermissions();
 
         synchronized (uncheckedPermissions) {
             return uncheckedPermissions.implies(permission);
@@ -237,7 +236,7 @@ public class JaccDelegatingPolicy extends Policy {
     }
 
     private boolean impliesExcludedPermission(Permission permission, ElytronPolicyConfiguration policyConfiguration) {
-        Permissions excludedPermissions = policyConfiguration.getExcludedPermissions();
+        PermissionCollection excludedPermissions = policyConfiguration.getExcludedPermissions();
 
         synchronized (excludedPermissions) {
             return excludedPermissions.implies(permission);
