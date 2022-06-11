@@ -26,6 +26,7 @@ import org.wildfly.security.auth.server.SecurityDomain;
 import jakarta.security.auth.message.config.AuthConfigFactory;
 import jakarta.security.auth.message.config.AuthConfigProvider;
 import jakarta.security.auth.message.config.RegistrationListener;
+import jakarta.security.auth.message.module.ServerAuthModule;
 
 /**
  * An {@link AuthConfigFactory} implementation that can delegate to a backup AuthConfigFactory if the Elytron factory is unable
@@ -92,13 +93,18 @@ public class DelegatingAuthConfigFactory extends AuthConfigFactory {
     }
 
     @Override
-    public String registerConfigProvider(String className, Map properties, String layer, String appContext, String description) {
+    public String registerConfigProvider(String className, Map<String, String> properties, String layer, String appContext, String description) {
         return elytronAuthConfigFactory.registerConfigProvider(className, properties, layer, appContext, description);
     }
 
     @Override
     public String registerConfigProvider(AuthConfigProvider provider, String layer, String appContext, String description) {
         return elytronAuthConfigFactory.registerConfigProvider(provider, layer, appContext, description);
+    }
+
+    @Override
+    public String registerServerAuthModule(ServerAuthModule serverAuthModule, Object context) {
+        return elytronAuthConfigFactory.registerServerAuthModule(serverAuthModule, context);
     }
 
     @Override
@@ -119,6 +125,12 @@ public class DelegatingAuthConfigFactory extends AuthConfigFactory {
         }
 
         return result;
+    }
+
+    @Override
+    public void removeServerAuthModule(Object context) {
+        // We only support registration against the elytronAuthConfigFactory not the backupAuthConfigFactory.
+        elytronAuthConfigFactory.removeServerAuthModule(context);
     }
 
 }

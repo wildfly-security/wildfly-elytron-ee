@@ -16,7 +16,7 @@
 
 package org.wildfly.security.auth.jaspi.impl;
 
-import static org.wildfly.security.auth.jaspi._private.ElytronEEMessages.log;
+import static org.wildfly.security.auth.jaspi._private.ElytronEEMessages.eeLog;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -43,7 +43,7 @@ class ThreadLocalCallbackHandler implements CallbackHandler {
         if (delegate == null) {
             // This could only happen if there is an attempt to use the CallbackHandler from
             // a different thread.
-            throw log.noThreadLocalCallbackHandler();
+            throw eeLog.noThreadLocalCallbackHandler();
         }
 
         delegate.handle(callbacks);

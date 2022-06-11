@@ -19,6 +19,7 @@ package org.wildfly.security.auth.jaspi;
 import static java.lang.System.getSecurityManager;
 import static org.wildfly.common.Assert.checkNotNullParam;
 import static org.wildfly.security.auth.jaspi._private.ElytronMessages.log;
+import static org.wildfly.security.auth.jaspi._private.ElytronEEMessages.eeLog;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
@@ -32,11 +33,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.wildfly.security.auth.jaspi.impl.AuthenticationModuleDefinition;
+import org.wildfly.security.auth.jaspi.impl.ElytronAuthConfigProvider;
 import org.wildfly.security.manager.action.GetContextClassLoaderAction;
 
 import jakarta.security.auth.message.config.AuthConfigFactory;
 import jakarta.security.auth.message.config.AuthConfigProvider;
 import jakarta.security.auth.message.config.RegistrationListener;
+import jakarta.security.auth.message.module.ServerAuthModule;
+import jakarta.servlet.ServletContext;
 
 /**
  * The WildFly Elytron implementation of {@link AuthConfigFactory}.
@@ -44,6 +49,9 @@ import jakarta.security.auth.message.config.RegistrationListener;
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public class ElytronAuthConfigFactory extends AuthConfigFactory {
+
+    private static final String SERVLET_MESSAGE_LAYER = "HttpServlet";
+    private static final String REGISTRATION_KEY = ElytronAuthConfigFactory.class.getName() + ".registration";
 
     private final Map<LayerContextKey, Registration> layerContextRegistration = new HashMap<>();
 
@@ -143,7 +151,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
      * @see jakarta.security.auth.message.config.AuthConfigFactory#registerConfigProvider(java.lang.String, java.util.Map, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public String registerConfigProvider(String className, Map properties, String layer, String appContext, String description) {
+    public String registerConfigProvider(String className, Map<String, String> properties, String layer, String appContext, String description) {
         // TODO [ELY-1548] We should support persisting to configuration changes made by calling this method.
         checkPermission(providerRegistrationSecurityPermission);
 
@@ -192,6 +200,32 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
         }
 
         return registration.getRegistrationId();
+    }
+
+    @Override
+    public String registerServerAuthModule(ServerAuthModule module, Object context) {
+        checkNotNullParam("module", module);
+        checkNotNullParam("context", context);
+
+        String layer = toLayer(context);
+        String appContext = toApplicationContext(context);
+
+        String registration = registerConfigProvider(
+                new ElytronAuthConfigProvider(layer, appContext,
+                        Collections.singletonList(
+                                new AuthenticationModuleDefinition(() -> module, Flag.REQUIRED, Collections.emptyMap()))),
+                layer, appContext, module.getClass().getName());
+
+        saveRegistration(registration, context);
+
+        return registration;
+    }
+
+    @Override
+    public void removeServerAuthModule(Object context) {
+        checkNotNullParam("context", context);
+
+        removeRegistration(getRegistration(context));
     }
 
     /**
@@ -303,6 +337,9 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
         checkPermission(providerRegistrationSecurityPermission);
     }
 
+
+
+
     private static void checkPermission(final SecurityPermission securityPermission) {
         SecurityManager securityManager = getSecurityManager();
         if (securityManager != null) {
@@ -316,6 +353,45 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
                 : GetContextClassLoaderAction.getInstance().run();
 
         return classLoader != null ? classLoader : ClassLoader.getSystemClassLoader();
+    }
+
+    private static String toLayer(Object context) {
+        if (context instanceof ServletContext) {
+            return SERVLET_MESSAGE_LAYER;
+        }
+
+        throw eeLog.unrecognisedContext(context.getClass().getName());
+    }
+
+    private static String toApplicationContext(Object context) {
+        if (context instanceof ServletContext) {
+            ServletContext servletContext = (ServletContext) context;
+            String path = servletContext.getContextPath();
+            return servletContext.getVirtualServerName() + " " + ("".equals(path) ? "" : "/" + path);
+        }
+
+        throw eeLog.unrecognisedContext(context.getClass().getName());
+    }
+
+    private static void saveRegistration(String registration, Object context) {
+        if (context instanceof ServletContext) {
+            ((ServletContext) context).setAttribute(REGISTRATION_KEY, registration);
+        } else {
+            throw eeLog.unrecognisedContext(context.getClass().getName());
+        }
+    }
+
+    private static String getRegistration(Object context) {
+        if (context instanceof ServletContext) {
+            String registration = (String) ((ServletContext) context).getAttribute(REGISTRATION_KEY);
+            if (registration == null) {
+                throw eeLog.noSavedRegistration(toApplicationContext(context));
+            }
+
+            return registration;
+        }
+
+        throw eeLog.unrecognisedContext(context.getClass().getName());
     }
 
     static class Registration {

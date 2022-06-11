@@ -57,9 +57,9 @@
     <properties>
         <jdk.min.version>11</jdk.min.version>
 
-        <version.jakarta.authentication>2.0.0</version.jakarta.authentication>
-        <version.jakarta.authorization>2.0.0</version.jakarta.authorization>
-        <version.jakarta.servlet>5.0.0</version.jakarta.servlet>
+        <version.jakarta.authentication>3.0.0</version.jakarta.authentication>
+        <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
+        <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
 
         <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>

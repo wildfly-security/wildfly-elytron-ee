@@ -36,10 +36,15 @@ import org.jboss.logging.annotations.ValidIdRanges;
 })
 public interface ElytronEEMessages extends BasicLogger {
 
-    ElytronEEMessages log = Logger.getMessageLogger(ElytronEEMessages.class, "org.wildfly.security.ee");
+    ElytronEEMessages eeLog = Logger.getMessageLogger(ElytronEEMessages.class, "org.wildfly.security.ee");
 
     @Message(id = 1, value = "No ThreadLocal CallbackHandler available.")
     IllegalStateException noThreadLocalCallbackHandler();
 
+    @Message(id = 2, value = "Unrecognised context type '%s'.")
+    IllegalStateException unrecognisedContext(final String contextClassName);
+
+    @Message(id = 3, value = "No registration for '%s'.")
+    IllegalStateException noSavedRegistration(final String appContext);
 
 }

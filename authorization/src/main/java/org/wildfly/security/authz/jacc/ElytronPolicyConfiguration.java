@@ -51,7 +51,7 @@ class ElytronPolicyConfiguration implements PolicyConfiguration {
     }
 
     private final String contextId;
-    private final Map<String, Permissions> rolePermissions = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, PermissionCollection> rolePermissions = Collections.synchronizedMap(new HashMap<>());
     private State state = State.OPEN; // needs synchronization
     private volatile Permissions uncheckedPermissions = new Permissions(); // atomic reference + synchronized inside
     private volatile Permissions excludedPermissions = new Permissions(); // atomic reference + synchronized inside
@@ -216,15 +216,18 @@ class ElytronPolicyConfiguration implements PolicyConfiguration {
         return this.linkedPolicies; // volatile/atomic reference - no synchronization needed
     }
 
-    Permissions getUncheckedPermissions() {
+    @Override
+    public PermissionCollection getUncheckedPermissions() {
         return this.uncheckedPermissions; // volatile/atomic reference - no synchronization needed
     }
 
-    Permissions getExcludedPermissions() {
+    @Override
+    public PermissionCollection getExcludedPermissions() {
         return this.excludedPermissions; // volatile/atomic reference - no synchronization needed
     }
 
-    Map<String, Permissions> getRolePermissions() {
+    @Override
+    public Map<String, PermissionCollection> getPerRolePermissions() {
         return this.rolePermissions;
     }
 
@@ -244,4 +247,6 @@ class ElytronPolicyConfiguration implements PolicyConfiguration {
     private boolean isDeleted() {
         return State.DELETED.equals(this.state);
     }
+
+
 }
