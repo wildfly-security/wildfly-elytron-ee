@@ -64,13 +64,19 @@ public class JaspiAuthenticationContext {
     private final SecurityDomain securityDomain;
     private final boolean integrated;
 
+    /**
+     * A previously cached SecurityIdentity which we may be asked to re-use.
+     */
+    private volatile SecurityIdentity cachedIdentity = null;
+
     private volatile SecurityIdentity securityIdentity = null;
     private final Set<String> roles = new HashSet<>();
 
 
-    JaspiAuthenticationContext(SecurityDomain securityDomain, boolean integrated) {
+    JaspiAuthenticationContext(SecurityDomain securityDomain, boolean integrated, SecurityIdentity cachedIdentity) {
         this.securityDomain = securityDomain;
         this.integrated = integrated;
+        this.cachedIdentity = cachedIdentity;
     }
 
     /*
@@ -82,12 +88,17 @@ public class JaspiAuthenticationContext {
 
     // TODO Can we find a way to create this from the SecurityDomain similar to ServerAuthContext?
 
+    @Deprecated
     public static JaspiAuthenticationContext newInstance(final SecurityDomain securityDomain, final boolean integrated) {
+        return newInstance(securityDomain, integrated, null);
+    }
+
+    public static JaspiAuthenticationContext newInstance(final SecurityDomain securityDomain, final boolean integrated, SecurityIdentity cachedIdentity) {
         final SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             sm.checkPermission(CREATE_AUTH_CONTEXT);
         }
-        return new JaspiAuthenticationContext(checkNotNullParam("securityDomain", securityDomain), integrated);
+        return new JaspiAuthenticationContext(checkNotNullParam("securityDomain", securityDomain), integrated, cachedIdentity);
     }
 
     public ServerAuthConfig getServerAuthConfig(AuthConfigProvider authConfigProvider, String layer, String appContext)
@@ -130,6 +141,10 @@ public class JaspiAuthenticationContext {
                 if (callback instanceof PasswordValidationCallback) {
                     PasswordValidationCallback pvc = (PasswordValidationCallback) callback;
 
+                    if (cachedIdentity != null) {
+                        cachedIdentity = null; // Deliberate decision to trigger an authentcation.
+                    }
+
                     final String username = pvc.getUsername();
                     log.tracef("Handling PasswordValidationCallback for '%s'", username);
                     final Evidence evidence = new PasswordGuessEvidence(pvc.getPassword());
@@ -153,36 +168,60 @@ public class JaspiAuthenticationContext {
                     log.tracef("Original Principal = '%s', Caller Name = '%s', Resulting Principal = '%s'", originalPrincipal, callerName, callerPrincipal);
 
                     SecurityIdentity authorizedIdentity = null;
-                    if (securityIdentity != null) {
-                        if (callerPrincipal != null) {
-                            boolean authorizationRequired = (integrated && !securityIdentity.getPrincipal().equals(callerPrincipal));
-                         // If we are integrated we want an authorization check.
-                            authorizedIdentity =  securityIdentity.createRunAsIdentity(callerPrincipal, authorizationRequired);
-                        } else if (integrated) {
-                            // Authorize as the authenticated identity.
-                            try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
-                                sac.importIdentity(securityIdentity);
-                                sac.authorize();
-                                authorizedIdentity = sac.getAuthorizedIdentity();
-                            }
-                        } else {
-                            authorizedIdentity = securityIdentity;
-                        }
-                    } else {
-                        if (callerPrincipal == null) {
-                            // Do nothing and don't fail.
-                            handleOne(callbacks, index + 1);
-                            return;
-                        } else {
+                    if (cachedIdentity != null) {
+                        // First we see if this is a request to use / discard the cached identity.
+                        if (cachedIdentity.getPrincipal().equals(callerPrincipal)) {
                             if (integrated) {
-                                try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
-                                    sac.setAuthenticationPrincipal(callerPrincipal);
-                                    if (sac.authorize()) {
-                                        authorizedIdentity = sac.getAuthorizedIdentity();
-                                    }
+                                // This is the simplest as we can just ask the SecurityDomain to import it again.
+                                try (ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
+                                    sac.importIdentity(cachedIdentity);
+                                    sac.authorize();
+                                    authorizedIdentity = sac.getAuthorizedIdentity();
                                 }
                             } else {
+                                // We will need to create a new AdHoc identity and also handle roles separately.
                                 authorizedIdentity = securityDomain.createAdHocIdentity(callerPrincipal);
+                                for (String role : cachedIdentity.getRoles() ) {
+                                    roles.add(role);
+                                }
+                            }
+                        }
+                        cachedIdentity = null;
+                    }
+
+                    if (authorizedIdentity == null) {
+                        if (securityIdentity != null) {
+                            if (callerPrincipal != null) {
+                                boolean authorizationRequired = (integrated
+                                        && !securityIdentity.getPrincipal().equals(callerPrincipal));
+                                // If we are integrated we want an authorization check.
+                                authorizedIdentity = securityIdentity.createRunAsIdentity(callerPrincipal, authorizationRequired);
+                            } else if (integrated) {
+                                // Authorize as the authenticated identity.
+                                try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
+                                    sac.importIdentity(securityIdentity);
+                                    sac.authorize();
+                                    authorizedIdentity = sac.getAuthorizedIdentity();
+                                }
+                            } else {
+                                authorizedIdentity = securityIdentity;
+                            }
+                        } else {
+                            if (callerPrincipal == null) {
+                                // Do nothing and don't fail.
+                                handleOne(callbacks, index + 1);
+                                return;
+                            } else {
+                                if (integrated) {
+                                    try (final ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
+                                        sac.setAuthenticationPrincipal(callerPrincipal);
+                                        if (sac.authorize()) {
+                                            authorizedIdentity = sac.getAuthorizedIdentity();
+                                        }
+                                    }
+                                } else {
+                                    authorizedIdentity = securityDomain.createAdHocIdentity(callerPrincipal);
+                                }
                             }
                         }
                     }
