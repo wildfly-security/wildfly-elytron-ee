@@ -114,7 +114,7 @@ public class ServletMessageInfo extends ElytronMessageInfo {
                 throw log.messageDoesNotWrapExistingMessage(HttpServletResponse.class.getName());
             }
             case SECURE: {
-                ServletResponse unwrapped = (ServletResponse) getRequestMessage();
+                ServletResponse unwrapped = (ServletResponse) getResponseMessage();
                 while (unwrapped != null) {
                     if (responseMessage == unwrapped) {
                         super.setResponseMessage(responseMessage);
