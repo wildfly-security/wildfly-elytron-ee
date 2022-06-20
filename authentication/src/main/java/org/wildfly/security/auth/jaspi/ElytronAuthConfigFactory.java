@@ -209,6 +209,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
 
         String layer = toLayer(context);
         String appContext = toApplicationContext(context);
+        log.tracef("Registering ServerAuthModule for Layer=%s, AppContext=%s", layer, appContext);
 
         String registration = registerConfigProvider(
                 new ElytronAuthConfigProvider(layer, appContext,
@@ -367,7 +368,7 @@ public class ElytronAuthConfigFactory extends AuthConfigFactory {
         if (context instanceof ServletContext) {
             ServletContext servletContext = (ServletContext) context;
             String path = servletContext.getContextPath();
-            return servletContext.getVirtualServerName() + " " + ("".equals(path) ? "" : "/" + path);
+            return servletContext.getVirtualServerName() + " " + path;
         }
 
         throw eeLog.unrecognisedContext(context.getClass().getName());
