@@ -177,7 +177,7 @@ class ElytronServerAuthContext implements ServerAuthContext {
     public void cleanSubject(MessageInfo messageInfo, Subject subject) throws AuthException {
         assert initialised : "Not initialised";
         if (messageInfo instanceof ElytronMessageInfo) ((ElytronMessageInfo) messageInfo).setState(State.CLEAN);
-        for (int i = authModules.size() - 1; i > 0; i--) {
+        for (int i = authModules.size() - 1; i >= 0; i--) {
             ServerAuthModule sam = authModules.get(i).getModule();
             sam.cleanSubject(messageInfo, subject);
         }
