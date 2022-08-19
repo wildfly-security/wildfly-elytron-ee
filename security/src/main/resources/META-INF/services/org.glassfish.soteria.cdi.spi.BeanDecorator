@@ -1,0 +1,2 @@
+org.glassfish.soteria.cdi.spi.impl.DefaultBeanDecorator
+org.glassfish.soteria.spi.bean.decorator.weld.WeldBeanDecorator

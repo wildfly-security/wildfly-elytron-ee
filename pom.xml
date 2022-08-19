@@ -56,12 +56,19 @@
 
     <properties>
         <jdk.min.version>11</jdk.min.version>
-
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        
         <version.jakarta.authentication>3.0.0</version.jakarta.authentication>
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
+        <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
+        <version.jakarta.jaxrs>3.1.0</version.jakarta.jaxrs>
+        <version.jakarta.security>3.0.0</version.jakarta.security>
         <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
 
+        <version.com.nimbus>9.21</version.com.nimbus>
         <version.junit.junit>4.13.1</version.junit.junit>
+        <version.org.glassfish.soteria>3.0.0</version.org.glassfish.soteria>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
         <version.org.jboss.spec.jakarta.xml.ws>1.0.1.Final</version.org.jboss.spec.jakarta.xml.ws>
@@ -117,7 +124,7 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <release>8</release>
+                            <release>11</release>
                             <buildDirectory>${project.build.directory}</buildDirectory>
                             <compileSourceRoots>${project.compileSourceRoots}</compileSourceRoots>
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
@@ -322,10 +329,15 @@
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>jakarta-authentication</artifactId>
                 <version>${project.version}</version>
-            </dependency>        
+            </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>jakarta-authorization</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.security</groupId>
+                <artifactId>jakarta-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
             
@@ -364,19 +376,19 @@
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-permission</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>provided</scope>            
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-realm</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>provided</scope>            
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-security-manager-action</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>provided</scope>            
+                <scope>provided</scope>
             </dependency>
 
             <!-- Jakarta EE APIs -->
@@ -393,13 +405,49 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${version.jakarta.cdi}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.security.enterprise</groupId>
+                <artifactId>jakarta.security.enterprise-api</artifactId>
+                <version>${version.jakarta.security}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>${version.jakarta.servlet}</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${version.jakarta.jaxrs}</version>
+                <scope>provided</scope>
+            </dependency>
+            
             <!-- Other Modules -->
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${version.com.nimbus}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.soteria</groupId>
+                <artifactId>jakarta.security.enterprise</artifactId>
+                <version>${version.org.glassfish.soteria}</version>
+                <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                <groupId>org.wildfly.client</groupId>
                <artifactId>wildfly-client-config</artifactId>
