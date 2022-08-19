@@ -597,5 +597,7 @@
         <module>authorization</module>
         <module>client/resteasy</module>
         <module>client/webservices</module>
+        <module>security</module>
     </modules>
+
 </project>
