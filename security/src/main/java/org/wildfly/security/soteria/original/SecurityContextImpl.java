@@ -36,8 +36,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.glassfish.soteria.authorization.spi.CallerDetailsResolver;
 import org.glassfish.soteria.authorization.spi.ResourceAccessResolver;
 import org.glassfish.soteria.authorization.spi.impl.JaccResourceAccessResolver;
-import org.glassfish.soteria.authorization.spi.impl.ReflectionAndJaccCallerDetailsResolver;
 import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
+import org.wildfly.security.soteria.integration.ElytronCallerDetailsResolver;
 
 public class SecurityContextImpl implements SecurityContext, Serializable {
 
@@ -65,7 +65,7 @@ public class SecurityContextImpl implements SecurityContext, Serializable {
 
     @PostConstruct
     public void init() {
-       callerDetailsResolver = new ReflectionAndJaccCallerDetailsResolver();
+       callerDetailsResolver = new ElytronCallerDetailsResolver();
        resourceAccessResolver = new JaccResourceAccessResolver();
     }
 

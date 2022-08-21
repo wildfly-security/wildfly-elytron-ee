@@ -37,6 +37,10 @@
 
     <licenses>
         <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+        <license>
             <name>EPL 2.0</name>
             <url>http://www.eclipse.org/legal/epl-2.0</url>
             <distribution>repo</distribution>
@@ -61,6 +65,7 @@
     </build>
 
     <dependencies>
+        <!-- Jakarta API Dependencies -->
         <dependency>
             <groupId>jakarta.authentication</groupId>
             <artifactId>jakarta.authentication-api</artifactId>
@@ -82,6 +87,14 @@
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
+
+        <!-- Elytron Dependencies -->
+        <dependency>
+            <groupId>org.wildfly.security</groupId>
+            <artifactId>wildfly-elytron-auth-server</artifactId>
+        </dependency>
+
+        <!-- Other Dependencies -->
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
