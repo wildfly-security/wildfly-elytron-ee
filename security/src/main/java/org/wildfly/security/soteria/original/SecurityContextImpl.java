@@ -22,7 +22,9 @@ import static org.glassfish.soteria.mechanisms.jaspic.Jaspic.getLastAuthenticati
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Set;
+import java.util.TreeSet;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.security.enterprise.AuthenticationStatus;
@@ -38,6 +40,23 @@ import org.glassfish.soteria.authorization.spi.impl.ReflectionAndJaccCallerDetai
 import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
 
 public class SecurityContextImpl implements SecurityContext, Serializable {
+
+    public static final Set<String> ALL_HTTP_METHODS;
+    public static final String[] ALL_HTTP_METHOD_NAMES;
+
+    static {
+        TreeSet<String> tmp = new TreeSet<String>();
+        tmp.add("GET");
+        tmp.add("POST");
+        tmp.add("PUT");
+        tmp.add("DELETE");
+        tmp.add("HEAD");
+        tmp.add("OPTIONS");
+        tmp.add("TRACE");
+        ALL_HTTP_METHODS = Collections.unmodifiableSortedSet(tmp);
+        ALL_HTTP_METHOD_NAMES = new String[ALL_HTTP_METHODS.size()];
+        ALL_HTTP_METHODS.toArray(ALL_HTTP_METHOD_NAMES);
+    }
 
     private static final long serialVersionUID = 1L;
 
@@ -72,7 +91,8 @@ public class SecurityContextImpl implements SecurityContext, Serializable {
 
     @Override
     public boolean hasAccessToWebResource(String resource, String... methods) {
-        return resourceAccessResolver.hasAccessToWebResource(resource, methods);
+        String[] substititeMethods = methods == null || methods.length == 0 ? ALL_HTTP_METHOD_NAMES : methods;
+        return resourceAccessResolver.hasAccessToWebResource(resource, substititeMethods);
     }
 
     @Override
