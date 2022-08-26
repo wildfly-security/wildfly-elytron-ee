@@ -16,7 +16,9 @@
 
 package org.wildfly.security.soteria.integration;
 
+import static java.security.AccessController.doPrivileged;
 import java.security.Principal;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,6 +27,7 @@ import java.util.Set;
 import org.glassfish.soteria.authorization.spi.CallerDetailsResolver;
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
+import org.wildfly.security.manager.WildFlySecurityManager;
 
 /**
  *
@@ -64,7 +67,15 @@ public class ElytronCallerDetailsResolver implements CallerDetailsResolver {
     }
 
     private static SecurityIdentity currentSecurityIdentity() {
-        return SecurityDomain.getCurrent().getCurrentSecurityIdentity();
+        return getCurrentSecurityDomain().getCurrentSecurityIdentity();
+    }
+
+    private static SecurityDomain getCurrentSecurityDomain() {
+        if (WildFlySecurityManager.isChecking()) {
+            return doPrivileged((PrivilegedAction<SecurityDomain>) SecurityDomain::getCurrent);
+        }
+
+        return SecurityDomain.getCurrent();
     }
 
 }
