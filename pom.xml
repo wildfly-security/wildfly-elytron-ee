@@ -353,24 +353,30 @@
                 <artifactId>wildfly-elytron-auth-server</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
                 <scope>provided</scope>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-base</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>provided</scope>            
-            </dependency>    
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-client</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
                 <scope>provided</scope>
-            </dependency>    
+            </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
                 <artifactId>wildfly-elytron-credential</artifactId>
                 <version>${version.org.wildfly.security.elytron}</version>
-                <scope>provided</scope>            
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wildfly.security</groupId>
+                <artifactId>wildfly-elytron-security-manager</artifactId>
+                <version>${version.org.wildfly.security.elytron}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wildfly.security</groupId>
