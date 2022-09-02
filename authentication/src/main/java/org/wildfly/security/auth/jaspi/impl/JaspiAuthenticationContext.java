@@ -42,6 +42,7 @@ import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.auth.server.ServerAuthenticationContext;
 import org.wildfly.security.authz.RoleMapper;
 import org.wildfly.security.authz.Roles;
+import org.wildfly.security.cache.CachedIdentity;
 import org.wildfly.security.evidence.Evidence;
 import org.wildfly.security.evidence.PasswordGuessEvidence;
 import org.wildfly.security.permission.ElytronPermission;
@@ -67,13 +68,22 @@ public class JaspiAuthenticationContext {
     /**
      * A previously cached SecurityIdentity which we may be asked to re-use.
      */
-    private volatile SecurityIdentity cachedIdentity = null;
+    private CachedIdentity cachedIdentity = null;
 
     private volatile SecurityIdentity securityIdentity = null;
     private final Set<String> roles = new HashSet<>();
 
 
-    JaspiAuthenticationContext(SecurityDomain securityDomain, boolean integrated, SecurityIdentity cachedIdentity) {
+    JaspiAuthenticationContext(SecurityDomain securityDomain, boolean integrated, SecurityIdentity securityIdentity) {
+        this.securityDomain = securityDomain;
+        this.integrated = integrated;
+        this.securityIdentity = securityIdentity;
+        if (securityIdentity != null) {
+            this.cachedIdentity = new CachedIdentity("JASPI", true, securityIdentity);
+        }
+    }
+
+    JaspiAuthenticationContext(SecurityDomain securityDomain, boolean integrated, CachedIdentity cachedIdentity) {
         this.securityDomain = securityDomain;
         this.integrated = integrated;
         this.cachedIdentity = cachedIdentity;
@@ -90,7 +100,15 @@ public class JaspiAuthenticationContext {
 
     @Deprecated
     public static JaspiAuthenticationContext newInstance(final SecurityDomain securityDomain, final boolean integrated) {
-        return newInstance(securityDomain, integrated, null);
+        return newInstance(securityDomain, integrated, (SecurityIdentity) null);
+    }
+
+    public static JaspiAuthenticationContext newInstance(final SecurityDomain securityDomain, final boolean integrated, CachedIdentity cachedIdentity) {
+        final SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            sm.checkPermission(CREATE_AUTH_CONTEXT);
+        }
+        return new JaspiAuthenticationContext(checkNotNullParam("securityDomain", securityDomain), integrated, cachedIdentity);
     }
 
     public static JaspiAuthenticationContext newInstance(final SecurityDomain securityDomain, final boolean integrated, SecurityIdentity cachedIdentity) {
@@ -154,6 +172,7 @@ public class JaspiAuthenticationContext {
                         SecurityIdentity authenticated = securityDomain.authenticate(username, evidence);
                         pvc.setResult(true);
                         securityIdentity = authenticated;  // Take a PasswordValidationCallback as always starting authentication again.
+                        cachedIdentity = new CachedIdentity("JASPI", true, authenticated);
                     } catch (Exception e) {
                         log.trace("Authentication failed", e);
                         pvc.setResult(false);
@@ -168,13 +187,19 @@ public class JaspiAuthenticationContext {
                     log.tracef("Original Principal = '%s', Caller Name = '%s', Resulting Principal = '%s'", originalPrincipal, callerName, callerPrincipal);
 
                     SecurityIdentity authorizedIdentity = null;
+                    SecurityIdentity securityIdentityToImport = null;
                     if (cachedIdentity != null) {
+                        if (cachedIdentity.getSecurityIdentity() == null) {
+                            securityIdentityToImport = securityDomain.createAdHocIdentity(cachedIdentity.getName());
+                        } else {
+                            securityIdentityToImport = cachedIdentity.getSecurityIdentity();
+                        }
                         // First we see if this is a request to use / discard the cached identity.
-                        if (cachedIdentity.getPrincipal().equals(callerPrincipal)) {
+                        if (securityIdentityToImport.getPrincipal().equals(callerPrincipal)) {
                             if (integrated) {
                                 // This is the simplest as we can just ask the SecurityDomain to import it again.
                                 try (ServerAuthenticationContext sac = securityDomain.createNewAuthenticationContext()) {
-                                    sac.importIdentity(cachedIdentity);
+                                    sac.importIdentity(securityIdentityToImport);
                                     sac.authorize();
                                     authorizedIdentity = sac.getAuthorizedIdentity();
                                 }
