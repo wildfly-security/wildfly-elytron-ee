@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc.
+ * Copyright 2023 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,33 @@
 package org.wildfly.security.authz.jacc;
 
 import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
-import static org.wildfly.security.authz.jacc.SubjectUtil.fromSecurityIdentity;
 
 import java.security.PrivilegedAction;
 
-import org.wildfly.security.auth.server.SecurityDomain;
-import org.wildfly.security.auth.server.SecurityIdentity;
-
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * A {@code PolicyContextHandler} to return a {@code Subject} from the current {@code SecurityIdentity}.
+ * A {@code PolicyContextHandler} to return a {@code HttpServletRequest} from the current request.
  *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
-class SubjectPolicyContextHandler implements PolicyContextHandler {
+class RequestPolicyContextHandler implements PolicyContextHandler {
 
-    private static final String KEY = "javax.security.auth.Subject.container";
+    private static final String KEY = "jakarta.servlet.http.HttpServletRequest";
+
+    private final PrivilegedAction<HttpServletRequest> getRequestAction;
+
+    RequestPolicyContextHandler(final HttpServletRequestContext requestContext) {
+        getRequestAction = new PrivilegedAction<HttpServletRequest>() {
+
+            @Override
+            public HttpServletRequest run() {
+                return requestContext.getCurrent();
+            }
+        };
+    }
 
     @Override
     public boolean supports(String key) throws PolicyContextException {
@@ -52,21 +61,7 @@ class SubjectPolicyContextHandler implements PolicyContextHandler {
             return null;
         }
 
-        SecurityIdentity securityIdentity = getSecurityIdentity();
-        if (securityIdentity != null) {
-            return fromSecurityIdentity(securityIdentity);
-        }
-
-        return null;
+        return doPrivileged(getRequestAction);
     }
 
-    private static SecurityIdentity getSecurityIdentity() {
-        SecurityDomain securityDomain = doPrivileged((PrivilegedAction<SecurityDomain>) SecurityDomain::getCurrent);
-
-        if (securityDomain != null) {
-            return securityDomain.getCurrentSecurityIdentity();
-        }
-
-        return null;
-    }
 }
