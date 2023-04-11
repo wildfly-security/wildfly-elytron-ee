@@ -36,7 +36,7 @@ import jakarta.security.jacc.PolicyContextHandler;
  *
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
  */
-public class SecurityIdentityHandler implements PolicyContextHandler {
+class SecurityIdentityHandler implements PolicyContextHandler {
 
     static final String KEY = SecurityIdentity.class.getName();
 
