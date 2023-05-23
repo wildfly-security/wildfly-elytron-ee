@@ -121,7 +121,6 @@ public class CdiExtension implements Extension {
 
             identityStoreBeans.add(new CdiProducer<IdentityStore>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(IdentityStore.class)
                     .types(Object.class, IdentityStore.class, EmbeddedIdentityStore.class)
                     .addToId(EmbeddedIdentityStoreDefinition.class)
                     .create(e -> new EmbeddedIdentityStore(embeddedIdentityStoreDefinition))
@@ -134,7 +133,6 @@ public class CdiExtension implements Extension {
 
             identityStoreBeans.add(new CdiProducer<IdentityStore>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(IdentityStore.class)
                     .types(Object.class, IdentityStore.class, DatabaseIdentityStore.class)
                     .addToId(DatabaseIdentityStoreDefinition.class)
                     .create(e -> new DatabaseIdentityStore(
@@ -149,7 +147,6 @@ public class CdiExtension implements Extension {
 
             identityStoreBeans.add(new CdiProducer<IdentityStore>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(IdentityStore.class)
                     .types(Object.class, IdentityStore.class, LdapIdentityStore.class)
                     .addToId(LdapIdentityStoreDefinition.class)
                     .create(e -> new LdapIdentityStore(
@@ -164,7 +161,6 @@ public class CdiExtension implements Extension {
 
             authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(BasicAuthenticationMechanism.class)
                     .types(Object.class, HttpAuthenticationMechanism.class, BasicAuthenticationMechanism.class)
                     .addToId(BasicAuthenticationMechanismDefinition.class)
                     .create(e -> new BasicAuthenticationMechanism(
@@ -178,7 +174,6 @@ public class CdiExtension implements Extension {
 
             authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(HttpAuthenticationMechanism.class)
                     .types(Object.class, HttpAuthenticationMechanism.class)
                     .addToId(FormAuthenticationMechanismDefinition.class)
                     .create(e -> {
@@ -197,7 +192,6 @@ public class CdiExtension implements Extension {
 
             authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(HttpAuthenticationMechanism.class)
                     .types(Object.class, HttpAuthenticationMechanism.class)
                     .addToId(CustomFormAuthenticationMechanismDefinition.class)
                     .create(e -> {
@@ -218,14 +212,12 @@ public class CdiExtension implements Extension {
 
             authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(HttpAuthenticationMechanism.class)
                     .types(HttpAuthenticationMechanism.class)
                     .addToId(OpenIdAuthenticationMechanism.class)
                     .create(e -> getBeanReference(OpenIdAuthenticationMechanism.class));
 
             identityStoreBeans.add(new CdiProducer<IdentityStore>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(IdentityStore.class)
                     .types(IdentityStore.class)
                     .addToId(OpenIdIdentityStore.class)
                     .create(e -> getBeanReference(OpenIdIdentityStore.class))
@@ -233,7 +225,6 @@ public class CdiExtension implements Extension {
 
             extraBeans.add(new CdiProducer<OpenIdAuthenticationMechanismDefinition>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(OpenIdAuthenticationMechanismDefinition.class)
                     .types(OpenIdAuthenticationMechanismDefinition.class)
                     .addToId("OpenId Definition")
                     .create(e -> definition)
@@ -267,7 +258,6 @@ public class CdiExtension implements Extension {
             if ("basic".equalsIgnoreCase(loginConfig.getAuthMethod())) {
                 authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(BasicAuthenticationMechanism.class)
                     .types(Object.class, HttpAuthenticationMechanism.class, BasicAuthenticationMechanism.class)
                     .addToId(BasicAuthenticationMechanismDefinition.class)
                     .create(e ->
@@ -278,7 +268,6 @@ public class CdiExtension implements Extension {
             } else if ("form".equalsIgnoreCase(loginConfig.getAuthMethod())) {
                 authenticationMechanismBean = new CdiProducer<HttpAuthenticationMechanism>()
                         .scope(ApplicationScoped.class)
-                        .beanClass(HttpAuthenticationMechanism.class)
                         .types(Object.class, HttpAuthenticationMechanism.class)
                         .addToId(FormAuthenticationMechanismDefinition.class)
                         .create(e -> {
@@ -314,7 +303,6 @@ public class CdiExtension implements Extension {
             // Probably can circumvent this using programmatic lookup or Instance injection
             afterBeanDiscovery.addBean()
                 .scope(Dependent.class)
-                .beanClass(OpenIdAuthenticationMechanismDefinition.class)
                 .types(OpenIdAuthenticationMechanismDefinition.class)
                 .id("Null OpenId Definition")
                 .createWith(cc -> null);
@@ -324,7 +312,6 @@ public class CdiExtension implements Extension {
             decorator.decorateBean(
                 new CdiProducer<IdentityStoreHandler>()
                     .scope(ApplicationScoped.class)
-                    .beanClass(IdentityStoreHandler.class)
                     .types(Object.class, IdentityStoreHandler.class)
                     .addToId(IdentityStoreHandler.class)
                     .create(e -> {
