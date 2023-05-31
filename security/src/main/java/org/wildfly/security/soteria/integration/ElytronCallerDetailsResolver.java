@@ -44,7 +44,7 @@ public class ElytronCallerDetailsResolver implements CallerDetailsResolver {
     public <T extends Principal> Set<T> getPrincipalsByType(Class<T> pType) {
         Set<T> principals = new HashSet<>();
         Principal principal = getCallerPrincipal();
-        if (principal.getClass().isAssignableFrom(pType)) {
+        if (pType.isAssignableFrom(principal.getClass())) {
             principals.add(pType.cast(principal));
         }
         return Collections.unmodifiableSet(principals);
