@@ -66,7 +66,7 @@
         <version.jakarta.security>3.0.0</version.jakarta.security>
         <version.jakarta.servlet>6.0.0</version.jakarta.servlet>
 
-        <version.com.nimbus>9.21</version.com.nimbus>
+        <version.com.nimbus>9.31</version.com.nimbus>
         <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.glassfish.soteria>3.0.0</version.org.glassfish.soteria>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
