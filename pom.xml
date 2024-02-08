@@ -74,7 +74,7 @@
         <version.org.jboss.spec.jakarta.xml.ws>1.0.1.Final</version.org.jboss.spec.jakarta.xml.ws>
         <version.org.jboss.spec.org.jboss.spec.javax.security.jacc>2.0.0.Final</version.org.jboss.spec.org.jboss.spec.javax.security.jacc>
         <version.org.kohsuke.metainf-services.metainf-services>1.7</version.org.kohsuke.metainf-services.metainf-services>
-        <version.org.jboss.resteasy>4.7.2.Final</version.org.jboss.resteasy>
+        <version.org.jboss.resteasy>6.2.7.Final</version.org.jboss.resteasy>
         <version.org.jboss.ws.jbossws-spi>4.0.0.Final</version.org.jboss.ws.jbossws-spi>
         <version.org.wildfly.checkstyle-config>1.0.8.Final</version.org.wildfly.checkstyle-config>
         <version.org.wildfly.client.config>1.0.1.Final</version.org.wildfly.client.config>
