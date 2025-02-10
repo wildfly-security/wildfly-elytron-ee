@@ -42,7 +42,6 @@ import static org.glassfish.soteria.Utils.isOneOf;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -56,16 +55,15 @@ import org.glassfish.soteria.mechanisms.openid.domain.RefreshTokenImpl;
 import org.glassfish.soteria.servlet.HttpServletRequestDelegator;
 import org.glassfish.soteria.servlet.HttpStorageController;
 import org.glassfish.soteria.servlet.RequestData;
+import org.wildfly.security.soteria.original.TokenController.TokensResponse;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Typed;
 import jakarta.inject.Inject;
-import jakarta.json.Json;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 import jakarta.security.auth.message.callback.CallerPrincipalCallback;
 import jakarta.security.enterprise.AuthenticationException;
 import jakarta.security.enterprise.AuthenticationStatus;
@@ -77,7 +75,6 @@ import jakarta.security.enterprise.identitystore.openid.RefreshToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -346,9 +343,9 @@ public class OpenIdAuthenticationMechanism implements HttpAuthenticationMechanis
 
         LOGGER.finer("Authorization Code received, now fetching Access token & Id token");
 
-        Response tokenResponse = tokenController.getTokens(request);
-        JsonObject tokensObject = readJsonObject(tokenResponse.readEntity(String.class));
-        if (tokenResponse.getStatus() == OK.getStatusCode()) {
+        TokensResponse tokensResponse = tokenController.getTokens(request);
+        JsonObject tokensObject = tokensResponse.getTokensObject();
+        if (tokensResponse.getStatus() == OK.getStatusCode()) {
             // Successful Token Response
             updateContext(tokensObject);
             OpenIdCredential credential = new OpenIdCredential(tokensObject, httpContext, configuration.getTokenMinValidity());
@@ -407,10 +404,10 @@ public class OpenIdAuthenticationMechanism implements HttpAuthenticationMechanis
     }
 
     private AuthenticationStatus refreshTokens(HttpMessageContext httpContext, RefreshToken refreshToken) {
-        Response response = tokenController.refreshTokens(refreshToken);
-        JsonObject tokensObject = readJsonObject(response.readEntity(String.class));
+        TokensResponse response = tokenController.refreshTokens(refreshToken);
+        JsonObject tokensObject = response.getTokensObject();
 
-        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+        if (response.getStatus() == OK.getStatusCode()) {
             // Successful Token Response
             updateContext(tokensObject);
             OpenIdCredential credential = new OpenIdCredential(tokensObject, httpContext, configuration.getTokenMinValidity());
@@ -474,13 +471,6 @@ public class OpenIdAuthenticationMechanism implements HttpAuthenticationMechanis
             response.sendRedirect(uri);
         } catch (IOException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    private JsonObject readJsonObject(String tokensBody) {
-        LOGGER.fine("tokensBody = " + tokensBody);
-        try (JsonReader reader = Json.createReader(new StringReader(tokensBody))) {
-            return reader.readObject();
         }
     }
 
