@@ -33,6 +33,7 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.PassivationCapable;
+import org.glassfish.soteria.cdi.CdiExtension;
 
 // May be replaced by CDI 2.0 bean builder API when ready.
 // See http://weld.cdi-spec.org/news/2015/02/25/weld-300Alpha5/#_bean_builder_api
@@ -58,7 +59,7 @@ public class CdiProducer<T> implements Bean<T>, PassivationCapable {
 
     @Override
     public Class<?> getBeanClass() {
-       return beanClass;
+        return beanClass;
     }
 
     @Override
@@ -134,7 +135,6 @@ public class CdiProducer<T> implements Bean<T>, PassivationCapable {
         this.qualifiers = asSet(qualifiers);
         return this;
     }
-
 
     protected CdiProducer<T> scope(Class<? extends Annotation> scope) {
         this.scope = scope;

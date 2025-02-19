@@ -18,18 +18,18 @@ package org.wildfly.security.soteria.original;
 
 import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalELExpression;
 
-import org.glassfish.soteria.cdi.AnnotationELPProcessor;
-
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.security.enterprise.identitystore.IdentityStore.ValidationType;
 import jakarta.security.enterprise.identitystore.LdapIdentityStoreDefinition;
+import org.glassfish.soteria.cdi.AnnotationELPProcessor;
 
 /**
  * An annotation literal for <code>@LdapIdentityStoreDefinition</code>.
  *
  */
 @SuppressWarnings("all")
-public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLiteral<LdapIdentityStoreDefinition> implements LdapIdentityStoreDefinition {
+public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLiteral<LdapIdentityStoreDefinition>
+        implements LdapIdentityStoreDefinition {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,32 +62,14 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
 
     public LdapIdentityStoreDefinitionAnnotationLiteral(
 
-            String bindDn,
-            String bindDnPassword,
-            String callerBaseDn,
-            String callerNameAttribute,
-            String callerSearchBase,
-            String callerSearchFilter,
-            LdapSearchScope callerSearchScope,
-            String callerSearchScopeExpression,
-            String groupMemberAttribute,
-            String groupMemberOfAttribute,
-            String groupNameAttribute,
-            String groupSearchBase,
-            String groupSearchFilter,
-            LdapSearchScope groupSearchScope,
-            String groupSearchScopeExpression,
-            int maxResults,
-            String maxResultsExpression,
-            int priority,
-            String priorityExpression,
-            int readTimeout,
-            String readTimeoutExpression,
-            String url,
-            ValidationType[] useFor,
-            String useForExpression
+            String bindDn, String bindDnPassword, String callerBaseDn, String callerNameAttribute, String callerSearchBase,
+            String callerSearchFilter, LdapSearchScope callerSearchScope, String callerSearchScopeExpression,
+            String groupMemberAttribute, String groupMemberOfAttribute, String groupNameAttribute, String groupSearchBase,
+            String groupSearchFilter, LdapSearchScope groupSearchScope, String groupSearchScopeExpression, int maxResults,
+            String maxResultsExpression, int priority, String priorityExpression, int readTimeout, String readTimeoutExpression,
+            String url, ValidationType[] useFor, String useForExpression
 
-            ) {
+    ) {
 
         this.bindDn = bindDn;
         this.bindDnPassword = bindDnPassword;
@@ -122,33 +104,13 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
         }
 
         try {
-            LdapIdentityStoreDefinitionAnnotationLiteral out =
-                new LdapIdentityStoreDefinitionAnnotationLiteral(
-                    in.bindDn(),
-                    in.bindDnPassword(),
-                    in.callerBaseDn(),
-                    in.callerNameAttribute(),
-                    in.callerSearchBase(),
-                    in.callerSearchFilter(),
-                    in.callerSearchScope(),
-                    in.callerSearchScopeExpression(),
-                    in.groupMemberAttribute(),
-                    in.groupMemberOfAttribute(),
-                    in.groupNameAttribute(),
-                    in.groupSearchBase(),
-                    in.groupSearchFilter(),
-                    in.groupSearchScope(),
-                    in.groupSearchScopeExpression(),
-                    in.maxResults(),
-                    in.maxResultsExpression(),
-                    in.priority(),
-                    in.priorityExpression(),
-                    in.readTimeout(),
-                    in.readTimeoutExpression(),
-                    in.url(),
-                    in.useFor(),
-                    in.useForExpression()
-                );
+            LdapIdentityStoreDefinitionAnnotationLiteral out = new LdapIdentityStoreDefinitionAnnotationLiteral(in.bindDn(),
+                    in.bindDnPassword(), in.callerBaseDn(), in.callerNameAttribute(), in.callerSearchBase(),
+                    in.callerSearchFilter(), in.callerSearchScope(), in.callerSearchScopeExpression(),
+                    in.groupMemberAttribute(), in.groupMemberOfAttribute(), in.groupNameAttribute(), in.groupSearchBase(),
+                    in.groupSearchFilter(), in.groupSearchScope(), in.groupSearchScopeExpression(), in.maxResults(),
+                    in.maxResultsExpression(), in.priority(), in.priorityExpression(), in.readTimeout(),
+                    in.readTimeoutExpression(), in.url(), in.useFor(), in.useForExpression());
 
             out.setHasDeferredExpressions(hasAnyELExpression(out));
 
@@ -161,95 +123,81 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
     }
 
     public static boolean hasAnyELExpression(LdapIdentityStoreDefinition in) {
-        return AnnotationELPProcessor.hasAnyELExpression(
-            in.bindDn(),
-            in.bindDnPassword(),
-            in.callerNameAttribute(),
-            in.callerSearchBase(),
-            in.callerSearchFilter(),
-            in.callerSearchScopeExpression(),
-            in.groupMemberAttribute(),
-            in.groupMemberOfAttribute(),
-            in.groupNameAttribute(),
-            in.groupSearchBase(),
-            in.groupSearchFilter(),
-            in.groupSearchScopeExpression(),
-            in.maxResultsExpression(),
-            in.priorityExpression(),
-            in.readTimeoutExpression(),
-            in.url(),
-            in.useForExpression()
-        );
+        return AnnotationELPProcessor.hasAnyELExpression(in.bindDn(), in.bindDnPassword(), in.callerNameAttribute(),
+                in.callerSearchBase(), in.callerSearchFilter(), in.callerSearchScopeExpression(), in.groupMemberAttribute(),
+                in.groupMemberOfAttribute(), in.groupNameAttribute(), in.groupSearchBase(), in.groupSearchFilter(),
+                in.groupSearchScopeExpression(), in.maxResultsExpression(), in.priorityExpression(), in.readTimeoutExpression(),
+                in.url(), in.useForExpression());
     }
 
     @Override
     public String bindDn() {
-        return hasDeferredExpressions? evalELExpression(bindDn) : bindDn;
+        return hasDeferredExpressions ? evalELExpression(bindDn) : bindDn;
     }
 
     @Override
     public String bindDnPassword() {
-        return hasDeferredExpressions? evalELExpression(bindDnPassword) : bindDnPassword;
+        return hasDeferredExpressions ? evalELExpression(bindDnPassword) : bindDnPassword;
     }
 
     @Override
     public String callerBaseDn() {
-        return hasDeferredExpressions? evalELExpression(callerBaseDn) : callerBaseDn;
+        return hasDeferredExpressions ? evalELExpression(callerBaseDn) : callerBaseDn;
     }
 
     @Override
     public String callerNameAttribute() {
-        return hasDeferredExpressions? evalELExpression(callerNameAttribute) : callerNameAttribute;
+        return hasDeferredExpressions ? evalELExpression(callerNameAttribute) : callerNameAttribute;
     }
 
     @Override
     public String callerSearchBase() {
-        return hasDeferredExpressions? evalELExpression(callerSearchBase) : callerSearchBase;
+        return hasDeferredExpressions ? evalELExpression(callerSearchBase) : callerSearchBase;
     }
 
     @Override
     public String callerSearchFilter() {
-        return hasDeferredExpressions? evalELExpression(callerSearchFilter) : callerSearchFilter;
+        return hasDeferredExpressions ? evalELExpression(callerSearchFilter) : callerSearchFilter;
     }
 
     @Override
     public LdapSearchScope callerSearchScope() {
-        return hasDeferredExpressions? evalELExpression(callerSearchScopeExpression, callerSearchScope) : callerSearchScope;
+        return hasDeferredExpressions ? evalELExpression(callerSearchScopeExpression, callerSearchScope) : callerSearchScope;
     }
 
     @Override
     public String callerSearchScopeExpression() {
-        return hasDeferredExpressions? evalELExpression(callerSearchScopeExpression) : callerSearchScopeExpression;
+        return hasDeferredExpressions ? evalELExpression(callerSearchScopeExpression) : callerSearchScopeExpression;
     }
 
     @Override
     public String groupMemberAttribute() {
-        return hasDeferredExpressions? evalELExpression(groupMemberAttribute) : groupMemberAttribute;
+        return hasDeferredExpressions ? evalELExpression(groupMemberAttribute) : groupMemberAttribute;
     }
 
     @Override
     public String groupMemberOfAttribute() {
-        return hasDeferredExpressions? evalELExpression(groupMemberOfAttribute) : groupMemberOfAttribute;
+        return hasDeferredExpressions ? evalELExpression(groupMemberOfAttribute) : groupMemberOfAttribute;
     }
 
     @Override
     public String groupNameAttribute() {
-        return hasDeferredExpressions? evalELExpression(groupNameAttribute) : groupNameAttribute;
+        return hasDeferredExpressions ? evalELExpression(groupNameAttribute) : groupNameAttribute;
     }
 
     @Override
     public String groupSearchBase() {
-        return hasDeferredExpressions? evalELExpression(groupSearchBase) : groupSearchBase;
+        return hasDeferredExpressions ? evalELExpression(groupSearchBase) : groupSearchBase;
     }
 
     @Override
     public String groupSearchFilter() {
-        return hasDeferredExpressions? evalELExpression(groupSearchFilter) : groupSearchFilter;
+        return hasDeferredExpressions ? evalELExpression(groupSearchFilter) : groupSearchFilter;
     }
 
     @Override
     public LdapSearchScope groupSearchScope() {
-        return hasDeferredExpressions? evalELExpression(groupSearchScopeExpression, groupSearchScope) : groupSearchScope;
+        return hasDeferredExpressions ? evalELExpression(groupSearchScopeExpression, groupSearchScope) : groupSearchScope;
     }
 
     @Override
@@ -259,7 +207,7 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
 
     @Override
     public int maxResults() {
-        return hasDeferredExpressions? evalELExpression(maxResultsExpression, maxResults) : maxResults;
+        return hasDeferredExpressions ? evalELExpression(maxResultsExpression, maxResults) : maxResults;
     }
 
     @Override
@@ -269,7 +217,7 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
 
     @Override
     public int priority() {
-        return hasDeferredExpressions? evalELExpression(priorityExpression, priority) : priority;
+        return hasDeferredExpressions ? evalELExpression(priorityExpression, priority) : priority;
     }
 
     @Override
@@ -279,7 +227,7 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
 
     @Override
     public int readTimeout() {
-        return hasDeferredExpressions? evalELExpression(readTimeoutExpression, readTimeout) : readTimeout;
+        return hasDeferredExpressions ? evalELExpression(readTimeoutExpression, readTimeout) : readTimeout;
     }
 
     @Override
@@ -289,12 +237,12 @@ public class LdapIdentityStoreDefinitionAnnotationLiteral extends AnnotationLite
 
     @Override
     public String url() {
-        return hasDeferredExpressions? evalELExpression(url) : url;
+        return hasDeferredExpressions ? evalELExpression(url) : url;
     }
 
     @Override
     public ValidationType[] useFor() {
-        return hasDeferredExpressions? evalELExpression(useForExpression, useFor) : useFor;
+        return hasDeferredExpressions ? evalELExpression(useForExpression, useFor) : useFor;
     }
 
     @Override

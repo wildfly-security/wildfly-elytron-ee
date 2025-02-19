@@ -17,6 +17,7 @@
  */
 package org.wildfly.security.soteria.original;
 
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,8 +27,6 @@ import org.glassfish.soteria.Utils;
 import org.glassfish.soteria.mechanisms.openid.OpenIdState;
 import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
 import org.glassfish.soteria.servlet.HttpStorageController;
-
-import java.util.Optional;
 
 /**
  * Controller to manage OpenId state parameter value and request being validated
@@ -43,10 +42,7 @@ public class StateController {
     @Inject
     private OpenIdConfiguration configuration;
 
-    public void store(
-            OpenIdState state,
-            OpenIdConfiguration configuration,
-            HttpServletRequest request,
+    public void store(OpenIdState state, OpenIdConfiguration configuration, HttpServletRequest request,
             HttpServletResponse response) {
 
         HttpStorageController storage = HttpStorageController.getInstance(configuration, request, response);
@@ -54,21 +50,14 @@ public class StateController {
         storage.store(STATE_KEY, state.getValue(), null);
     }
 
-    public Optional<OpenIdState> get(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public Optional<OpenIdState> get(HttpServletRequest request, HttpServletResponse response) {
 
-        return HttpStorageController.getInstance(configuration, request, response)
-                .getAsString(STATE_KEY)
-                .filter(k -> !Utils.isEmpty(k))
-                .map(OpenIdState::new);
+        return HttpStorageController.getInstance(configuration, request, response).getAsString(STATE_KEY)
+                .filter(k -> !Utils.isEmpty(k)).map(OpenIdState::new);
     }
 
-    public void remove(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public void remove(HttpServletRequest request, HttpServletResponse response) {
 
-        HttpStorageController.getInstance(configuration, request, response)
-                .remove(STATE_KEY);
+        HttpStorageController.getInstance(configuration, request, response).remove(STATE_KEY);
     }
 }
