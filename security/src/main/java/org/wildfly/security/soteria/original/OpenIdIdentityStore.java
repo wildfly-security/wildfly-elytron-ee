@@ -28,23 +28,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jwt.JWTClaimsSet;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import jakarta.security.enterprise.credential.Credential;
 import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
+import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
 
 /**
- * Identity store validates the identity token and access token and returns the
- * validation result with the caller name and groups.
+ * Identity store validates the identity token and access token and returns the validation result with the caller name and
+ * groups.
  *
  * @author Gaurav Gupta
  * @author Rudy De Busscher
@@ -81,9 +79,7 @@ public class OpenIdIdentityStore implements IdentityStore {
 
         AccessTokenImpl accessToken = (AccessTokenImpl) credential.getAccessToken();
         if (nonNull(accessToken)) {
-            tokenController.validateAccessToken(
-                    accessToken, idTokenAlgorithm, context.getIdentityToken().getClaims()
-            );
+            tokenController.validateAccessToken(accessToken, idTokenAlgorithm, context.getIdentityToken().getClaims());
             context.setAccessToken(accessToken);
         }
 
@@ -108,7 +104,7 @@ public class OpenIdIdentityStore implements IdentityStore {
     private String getCallerName() {
         String callerNameClaim = configuration.getClaimsConfiguration().getCallerNameClaim();
 
-        String callerName =  context.getIdentityToken().getJwtClaims().getStringClaim(callerNameClaim).orElse(null);
+        String callerName = context.getIdentityToken().getJwtClaims().getStringClaim(callerNameClaim).orElse(null);
         if (callerName == null) {
             callerName = context.getAccessToken().getJwtClaims().getStringClaim(callerNameClaim).orElse(null);
         }

@@ -19,9 +19,6 @@ package org.wildfly.security.soteria.original;
 
 import java.util.Optional;
 
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-import org.glassfish.soteria.servlet.HttpStorageController;
-
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -33,10 +30,12 @@ import jakarta.security.enterprise.identitystore.openid.OpenIdContext;
 import jakarta.security.enterprise.identitystore.openid.RefreshToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
+import org.glassfish.soteria.servlet.HttpStorageController;
 
 /**
- * An injectable interface that provides access to access token, identity token,
- * claims and OpenId Connect provider related information.
+ * An injectable interface that provides access to access token, identity token, claims and OpenId Connect provider related
+ * information.
  *
  * @author Gaurav Gupta
  * @author Rudy De Busscher
@@ -134,9 +133,7 @@ public class OpenIdContextImpl implements OpenIdContext {
     }
 
     @Override
-    public <T> Optional<T> getStoredValue(HttpServletRequest request,
-                                          HttpServletResponse response,
-                                          String key) {
+    public <T> Optional<T> getStoredValue(HttpServletRequest request, HttpServletResponse response, String key) {
         return HttpStorageController.getInstance(configuration, request, response).get(key);
     }
 }
