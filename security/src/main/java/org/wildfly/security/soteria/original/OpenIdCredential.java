@@ -17,7 +17,6 @@
  */
 package org.wildfly.security.soteria.original;
 
-
 import static jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant.ACCESS_TOKEN;
 import static jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant.EXPIRES_IN;
 import static jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant.IDENTITY_TOKEN;
@@ -25,13 +24,12 @@ import static jakarta.security.enterprise.authentication.mechanism.http.openid.O
 import static jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant.TOKEN_TYPE;
 import static java.util.Objects.nonNull;
 
-import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
-
 import jakarta.json.JsonObject;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import jakarta.security.enterprise.credential.Credential;
 import jakarta.security.enterprise.identitystore.openid.AccessToken;
+import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
 
 /**
  * @author Gaurav Gupta

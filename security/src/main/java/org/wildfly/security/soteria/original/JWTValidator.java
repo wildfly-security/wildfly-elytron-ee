@@ -25,8 +25,6 @@ import static java.util.Objects.isNull;
 import java.text.ParseException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEHeader;
@@ -49,19 +47,18 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.jwt.proc.JWTClaimsSetVerifier;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
 
 @ApplicationScoped
 public class JWTValidator {
     @Inject
     private OpenIdConfiguration configuration;
 
-    private ConcurrentHashMap<CacheKey, JWSKeySelector> jwsCache = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<CacheKey, JWEKeySelector> jweCache = new ConcurrentHashMap<>();
-
+    private final ConcurrentHashMap<CacheKey, JWSKeySelector> jwsCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<CacheKey, JWEKeySelector> jweCache = new ConcurrentHashMap<>();
 
     public JWTClaimsSet validateBearerToken(JWT token, JWTClaimsSetVerifier jwtVerifier) {
         JWTClaimsSet claimsSet;
@@ -85,8 +82,7 @@ public class JWTValidator {
                 claimsSet = jwtProcessor.process(signedToken, null);
             } else if (token instanceof EncryptedJWT) {
                 /*
-                 * If ID Token is encrypted, decrypt it using the keys and
-                 * algorithms
+                 * If ID Token is encrypted, decrypt it using the keys and algorithms
                  */
                 EncryptedJWT encryptedToken = (EncryptedJWT) token;
                 JWEHeader header = encryptedToken.getHeader();
@@ -108,9 +104,8 @@ public class JWTValidator {
     }
 
     /**
-     * JWSKeySelector finds the JSON Web Key Set (JWKS) from jwks_uri endpoint
-     * and filter for potential signing keys in the JWKS with a matching kid
-     * property.
+     * JWSKeySelector finds the JSON Web Key Set (JWKS) from jwks_uri endpoint and filter for potential signing keys in the JWKS
+     * with a matching kid property.
      *
      * @param alg the algorithm for the key
      * @return the JSON Web Signing (JWS) key selector
@@ -120,11 +115,8 @@ public class JWTValidator {
     }
 
     private CacheKey createCacheKey(String alg) {
-        return new CacheKey(alg,
-                configuration.getJwksConnectTimeout(),
-                configuration.getJwksReadTimeout(),
-                configuration.getProviderMetadata().getJwksURL(),
-                configuration.getClientSecret());
+        return new CacheKey(alg, configuration.getJwksConnectTimeout(), configuration.getJwksReadTimeout(),
+                configuration.getProviderMetadata().getJwksURL(), configuration.getClientSecret());
     }
 
     private JWSKeySelector<?> createJWSKeySelector(String alg) {
@@ -134,17 +126,13 @@ public class JWTValidator {
             throw new IllegalStateException("Unsupported JWS algorithm : " + jWSAlgorithm);
         }
 
-        if (JWSAlgorithm.Family.RSA.contains(jWSAlgorithm)
-                || JWSAlgorithm.Family.EC.contains(jWSAlgorithm)) {
-            ResourceRetriever jwkSetRetriever = new DefaultResourceRetriever(
-                    configuration.getJwksConnectTimeout(),
-                    configuration.getJwksReadTimeout(),
-                    DEFAULT_HTTP_SIZE_LIMIT
-            );
+        if (JWSAlgorithm.Family.RSA.contains(jWSAlgorithm) || JWSAlgorithm.Family.EC.contains(jWSAlgorithm)) {
+            ResourceRetriever jwkSetRetriever = new DefaultResourceRetriever(configuration.getJwksConnectTimeout(),
+                    configuration.getJwksReadTimeout(), DEFAULT_HTTP_SIZE_LIMIT);
             jwkSource = new RemoteJWKSet<>(configuration.getProviderMetadata().getJwksURL(), jwkSetRetriever);
         } else if (JWSAlgorithm.Family.HMAC_SHA.contains(jWSAlgorithm)) {
             byte[] clientSecret = new String(configuration.getClientSecret()).getBytes(UTF_8);
-            if (isNull(clientSecret)) {  // FIXME
+            if (isNull(clientSecret)) { // FIXME
                 throw new IllegalStateException("Missing client secret");
             }
             jwkSource = new ImmutableSecret<>(clientSecret);

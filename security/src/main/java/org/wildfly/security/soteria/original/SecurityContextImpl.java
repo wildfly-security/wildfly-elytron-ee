@@ -32,7 +32,6 @@ import jakarta.security.enterprise.SecurityContext;
 import jakarta.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.glassfish.soteria.authorization.spi.CallerDetailsResolver;
 import org.glassfish.soteria.authorization.spi.ResourceAccessResolver;
 import org.glassfish.soteria.authorization.spi.impl.JaccResourceAccessResolver;
@@ -65,8 +64,8 @@ public class SecurityContextImpl implements SecurityContext, Serializable {
 
     @PostConstruct
     public void init() {
-       callerDetailsResolver = new ElytronCallerDetailsResolver();
-       resourceAccessResolver = new JaccResourceAccessResolver();
+        callerDetailsResolver = new ElytronCallerDetailsResolver();
+        resourceAccessResolver = new JaccResourceAccessResolver();
     }
 
     @Override
@@ -96,7 +95,8 @@ public class SecurityContextImpl implements SecurityContext, Serializable {
     }
 
     @Override
-    public AuthenticationStatus authenticate(HttpServletRequest request, HttpServletResponse response, AuthenticationParameters parameters) {
+    public AuthenticationStatus authenticate(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationParameters parameters) {
 
         try {
             if (Jaspic.authenticate(request, response, parameters)) {

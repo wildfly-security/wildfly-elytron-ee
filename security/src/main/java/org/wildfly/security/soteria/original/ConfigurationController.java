@@ -17,7 +17,6 @@
  */
 package org.wildfly.security.soteria.original;
 
-
 import static java.util.stream.Collectors.joining;
 import static org.glassfish.soteria.Utils.isEmpty;
 import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalImmediate;
@@ -34,12 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.glassfish.soteria.mechanisms.openid.controller.ProviderMetadataController;
-import org.glassfish.soteria.mechanisms.openid.domain.ClaimsConfiguration;
-import org.glassfish.soteria.mechanisms.openid.domain.LogoutConfiguration;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdProviderData;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
@@ -50,6 +43,11 @@ import jakarta.security.enterprise.authentication.mechanism.http.OpenIdAuthentic
 import jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdConstant;
 import jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdProviderMetadata;
 import jakarta.security.enterprise.authentication.mechanism.http.openid.PromptType;
+import org.glassfish.soteria.mechanisms.openid.controller.ProviderMetadataController;
+import org.glassfish.soteria.mechanisms.openid.domain.ClaimsConfiguration;
+import org.glassfish.soteria.mechanisms.openid.domain.LogoutConfiguration;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdProviderData;
 
 /**
  * Build and validate the OpenId Connect client configuration.
@@ -88,10 +86,9 @@ public class ConfigurationController implements Serializable {
     }
 
     /**
-     * Creates the {@link OpenIdConfiguration} using the properties as defined
-     * in an {@link OpenIdAuthenticationMechanismDefinition} annotation or using MP
-     * Config source. MP Config source value take precedence over
-     * {@link OpenIdAuthenticationMechanismDefinition} annotation value.
+     * Creates the {@link OpenIdConfiguration} using the properties as defined in an
+     * {@link OpenIdAuthenticationMechanismDefinition} annotation or using MP Config source. MP Config source value take
+     * precedence over {@link OpenIdAuthenticationMechanismDefinition} annotation value.
      *
      * @param definition
      * @return
@@ -111,7 +108,8 @@ public class ConfigurationController implements Serializable {
         OpenIdProviderMetadata providerMetadata = definition.providerMetadata();
         providerDocument = providerMetadataController.getDocument(providerURI);
 
-        if (isEmpty(providerMetadata.authorizationEndpoint()) && providerDocument.containsKey(OpenIdConstant.AUTHORIZATION_ENDPOINT)) {
+        if (isEmpty(providerMetadata.authorizationEndpoint())
+                && providerDocument.containsKey(OpenIdConstant.AUTHORIZATION_ENDPOINT)) {
             authorizationEndpoint = evalImmediate(providerDocument.getString(OpenIdConstant.AUTHORIZATION_ENDPOINT));
         } else {
             authorizationEndpoint = evalImmediate(providerMetadata.authorizationEndpoint());
@@ -126,7 +124,8 @@ public class ConfigurationController implements Serializable {
         } else {
             userinfoEndpoint = evalImmediate(providerMetadata.userinfoEndpoint());
         }
-        if (isEmpty(providerMetadata.endSessionEndpoint()) && providerDocument.containsKey(OpenIdConstant.END_SESSION_ENDPOINT)) {
+        if (isEmpty(providerMetadata.endSessionEndpoint())
+                && providerDocument.containsKey(OpenIdConstant.END_SESSION_ENDPOINT)) {
             endSessionEndpoint = evalImmediate(providerDocument.getString(OpenIdConstant.END_SESSION_ENDPOINT));
         } else {
             endSessionEndpoint = evalImmediate(providerMetadata.endSessionEndpoint());
@@ -150,37 +149,33 @@ public class ConfigurationController implements Serializable {
 
         List<String> supportedResponseTypes = null;
         if (providerDocument.containsKey(OpenIdConstant.RESPONSE_TYPES_SUPPORTED)) {
-            supportedResponseTypes = providerDocument.getJsonArray(OpenIdConstant.RESPONSE_TYPES_SUPPORTED).getValuesAs(JsonString::getString);
+            supportedResponseTypes = providerDocument.getJsonArray(OpenIdConstant.RESPONSE_TYPES_SUPPORTED)
+                    .getValuesAs(JsonString::getString);
         }
         if (isEmpty(supportedResponseTypes)) {
             String value = evalImmediate(providerMetadata.responseTypeSupported());
-            supportedResponseTypes = Arrays.stream(value.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
+            supportedResponseTypes = Arrays.stream(value.split(",")).map(String::trim).collect(Collectors.toList());
         }
 
         List<String> supportedIdTokenSigningAlgorithms = null;
         if (providerDocument.containsKey(OpenIdConstant.ID_TOKEN_SIGNING_ALG_VALUES_SUPPORTED)) {
-            supportedIdTokenSigningAlgorithms = providerDocument.getJsonArray(OpenIdConstant.ID_TOKEN_SIGNING_ALG_VALUES_SUPPORTED).getValuesAs(JsonString::getString);
+            supportedIdTokenSigningAlgorithms = providerDocument
+                    .getJsonArray(OpenIdConstant.ID_TOKEN_SIGNING_ALG_VALUES_SUPPORTED).getValuesAs(JsonString::getString);
         }
         if (isEmpty(supportedIdTokenSigningAlgorithms)) {
             String value = evalImmediate(providerMetadata.idTokenSigningAlgorithmsSupported());
-            supportedIdTokenSigningAlgorithms = Arrays.stream(value.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
+            supportedIdTokenSigningAlgorithms = Arrays.stream(value.split(",")).map(String::trim).collect(Collectors.toList());
         }
 
         List<String> supportedSubjectTypes = null;
         if (providerDocument.containsKey(OpenIdConstant.SUBJECT_TYPES_SUPPORTED)) {
-            supportedSubjectTypes = providerDocument.getJsonArray(OpenIdConstant.SUBJECT_TYPES_SUPPORTED).getValuesAs(JsonString::getString);
+            supportedSubjectTypes = providerDocument.getJsonArray(OpenIdConstant.SUBJECT_TYPES_SUPPORTED)
+                    .getValuesAs(JsonString::getString);
         }
         if (isEmpty(supportedSubjectTypes)) {
             String value = evalImmediate(providerMetadata.subjectTypeSupported());
-            supportedSubjectTypes = Arrays.stream(value.split(","))
-                    .map(String::trim)
-                    .collect(Collectors.toList());
+            supportedSubjectTypes = Arrays.stream(value.split(",")).map(String::trim).collect(Collectors.toList());
         }
-
 
         String clientId = evalImmediate(definition.clientId());
         char[] clientSecret = evalImmediate(definition.clientSecret()).toCharArray();
@@ -195,10 +190,7 @@ public class ConfigurationController implements Serializable {
         }
 
         String responseType = evalImmediate(definition.responseType());
-        responseType
-                = Arrays.stream(responseType.trim().split(SPACE_SEPARATOR))
-                .map(String::toLowerCase)
-                .sorted()
+        responseType = Arrays.stream(responseType.trim().split(SPACE_SEPARATOR)).map(String::toLowerCase).sorted()
                 .collect(joining(SPACE_SEPARATOR));
 
         String responseMode = evalImmediate(definition.responseMode());
@@ -206,9 +198,7 @@ public class ConfigurationController implements Serializable {
         String display = definition.display().toString().toLowerCase();
         display = evalImmediate(display);
 
-        String prompt = Arrays.stream(definition.prompt())
-                .map(PromptType::toString)
-                .map(String::toLowerCase)
+        String prompt = Arrays.stream(definition.prompt()).map(PromptType::toString).map(String::toLowerCase)
                 .collect(joining(SPACE_SEPARATOR));
         prompt = evalImmediate(definition.promptExpression(), prompt);
 
@@ -222,7 +212,8 @@ public class ConfigurationController implements Serializable {
 
         boolean nonce = evalImmediate(definition.useNonceExpression(), definition.useNonce());
         boolean session = evalImmediate(definition.useSessionExpression(), definition.useSession());
-        boolean redirectToOriginalResource = evalImmediate(definition.redirectToOriginalResourceExpression(), definition.redirectToOriginalResource());
+        boolean redirectToOriginalResource = evalImmediate(definition.redirectToOriginalResourceExpression(),
+                definition.redirectToOriginalResource());
 
         int jwksConnectTimeout = evalImmediate(definition.jwksConnectTimeoutExpression(), definition.jwksConnectTimeout());
         int jwksReadTimeout = evalImmediate(definition.jwksReadTimeoutExpression(), definition.jwksReadTimeout());
@@ -230,53 +221,34 @@ public class ConfigurationController implements Serializable {
         String callerNameClaim = evalImmediate(definition.claimsDefinition().callerNameClaim());
         String callerGroupsClaim = evalImmediate(definition.claimsDefinition().callerGroupsClaim());
 
-        boolean notifyProvider = evalImmediate(definition.logout().notifyProviderExpression(), definition.logout().notifyProvider());
+        boolean notifyProvider = evalImmediate(definition.logout().notifyProviderExpression(),
+                definition.logout().notifyProvider());
         String logoutRedirectURI = evalImmediate(definition.logout().redirectURI());
-        boolean accessTokenExpiry = evalImmediate(definition.logout().accessTokenExpiryExpression(), definition.logout().accessTokenExpiry());
-        boolean identityTokenExpiry = evalImmediate(definition.logout().identityTokenExpiryExpression(), definition.logout().identityTokenExpiry());
+        boolean accessTokenExpiry = evalImmediate(definition.logout().accessTokenExpiryExpression(),
+                definition.logout().accessTokenExpiry());
+        boolean identityTokenExpiry = evalImmediate(definition.logout().identityTokenExpiryExpression(),
+                definition.logout().identityTokenExpiry());
 
         boolean tokenAutoRefresh = evalImmediate(definition.tokenAutoRefreshExpression(), definition.tokenAutoRefresh());
         int tokenMinValidity = evalImmediate(definition.tokenMinValidityExpression(), definition.tokenMinValidity());
 
         OpenIdConfiguration configuration = new OpenIdConfiguration()
-                .setProviderMetadata(
-                        new OpenIdProviderData(providerDocument)
-                                .setAuthorizationEndpoint(authorizationEndpoint)
-                                .setTokenEndpoint(tokenEndpoint)
-                                .setUserinfoEndpoint(userinfoEndpoint)
-                                .setEndSessionEndpoint(endSessionEndpoint)
-                                .setJwksURL(jwksURL)
-                                .setIssuer(issuer)
-                                .setResponseTypeSupported(new HashSet<>(supportedResponseTypes))
-                                .setIdTokenSigningAlgorithmsSupported(new HashSet<>(supportedIdTokenSigningAlgorithms))
-                                .setSubjectTypesSupported(new HashSet<>(supportedSubjectTypes))
-                )
+                .setProviderMetadata(new OpenIdProviderData(providerDocument).setAuthorizationEndpoint(authorizationEndpoint)
+                        .setTokenEndpoint(tokenEndpoint).setUserinfoEndpoint(userinfoEndpoint)
+                        .setEndSessionEndpoint(endSessionEndpoint).setJwksURL(jwksURL).setIssuer(issuer)
+                        .setResponseTypeSupported(new HashSet<>(supportedResponseTypes))
+                        .setIdTokenSigningAlgorithmsSupported(new HashSet<>(supportedIdTokenSigningAlgorithms))
+                        .setSubjectTypesSupported(new HashSet<>(supportedSubjectTypes)))
                 .setClaimsConfiguration(
-                        new ClaimsConfiguration()
-                                .setCallerNameClaim(callerNameClaim)
-                                .setCallerGroupsClaim(callerGroupsClaim)
-                ).setLogoutConfiguration(
-                        new LogoutConfiguration()
-                                .setNotifyProvider(notifyProvider)
-                                .setRedirectURI(logoutRedirectURI)
-                                .setAccessTokenExpiry(accessTokenExpiry)
-                                .setIdentityTokenExpiry(identityTokenExpiry)
-                )
-                .setClientId(clientId)
-                .setClientSecret(clientSecret)
-                .setRedirectURI(redirectURI)
-                .setRedirectToOriginalResource(redirectToOriginalResource)
-                .setScopes(scopes)
-                .setResponseType(responseType)
-                .setResponseMode(responseMode)
-                .setExtraParameters(extraParameters)
-                .setPrompt(prompt)
-                .setDisplay(display)
-                .setUseNonce(nonce)
-                .setUseSession(session)
-                .setJwksConnectTimeout(jwksConnectTimeout)
-                .setJwksReadTimeout(jwksReadTimeout)
-                .setTokenAutoRefresh(tokenAutoRefresh)
+                        new ClaimsConfiguration().setCallerNameClaim(callerNameClaim).setCallerGroupsClaim(callerGroupsClaim))
+                .setLogoutConfiguration(
+                        new LogoutConfiguration().setNotifyProvider(notifyProvider).setRedirectURI(logoutRedirectURI)
+                                .setAccessTokenExpiry(accessTokenExpiry).setIdentityTokenExpiry(identityTokenExpiry))
+                .setClientId(clientId).setClientSecret(clientSecret).setRedirectURI(redirectURI)
+                .setRedirectToOriginalResource(redirectToOriginalResource).setScopes(scopes).setResponseType(responseType)
+                .setResponseMode(responseMode).setExtraParameters(extraParameters).setPrompt(prompt).setDisplay(display)
+                .setUseNonce(nonce).setUseSession(session).setJwksConnectTimeout(jwksConnectTimeout)
+                .setJwksReadTimeout(jwksReadTimeout).setTokenAutoRefresh(tokenAutoRefresh)
                 .setTokenMinValidity(tokenMinValidity);
 
         validateConfiguration(configuration);
@@ -285,8 +257,7 @@ public class ConfigurationController implements Serializable {
     }
 
     /**
-     * Validate the properties of the OpenId Connect Client and Provider
-     * Metadata
+     * Validate the properties of the OpenId Connect Client and Provider Metadata
      */
     private void validateConfiguration(OpenIdConfiguration configuration) {
         List<String> errorMessages = new ArrayList<>();
@@ -355,11 +326,8 @@ public class ConfigurationController implements Serializable {
         if (!supportedScopes.isEmpty()) {
             for (String scope : configuration.getScopes().split(SPACE_SEPARATOR)) {
                 if (!supportedScopes.contains(scope)) {
-                    errorMessages.add(String.format(
-                            "%s scope is not supported by %s OpenId Connect provider",
-                            scope,
-                            configuration.getProviderMetadata().getIssuerURI())
-                    );
+                    errorMessages.add(String.format("%s scope is not supported by %s OpenId Connect provider", scope,
+                            configuration.getProviderMetadata().getIssuerURI()));
                 }
             }
         }

@@ -23,12 +23,6 @@ import static org.glassfish.soteria.Utils.isEmpty;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.glassfish.soteria.cdi.CdiUtils;
-import org.glassfish.soteria.cdi.spi.CDIPerRequestInitializer;
-import org.glassfish.soteria.cdi.spi.impl.LibertyCDIPerRequestInitializer;
-import org.glassfish.soteria.mechanisms.jaspic.HttpBridgeServerAuthModule;
-import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
-
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.security.auth.message.config.AuthConfigFactory;
 import jakarta.servlet.ServletContainerInitializer;
@@ -36,22 +30,26 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
+import org.glassfish.soteria.cdi.CdiUtils;
+import org.glassfish.soteria.cdi.spi.CDIPerRequestInitializer;
+import org.glassfish.soteria.cdi.spi.impl.LibertyCDIPerRequestInitializer;
+import org.glassfish.soteria.mechanisms.jaspic.HttpBridgeServerAuthModule;
+import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
 
 /**
- * If an HttpAuthenticationMechanism implementation has been found on the classpath, this
- * initializer installs a bridge SAM that delegates the validateRequest, secureResponse and
- * cleanSubject methods from the SAM to the HttpAuthenticationMechanism.
+ * If an HttpAuthenticationMechanism implementation has been found on the classpath, this initializer installs a bridge SAM that
+ * delegates the validateRequest, secureResponse and cleanSubject methods from the SAM to the HttpAuthenticationMechanism.
  *
  * <p>
- * The bridge SAM uses <code>CDI.current()</code> to obtain the HttpAuthenticationMechanism, therefore
- * fully enabling CDI in the implementation of that interface.
+ * The bridge SAM uses <code>CDI.current()</code> to obtain the HttpAuthenticationMechanism, therefore fully enabling CDI in the
+ * implementation of that interface.
  *
  * @author Arjan Tijms
  *
  */
 public class SamRegistrationInstaller implements ServletContainerInitializer, ServletContextListener {
 
-    private static final Logger logger =  Logger.getLogger(SamRegistrationInstaller.class.getName());
+    private static final Logger logger = Logger.getLogger(SamRegistrationInstaller.class.getName());
 
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
@@ -65,7 +63,8 @@ public class SamRegistrationInstaller implements ServletContainerInitializer, Se
 
             if (logger.isLoggable(INFO)) {
                 String version = getClass().getPackage().getImplementationVersion();
-                logger.log(INFO, "Initializing Soteria {0} for context ''{1}''", new Object[]{version, ctx.getContextPath()});
+                logger.log(INFO, "Initializing Soteria {0} for context ''{1}''",
+                        new Object[] { version, ctx.getContextPath() });
             }
 
         } catch (IllegalStateException e) {
@@ -95,9 +94,8 @@ public class SamRegistrationInstaller implements ServletContainerInitializer, Se
                 logger.log(INFO, "Running on Liberty - installing CDI request scope activator");
             }
 
-            AuthConfigFactory
-                .getFactory()
-                .registerServerAuthModule(new HttpBridgeServerAuthModule(cdiPerRequestInitializer), ctx);
+            AuthConfigFactory.getFactory().registerServerAuthModule(new HttpBridgeServerAuthModule(cdiPerRequestInitializer),
+                    ctx);
 
             // Add a listener so we can process the context destroyed event, which is needed
             // to de-register the SAM correctly.
@@ -108,9 +106,7 @@ public class SamRegistrationInstaller implements ServletContainerInitializer, Se
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        AuthConfigFactory
-            .getFactory()
-            .removeServerAuthModule(sce.getServletContext());
+        AuthConfigFactory.getFactory().removeServerAuthModule(sce.getServletContext());
     }
 
 }

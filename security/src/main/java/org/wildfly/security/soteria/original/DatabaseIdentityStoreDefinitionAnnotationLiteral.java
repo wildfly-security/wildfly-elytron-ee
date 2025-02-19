@@ -16,24 +16,23 @@
 
 package org.wildfly.security.soteria.original;
 
-
 import static org.glassfish.soteria.cdi.AnnotationELPProcessor.emptyIfImmediate;
 import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalELExpression;
 import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalImmediate;
 
-import org.glassfish.soteria.cdi.AnnotationELPProcessor;
-
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
-import jakarta.security.enterprise.identitystore.PasswordHash;
 import jakarta.security.enterprise.identitystore.IdentityStore.ValidationType;
+import jakarta.security.enterprise.identitystore.PasswordHash;
+import org.glassfish.soteria.cdi.AnnotationELPProcessor;
 
 /**
  * An annotation literal for <code>@DatabaseIdentityStoreDefinition</code>.
  *
  */
 @SuppressWarnings("all")
-public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends AnnotationLiteral<DatabaseIdentityStoreDefinition> implements DatabaseIdentityStoreDefinition {
+public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends AnnotationLiteral<DatabaseIdentityStoreDefinition>
+        implements DatabaseIdentityStoreDefinition {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,17 +50,11 @@ public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends Annotation
 
     public DatabaseIdentityStoreDefinitionAnnotationLiteral(
 
-        String dataSourceLookup,
-        String callerQuery,
-        String groupsQuery,
-        Class<? extends PasswordHash> hashAlgorithm,
-        String[] hashAlgorithmParameters,
-        int priority,
-        String priorityExpression,
-        ValidationType[] useFor,
-        String useForExpression
+            String dataSourceLookup, String callerQuery, String groupsQuery, Class<? extends PasswordHash> hashAlgorithm,
+            String[] hashAlgorithmParameters, int priority, String priorityExpression, ValidationType[] useFor,
+            String useForExpression
 
-            ) {
+    ) {
 
         this.dataSourceLookup = dataSourceLookup;
         this.callerQuery = callerQuery;
@@ -80,16 +73,10 @@ public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends Annotation
         }
 
         DatabaseIdentityStoreDefinitionAnnotationLiteral out = new DatabaseIdentityStoreDefinitionAnnotationLiteral(
-            evalImmediate(in.dataSourceLookup()),
-            evalImmediate(in.callerQuery()),
-            evalImmediate(in.groupsQuery()),
-            in.hashAlgorithm(),
-            in.hashAlgorithmParameters(),
-            evalImmediate(in.priorityExpression(), in.priority()),
-            emptyIfImmediate(in.priorityExpression()),
-            evalImmediate(in.useForExpression(), in.useFor()),
-            emptyIfImmediate(in.useForExpression())
-        );
+                evalImmediate(in.dataSourceLookup()), evalImmediate(in.callerQuery()), evalImmediate(in.groupsQuery()),
+                in.hashAlgorithm(), in.hashAlgorithmParameters(), evalImmediate(in.priorityExpression(), in.priority()),
+                emptyIfImmediate(in.priorityExpression()), evalImmediate(in.useForExpression(), in.useFor()),
+                emptyIfImmediate(in.useForExpression()));
 
         out.setHasDeferredExpressions(hasAnyELExpression(out));
 
@@ -97,28 +84,23 @@ public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends Annotation
     }
 
     public static boolean hasAnyELExpression(DatabaseIdentityStoreDefinition in) {
-        return AnnotationELPProcessor.hasAnyELExpression(
-            in.dataSourceLookup(),
-            in.callerQuery(),
-            in.groupsQuery(),
-            in.priorityExpression(),
-            in.useForExpression()
-       );
+        return AnnotationELPProcessor.hasAnyELExpression(in.dataSourceLookup(), in.callerQuery(), in.groupsQuery(),
+                in.priorityExpression(), in.useForExpression());
     }
 
     @Override
     public String dataSourceLookup() {
-        return hasDeferredExpressions? evalELExpression(dataSourceLookup) : dataSourceLookup;
+        return hasDeferredExpressions ? evalELExpression(dataSourceLookup) : dataSourceLookup;
     }
 
     @Override
     public String callerQuery() {
-        return hasDeferredExpressions? evalELExpression(callerQuery) : callerQuery;
+        return hasDeferredExpressions ? evalELExpression(callerQuery) : callerQuery;
     }
 
     @Override
     public String groupsQuery() {
-        return hasDeferredExpressions? evalELExpression(groupsQuery) : groupsQuery;
+        return hasDeferredExpressions ? evalELExpression(groupsQuery) : groupsQuery;
     }
 
     @Override
@@ -133,7 +115,7 @@ public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends Annotation
 
     @Override
     public int priority() {
-        return hasDeferredExpressions? evalELExpression(priorityExpression, priority) : priority;
+        return hasDeferredExpressions ? evalELExpression(priorityExpression, priority) : priority;
     }
 
     @Override
@@ -143,7 +125,7 @@ public class DatabaseIdentityStoreDefinitionAnnotationLiteral extends Annotation
 
     @Override
     public ValidationType[] useFor() {
-        return hasDeferredExpressions? evalELExpression(useForExpression, useFor) : useFor;
+        return hasDeferredExpressions ? evalELExpression(useForExpression, useFor) : useFor;
     }
 
     @Override

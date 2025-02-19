@@ -37,7 +37,11 @@ public final class PolicyUtil {
         if (SM_SUPPORTED) {
             Policy.setPolicy(policy);
         } else {
-            CURRENT_POLICY.set(policy);
+            if (policy == null) {
+                CURRENT_POLICY.remove();
+            } else {
+                CURRENT_POLICY.set(policy);
+            }
         }
     }
 
