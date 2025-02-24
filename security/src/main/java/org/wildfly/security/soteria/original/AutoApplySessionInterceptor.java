@@ -22,9 +22,10 @@ import static java.lang.Boolean.TRUE;
 import static org.glassfish.soteria.Utils.isImplementationOf;
 import static org.glassfish.soteria.Utils.validateRequestMethod;
 
-import javax.security.auth.callback.Callback;
 import java.io.Serializable;
 import java.security.Principal;
+
+import javax.security.auth.callback.Callback;
 
 import jakarta.annotation.Priority;
 import jakarta.interceptor.AroundInvoke;
@@ -48,14 +49,15 @@ public class AutoApplySessionInterceptor implements Serializable {
 
         if (isImplementationOf(invocationContext.getMethod(), validateRequestMethod)) {
 
-            HttpMessageContext httpMessageContext = (HttpMessageContext) invocationContext.getParameters()[2];
+            HttpMessageContext httpMessageContext = (HttpMessageContext)invocationContext.getParameters()[2];
 
             Principal userPrincipal = getPrincipal(httpMessageContext.getRequest());
 
             if (userPrincipal != null) {
 
-                httpMessageContext.getHandler().handle(
-                        new Callback[] { new CallerPrincipalCallback(httpMessageContext.getClientSubject(), userPrincipal) });
+                httpMessageContext.getHandler().handle(new Callback[] {
+                    new CallerPrincipalCallback(httpMessageContext.getClientSubject(), userPrincipal) }
+                );
 
                 return SUCCESS;
             }

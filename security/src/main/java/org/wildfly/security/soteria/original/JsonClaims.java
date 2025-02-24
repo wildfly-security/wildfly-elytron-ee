@@ -17,6 +17,7 @@
  */
 package org.wildfly.security.soteria.original;
 
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,8 @@ class JsonClaims implements OpenIdClaims {
 
     @Override
     public Optional<Instant> getNumericDateClaim(String name) {
-        return Optional.ofNullable(getNumber(name)).map(n -> Instant.ofEpochSecond(n.longValue()));
+        return Optional.ofNullable(getNumber(name))
+                .map(n -> Instant.ofEpochSecond(n.longValue()));
     }
 
     @Override
@@ -110,13 +112,29 @@ class JsonClaims implements OpenIdClaims {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" + "subject=" + getSubject() + ",name=" + getName() + ", familyName="
-                + getFamilyName() + ", givenName=" + getGivenName() + ", middleName=" + getMiddleName() + ", nickname="
-                + getNickname() + ", preferredUsername=" + getPreferredUsername() + ", profile=" + getProfile() + ", picture="
-                + getPicture() + ", website=" + getWebsite() + ", gender=" + getGender() + ", birthdate=" + getBirthdate()
-                + ", zoneinfo=" + getZoneinfo() + ", locale=" + getLocale() + ", updatedAt=" + getUpdatedAt() + ", email="
-                + getEmail() + ", emailVerified=" + getEmailVerified() + ", address=" + getAddress() + ", phoneNumber="
-                + getPhoneNumber() + ", phoneNumberVerified=" + getPhoneNumberVerified() + '}';
+        return getClass().getSimpleName()
+                + "{"
+                + "subject=" + getSubject()
+                + ",name=" + getName()
+                + ", familyName=" + getFamilyName()
+                + ", givenName=" + getGivenName()
+                + ", middleName=" + getMiddleName()
+                + ", nickname=" + getNickname()
+                + ", preferredUsername=" + getPreferredUsername()
+                + ", profile=" + getProfile()
+                + ", picture=" + getPicture()
+                + ", website=" + getWebsite()
+                + ", gender=" + getGender()
+                + ", birthdate=" + getBirthdate()
+                + ", zoneinfo=" + getZoneinfo()
+                + ", locale=" + getLocale()
+                + ", updatedAt=" + getUpdatedAt()
+                + ", email=" + getEmail()
+                + ", emailVerified=" + getEmailVerified()
+                + ", address=" + getAddress()
+                + ", phoneNumber=" + getPhoneNumber()
+                + ", phoneNumberVerified=" + getPhoneNumberVerified()
+                + '}';
 
     }
 }

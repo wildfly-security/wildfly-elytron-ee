@@ -37,6 +37,7 @@ import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
 import jakarta.security.enterprise.identitystore.IdentityStoreHandler;
 
+
 /**
  *
  */
@@ -48,12 +49,15 @@ public class DefaultIdentityStoreHandler implements IdentityStoreHandler {
     public void init() {
         List<IdentityStore> identityStores = getBeanReferencesByType(IdentityStore.class, false);
 
-        authenticationIdentityStores = identityStores.stream().filter(i -> i.validationTypes().contains(VALIDATE))
-                .sorted(comparing(IdentityStore::priority)).collect(toList());
+        authenticationIdentityStores = identityStores.stream()
+                                                     .filter(i -> i.validationTypes().contains(VALIDATE))
+                                                     .sorted(comparing(IdentityStore::priority))
+                                                     .collect(toList());
 
         authorizationIdentityStores = identityStores.stream()
-                .filter(i -> i.validationTypes().contains(PROVIDE_GROUPS) && !i.validationTypes().contains(VALIDATE))
-                .sorted(comparing(IdentityStore::priority)).collect(toList());
+                                                     .filter(i -> i.validationTypes().contains(PROVIDE_GROUPS) && !i.validationTypes().contains(VALIDATE))
+                                                     .sorted(comparing(IdentityStore::priority))
+                                                     .collect(toList());
     }
 
     @Override
@@ -69,7 +73,8 @@ public class DefaultIdentityStoreHandler implements IdentityStoreHandler {
             if (validationResult.getStatus() == VALID) {
                 identityStore = authenticationIdentityStore;
                 break;
-            } else if (validationResult.getStatus() == INVALID) {
+            }
+            else if (validationResult.getStatus() == INVALID) {
                 isGotAnInvalidResult = true;
             }
         }
@@ -79,7 +84,8 @@ public class DefaultIdentityStoreHandler implements IdentityStoreHandler {
             // return INVALID_RESULT. Otherwise, return NOT_VALIDATED_RESULT.
             if (isGotAnInvalidResult) {
                 return INVALID_RESULT;
-            } else {
+            }
+            else {
                 return NOT_VALIDATED_RESULT;
             }
         }
@@ -94,8 +100,7 @@ public class DefaultIdentityStoreHandler implements IdentityStoreHandler {
 
         // Ask all stores that were configured for group providing only to get the groups for the
         // authenticated caller
-        CredentialValidationResult finalResult = validationResult; // compiler didn't like validationResult in the enclosed
-                                                                   // scope
+        CredentialValidationResult finalResult = validationResult; // compiler didn't like validationResult in the enclosed scope
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             public Void run() {
                 for (IdentityStore authorizationIdentityStore : authorizationIdentityStores) {
@@ -105,8 +110,12 @@ public class DefaultIdentityStoreHandler implements IdentityStoreHandler {
             }
         });
 
-        return new CredentialValidationResult(validationResult.getIdentityStoreId(), validationResult.getCallerPrincipal(),
-                validationResult.getCallerDn(), validationResult.getCallerUniqueId(), groups);
+        return new CredentialValidationResult(
+                validationResult.getIdentityStoreId(),
+                validationResult.getCallerPrincipal(),
+                validationResult.getCallerDn(),
+                validationResult.getCallerUniqueId(),
+                groups);
     }
 
 }

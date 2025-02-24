@@ -34,6 +34,13 @@ import static org.glassfish.soteria.mechanisms.OpenIdAuthenticationMechanism.ORI
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.glassfish.soteria.mechanisms.openid.OpenIdState;
+import org.glassfish.soteria.mechanisms.openid.controller.NonceController;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdNonce;
+import org.glassfish.soteria.servlet.HttpStorageController;
+import org.glassfish.soteria.servlet.RequestData;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.AuthenticationStatus;
@@ -41,12 +48,6 @@ import jakarta.security.enterprise.authentication.mechanism.http.openid.OpenIdCo
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.UriBuilder;
-import org.glassfish.soteria.mechanisms.openid.OpenIdState;
-import org.glassfish.soteria.mechanisms.openid.controller.NonceController;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdNonce;
-import org.glassfish.soteria.servlet.HttpStorageController;
-import org.glassfish.soteria.servlet.RequestData;
 
 /**
  * Controller for Authentication endpoint
@@ -70,10 +71,13 @@ public class AuthenticationController {
     private static final Logger LOGGER = Logger.getLogger(AuthenticationController.class.getName());
 
     /**
-     * (1) The RP (Client) sends a request to the OpenId Connect Provider (OP) to authenticates the End-User using the
-     * Authorization Code Flow and authorization Code is returned from the Authorization Endpoint. <br>
-     * (2) Authorization Server authenticates the End-User, obtains End-User Consent/Authorization and sends the End-User back
-     * to the Client with an Authorization Code.
+     * (1) The RP (Client) sends a request to the OpenId Connect Provider (OP)
+     * to authenticates the End-User using the Authorization Code Flow and
+     * authorization Code is returned from the Authorization Endpoint.
+     * <br>
+     * (2) Authorization Server authenticates the End-User, obtains End-User
+     * Consent/Authorization and sends the End-User back to the Client with an
+     * Authorization Code.
      *
      *
      * @param request
@@ -83,13 +87,16 @@ public class AuthenticationController {
     public AuthenticationStatus authenticateUser(HttpServletRequest request, HttpServletResponse response) {
 
         /*
-         * Client prepares an authentication request and redirect to the Authorization Server. if query param value is invalid
-         * then OpenId Connect provider redirect to error page (hosted in OP domain).
+         * Client prepares an authentication request and redirect to the
+         * Authorization Server. if query param value is invalid then OpenId
+         * Connect provider redirect to error page (hosted in OP domain).
          */
-        UriBuilder authRequest = UriBuilder.fromUri(configuration.getProviderMetadata().getAuthorizationEndpoint())
-                .queryParam(SCOPE, configuration.getScopes()).queryParam(RESPONSE_TYPE, configuration.getResponseType())
-                .queryParam(CLIENT_ID, configuration.getClientId())
-                .queryParam(REDIRECT_URI, configuration.buildRedirectURI(request));
+        UriBuilder authRequest
+                = UriBuilder.fromUri(configuration.getProviderMetadata().getAuthorizationEndpoint())
+                        .queryParam(SCOPE, configuration.getScopes())
+                        .queryParam(RESPONSE_TYPE, configuration.getResponseType())
+                        .queryParam(CLIENT_ID, configuration.getClientId())
+                        .queryParam(REDIRECT_URI, configuration.buildRedirectURI(request));
 
         OpenIdState state = new OpenIdState();
         authRequest.queryParam(OpenIdConstant.STATE, state.getValue());
@@ -138,7 +145,7 @@ public class AuthenticationController {
         }
     }
 
-    private String getFullURL(HttpServletRequest request) {
+    private  String getFullURL(HttpServletRequest request) {
         StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
         String queryString = request.getQueryString();
 
