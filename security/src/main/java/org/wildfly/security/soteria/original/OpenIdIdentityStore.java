@@ -28,17 +28,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
+
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jwt.JWTClaimsSet;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import jakarta.security.enterprise.credential.Credential;
 import jakarta.security.enterprise.identitystore.CredentialValidationResult;
 import jakarta.security.enterprise.identitystore.IdentityStore;
-import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
 
 /**
  * Identity store validates the identity token and access token and returns the validation result with the caller name and

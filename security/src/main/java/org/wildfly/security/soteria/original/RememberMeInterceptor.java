@@ -51,8 +51,6 @@ import jakarta.security.enterprise.identitystore.RememberMeIdentityStore;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.glassfish.soteria.cdi.CdiUtils;
-import org.glassfish.soteria.cdi.RememberMeAnnotationLiteral;
 
 @Interceptor
 @RememberMe
@@ -73,25 +71,29 @@ public class RememberMeInterceptor implements Serializable {
 
         // If intercepting HttpAuthenticationMechanism#validateRequest
         if (isImplementationOf(invocationContext.getMethod(), validateRequestMethod)) {
-            return validateRequest(invocationContext, getParam(invocationContext, 0), getParam(invocationContext, 1),
-                    getParam(invocationContext, 2));
+            return validateRequest(
+                invocationContext,
+                getParam(invocationContext, 0),
+                getParam(invocationContext, 1),
+                getParam(invocationContext, 2));
         }
 
         // If intercepting HttpAuthenticationMechanism#cleanSubject
         if (isImplementationOf(invocationContext.getMethod(), cleanSubjectMethod)) {
-            cleanSubject(invocationContext, getParam(invocationContext, 0), getParam(invocationContext, 1),
-                    getParam(invocationContext, 2));
+            cleanSubject(
+                invocationContext,
+                getParam(invocationContext, 0),
+                getParam(invocationContext, 1),
+                getParam(invocationContext, 2));
         }
 
         return invocationContext.proceed();
     }
 
-    private AuthenticationStatus validateRequest(InvocationContext invocationContext, HttpServletRequest request,
-            HttpServletResponse response, HttpMessageContext httpMessageContext) throws Exception {
+    private AuthenticationStatus validateRequest(InvocationContext invocationContext, HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws Exception {
 
         RememberMeIdentityStore rememberMeIdentityStore = CdiUtils.getBeanReference(RememberMeIdentityStore.class);
-        RememberMe rememberMeAnnotation = getRememberMeFromIntercepted(getElProcessor(invocationContext, httpMessageContext),
-                invocationContext);
+        RememberMe rememberMeAnnotation = getRememberMeFromIntercepted(getElProcessor(invocationContext, httpMessageContext), invocationContext);
 
         Cookie rememberMeCookie = getCookie(request, rememberMeAnnotation.cookieName());
 
@@ -99,13 +101,15 @@ public class RememberMeInterceptor implements Serializable {
 
             // There's a remember me cookie, see if we can use it to authenticate
 
-            CredentialValidationResult result = rememberMeIdentityStore
-                    .validate(new RememberMeCredential(rememberMeCookie.getValue()));
+            CredentialValidationResult result = rememberMeIdentityStore.validate(
+                new RememberMeCredential(rememberMeCookie.getValue())
+            );
 
             if (result.getStatus() == VALID) {
                 // The remember me store contained an authenticated identity associated with
                 // the given token, use it to authenticate with the container
-                return httpMessageContext.notifyContainerAboutLogin(result.getCallerPrincipal(), result.getCallerGroups());
+                return httpMessageContext.notifyContainerAboutLogin(
+                    result.getCallerPrincipal(), result.getCallerGroups());
             } else {
                 // The token appears to be no longer valid, or perhaps wasn't valid
                 // to begin with. Remove the cookie.
@@ -126,29 +130,32 @@ public class RememberMeInterceptor implements Serializable {
 
             Boolean isRememberMe = true;
             if (rememberMeAnnotation instanceof RememberMeAnnotationLiteral) { // tmp
-                isRememberMe = ((RememberMeAnnotationLiteral) rememberMeAnnotation).isRememberMe();
+                isRememberMe = ((RememberMeAnnotationLiteral)rememberMeAnnotation).isRememberMe();
             }
 
             if (isRememberMe) {
                 String token = rememberMeIdentityStore.generateLoginToken(
-                        toCallerPrincipal(httpMessageContext.getCallerPrincipal()), httpMessageContext.getGroups());
+                    toCallerPrincipal(httpMessageContext.getCallerPrincipal()),
+                    httpMessageContext.getGroups()
+                );
 
-                saveCookie(request, response, rememberMeAnnotation.cookieName(), token,
-                        rememberMeAnnotation.cookieMaxAgeSeconds(), rememberMeAnnotation.cookieSecureOnly(),
-                        rememberMeAnnotation.cookieHttpOnly());
+                saveCookie(
+                    request, response,
+                    rememberMeAnnotation.cookieName(),
+                    token,
+                    rememberMeAnnotation.cookieMaxAgeSeconds(),
+                    rememberMeAnnotation.cookieSecureOnly(),
+                    rememberMeAnnotation.cookieHttpOnly());
             }
         }
 
         return authstatus;
     }
 
-    private void cleanSubject(InvocationContext invocationContext, HttpServletRequest request, HttpServletResponse response,
-            HttpMessageContext httpMessageContext) throws Exception {
+    private void cleanSubject(InvocationContext invocationContext, HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws Exception {
 
-        RememberMeIdentityStore rememberMeIdentityStore = CdiUtils.getBeanReference(RememberMeIdentityStore.class); // TODO ADD
-                                                                                                                    // CHECKS
-        RememberMe rememberMeAnnotation = getRememberMeFromIntercepted(getElProcessor(invocationContext, httpMessageContext),
-                invocationContext);
+        RememberMeIdentityStore rememberMeIdentityStore = CdiUtils.getBeanReference(RememberMeIdentityStore.class); // TODO ADD CHECKS
+        RememberMe rememberMeAnnotation = getRememberMeFromIntercepted(getElProcessor(invocationContext, httpMessageContext), invocationContext);
 
         Cookie rememberMeCookie = getCookie(request, rememberMeAnnotation.cookieName());
 
@@ -171,11 +178,12 @@ public class RememberMeInterceptor implements Serializable {
         }
 
         @SuppressWarnings("unchecked")
-        Set<Annotation> bindings = (Set<Annotation>) invocationContext.getContextData()
-                .get("org.jboss.weld.interceptor.bindings");
+        Set<Annotation> bindings = (Set<Annotation>) invocationContext.getContextData().get("org.jboss.weld.interceptor.bindings");
         if (bindings != null) {
-            optionalRememberMe = bindings.stream().filter(annotation -> annotation.annotationType().equals(RememberMe.class))
-                    .findAny().map(annotation -> RememberMe.class.cast(annotation));
+            optionalRememberMe = bindings.stream()
+                    .filter(annotation -> annotation.annotationType().equals(RememberMe.class))
+                    .findAny()
+                    .map(annotation -> RememberMe.class.cast(annotation));
 
             if (optionalRememberMe.isPresent()) {
                 return RememberMeAnnotationLiteral.eval(optionalRememberMe.get(), elProcessor);

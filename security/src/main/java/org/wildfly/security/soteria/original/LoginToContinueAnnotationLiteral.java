@@ -22,7 +22,6 @@ import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalImmediate;
 
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.security.enterprise.authentication.mechanism.http.LoginToContinue;
-import org.glassfish.soteria.cdi.AnnotationELPProcessor;
 
 /**
  * An annotation literal for <code>@LoginToContinue</code>.
@@ -40,8 +39,7 @@ public class LoginToContinueAnnotationLiteral extends AnnotationLiteral<LoginToC
 
     private boolean hasDeferredExpressions;
 
-    public LoginToContinueAnnotationLiteral(String loginPage, boolean useForwardToLogin, String useForwardToLoginExpression,
-            String errorPage) {
+    public LoginToContinueAnnotationLiteral(String loginPage, boolean useForwardToLogin, String useForwardToLoginExpression, String errorPage) {
         this.loginPage = loginPage;
         this.useForwardToLogin = useForwardToLogin;
         this.useForwardToLoginExpression = useForwardToLoginExpression;
@@ -54,13 +52,17 @@ public class LoginToContinueAnnotationLiteral extends AnnotationLiteral<LoginToC
         }
 
         try {
-            LoginToContinueAnnotationLiteral out = new LoginToContinueAnnotationLiteral(evalImmediate(in.loginPage()),
+        LoginToContinueAnnotationLiteral out =
+            new LoginToContinueAnnotationLiteral(
+                    evalImmediate(in.loginPage()),
                     evalImmediate(in.useForwardToLoginExpression(), in.useForwardToLogin()),
-                    emptyIfImmediate(in.useForwardToLoginExpression()), evalImmediate(in.errorPage()));
+                    emptyIfImmediate(in.useForwardToLoginExpression()),
+                    evalImmediate(in.errorPage())
+            );
 
-            out.setHasDeferredExpressions(hasAnyELExpression(out));
+        out.setHasDeferredExpressions(hasAnyELExpression(out));
 
-            return out;
+        return out;
         } catch (Throwable t) {
             t.printStackTrace();
 
@@ -69,17 +71,21 @@ public class LoginToContinueAnnotationLiteral extends AnnotationLiteral<LoginToC
     }
 
     public static boolean hasAnyELExpression(LoginToContinue in) {
-        return AnnotationELPProcessor.hasAnyELExpression(in.loginPage(), in.errorPage(), in.useForwardToLoginExpression());
+        return AnnotationELPProcessor.hasAnyELExpression(
+            in.loginPage(),
+            in.errorPage(),
+            in.useForwardToLoginExpression()
+        );
     }
 
     @Override
     public String loginPage() {
-        return hasDeferredExpressions ? evalELExpression(loginPage) : loginPage;
+        return hasDeferredExpressions? evalELExpression(loginPage) : loginPage;
     }
 
     @Override
     public boolean useForwardToLogin() {
-        return hasDeferredExpressions ? evalELExpression(useForwardToLoginExpression, useForwardToLogin) : useForwardToLogin;
+        return hasDeferredExpressions? evalELExpression(useForwardToLoginExpression, useForwardToLogin) : useForwardToLogin;
     }
 
     @Override
@@ -89,7 +95,7 @@ public class LoginToContinueAnnotationLiteral extends AnnotationLiteral<LoginToC
 
     @Override
     public String errorPage() {
-        return hasDeferredExpressions ? evalELExpression(errorPage) : errorPage;
+        return hasDeferredExpressions? evalELExpression(errorPage) : errorPage;
     }
 
     public boolean isHasDeferredExpressions() {
