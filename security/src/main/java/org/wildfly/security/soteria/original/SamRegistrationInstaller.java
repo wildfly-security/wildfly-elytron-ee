@@ -23,6 +23,12 @@ import static org.glassfish.soteria.Utils.isEmpty;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.glassfish.soteria.cdi.CdiUtils;
+import org.glassfish.soteria.cdi.spi.CDIPerRequestInitializer;
+import org.glassfish.soteria.cdi.spi.impl.LibertyCDIPerRequestInitializer;
+import org.glassfish.soteria.mechanisms.jaspic.HttpBridgeServerAuthModule;
+import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
+
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.security.auth.message.config.AuthConfigFactory;
 import jakarta.servlet.ServletContainerInitializer;
@@ -30,11 +36,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
-import org.glassfish.soteria.cdi.CdiUtils;
-import org.glassfish.soteria.cdi.spi.CDIPerRequestInitializer;
-import org.glassfish.soteria.cdi.spi.impl.LibertyCDIPerRequestInitializer;
-import org.glassfish.soteria.mechanisms.jaspic.HttpBridgeServerAuthModule;
-import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
 
 /**
  * If an HttpAuthenticationMechanism implementation has been found on the classpath, this initializer installs a bridge SAM that

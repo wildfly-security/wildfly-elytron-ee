@@ -22,8 +22,18 @@ import static java.util.Collections.emptyMap;
 
 import java.util.Map;
 
+import org.glassfish.soteria.mechanisms.openid.controller.AccessTokenClaimsSetVerifier;
+import org.glassfish.soteria.mechanisms.openid.controller.IdTokenClaimsSetVerifier;
+import org.glassfish.soteria.mechanisms.openid.controller.NonceController;
+import org.glassfish.soteria.mechanisms.openid.controller.RefreshedIdTokenClaimsSetVerifier;
+import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
+import org.glassfish.soteria.mechanisms.openid.domain.OpenIdNonce;
+
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jwt.JWTClaimsSet;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.authentication.mechanism.http.HttpMessageContext;
@@ -38,14 +48,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.soteria.mechanisms.openid.controller.AccessTokenClaimsSetVerifier;
-import org.glassfish.soteria.mechanisms.openid.controller.IdTokenClaimsSetVerifier;
-import org.glassfish.soteria.mechanisms.openid.controller.NonceController;
-import org.glassfish.soteria.mechanisms.openid.controller.RefreshedIdTokenClaimsSetVerifier;
-import org.glassfish.soteria.mechanisms.openid.domain.AccessTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.IdentityTokenImpl;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
-import org.glassfish.soteria.mechanisms.openid.domain.OpenIdNonce;
 
 /**
  * Controller for Token endpoint
@@ -66,11 +68,12 @@ public class TokenController {
     private JWTValidator validator;
 
     /**
-     * (4) A Client makes a token request to the token endpoint and the OpenId Provider responds with an ID Token and an Access
-     * Token.
+     * (4) A Client makes a token request to the token endpoint and the OpenId
+     * Provider responds with an ID Token and an Access Token.
      *
      * @param request
-     * @return a JSON object representation of OpenID Connect token response from the Token endpoint.
+     * @return a JSON object representation of OpenID Connect token response
+     * from the Token endpoint.
      */
     public Response getTokens(HttpServletRequest request) {
         /*
@@ -79,22 +82,27 @@ public class TokenController {
         String authorizationCode = request.getParameter(OpenIdConstant.CODE);
 
         /*
-         * The Client sends the parameters to the Token Endpoint using the Form Serialization with all parameters to :
+         * The Client sends the parameters to the Token Endpoint using the Form
+         * Serialization with all parameters to :
          *
-         * 1. Authenticate client using CLIENT_ID & CLIENT_SECRET <br> 2. Verify that the Authorization Code is valid <br> 3.
-         * Ensure that the redirect_uri parameter value is identical to the initial authorization request's redirect_uri
-         * parameter value.
+         * 1. Authenticate client using CLIENT_ID & CLIENT_SECRET <br>
+         * 2. Verify that the Authorization Code is valid <br>
+         * 3. Ensure that the redirect_uri parameter value is identical to the
+         * initial authorization request's redirect_uri parameter value.
          */
-        Form form = new Form().param(OpenIdConstant.CLIENT_ID, configuration.getClientId())
+        Form form = new Form()
+                .param(OpenIdConstant.CLIENT_ID, configuration.getClientId())
                 .param(OpenIdConstant.CLIENT_SECRET, new String(configuration.getClientSecret()))
                 .param(OpenIdConstant.GRANT_TYPE, OpenIdConstant.AUTHORIZATION_CODE)
                 .param(OpenIdConstant.CODE, authorizationCode)
                 .param(OpenIdConstant.REDIRECT_URI, configuration.buildRedirectURI(request));
 
-        // ID Token and Access Token Request
+        //  ID Token and Access Token Request
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(configuration.getProviderMetadata().getTokenEndpoint());
-        return target.request().accept(APPLICATION_JSON).post(Entity.form(form));
+        return target.request()
+                .accept(APPLICATION_JSON)
+                .post(Entity.form(form));
     }
 
     /**
@@ -110,8 +118,8 @@ public class TokenController {
         HttpServletResponse response = httpContext.getResponse();
 
         /*
-         * The nonce in the returned ID Token is compared to the hash of the session cookie to detect ID Token replay by third
-         * parties.
+         * The nonce in the returned ID Token is compared to the hash of the
+         * session cookie to detect ID Token replay by third parties.
          */
         String expectedNonceHash = null;
         if (configuration.isUseNonce()) {
@@ -120,8 +128,9 @@ public class TokenController {
         }
 
         try {
-            claimsSet = validator.validateBearerToken(idToken.getTokenJWT(),
-                    new IdTokenClaimsSetVerifier(expectedNonceHash, configuration));
+            claimsSet = validator.validateBearerToken(
+                            idToken.getTokenJWT(),
+                            new IdTokenClaimsSetVerifier(expectedNonceHash, configuration));
         } finally {
             nonceController.remove(configuration, request, response);
         }
@@ -137,7 +146,8 @@ public class TokenController {
      * @return JWT Claims
      */
     public JWTClaimsSet validateRefreshedIdToken(IdentityToken previousIdToken, IdentityTokenImpl newIdToken) {
-        return validator.validateBearerToken(newIdToken.getTokenJWT(),
+        return validator.validateBearerToken(
+                newIdToken.getTokenJWT(),
                 new RefreshedIdTokenClaimsSetVerifier(previousIdToken, configuration));
     }
 
@@ -149,12 +159,15 @@ public class TokenController {
      * @param idTokenClaims
      * @return JWT Claims
      */
-    public Map<String, Object> validateAccessToken(AccessTokenImpl accessToken, Algorithm idTokenAlgorithm,
-            Map<String, Object> idTokenClaims) {
+    public Map<String, Object> validateAccessToken(AccessTokenImpl accessToken, Algorithm idTokenAlgorithm, Map<String, Object> idTokenClaims) {
         Map<String, Object> claims = emptyMap();
 
-        AccessTokenClaimsSetVerifier jwtVerifier = new AccessTokenClaimsSetVerifier(accessToken, idTokenAlgorithm,
-                idTokenClaims, configuration);
+        AccessTokenClaimsSetVerifier jwtVerifier = new AccessTokenClaimsSetVerifier(
+                accessToken,
+                idTokenAlgorithm,
+                idTokenClaims,
+                configuration
+        );
 
         jwtVerifier.validateAccessToken();
 
@@ -162,14 +175,16 @@ public class TokenController {
     }
 
     /**
-     * Makes a refresh request to the token endpoint and the OpenId Provider responds with a new (updated) Access Token and
-     * Refreshs Token.
+     * Makes a refresh request to the token endpoint and the OpenId Provider
+     * responds with a new (updated) Access Token and Refreshs Token.
      *
      * @param refreshToken Refresh Token received from previous token request.
-     * @return a JSON object representation of OpenID Connect token response from the Token endpoint.
+     * @return a JSON object representation of OpenID Connect token response
+     * from the Token endpoint.
      */
     public Response refreshTokens(RefreshToken refreshToken) {
-        Form form = new Form().param(OpenIdConstant.CLIENT_ID, configuration.getClientId())
+        Form form = new Form()
+                .param(OpenIdConstant.CLIENT_ID, configuration.getClientId())
                 .param(OpenIdConstant.CLIENT_SECRET, new String(configuration.getClientSecret()))
                 .param(OpenIdConstant.GRANT_TYPE, OpenIdConstant.REFRESH_TOKEN)
                 .param(OpenIdConstant.REFRESH_TOKEN, refreshToken.getToken());
@@ -177,7 +192,9 @@ public class TokenController {
         // Access Token and RefreshToken Request
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(configuration.getProviderMetadata().getTokenEndpoint());
-        return target.request().accept(APPLICATION_JSON).post(Entity.form(form));
+        return target.request()
+                .accept(APPLICATION_JSON)
+                .post(Entity.form(form));
     }
 
 }

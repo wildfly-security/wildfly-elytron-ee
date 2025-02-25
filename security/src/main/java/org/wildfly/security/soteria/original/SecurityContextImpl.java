@@ -26,17 +26,18 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.glassfish.soteria.authorization.spi.CallerDetailsResolver;
+import org.glassfish.soteria.authorization.spi.ResourceAccessResolver;
+import org.glassfish.soteria.authorization.spi.impl.JaccResourceAccessResolver;
+import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
+import org.wildfly.security.soteria.integration.ElytronCallerDetailsResolver;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.security.enterprise.AuthenticationStatus;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.glassfish.soteria.authorization.spi.CallerDetailsResolver;
-import org.glassfish.soteria.authorization.spi.ResourceAccessResolver;
-import org.glassfish.soteria.authorization.spi.impl.JaccResourceAccessResolver;
-import org.glassfish.soteria.mechanisms.jaspic.Jaspic;
-import org.wildfly.security.soteria.integration.ElytronCallerDetailsResolver;
 
 public class SecurityContextImpl implements SecurityContext, Serializable {
 

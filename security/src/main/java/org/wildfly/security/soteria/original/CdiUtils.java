@@ -22,8 +22,6 @@ import static java.util.Collections.emptySet;
 import static java.util.Optional.empty;
 import static org.glassfish.soteria.Utils.isEmpty;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,6 +32,9 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import jakarta.el.ELProcessor;
 import jakarta.enterprise.inject.spi.Annotated;
 import jakarta.enterprise.inject.spi.Bean;
@@ -42,8 +43,7 @@ import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
 
 public class CdiUtils {
 
-    public static <A extends Annotation> Optional<A> getAnnotation(BeanManager beanManager, Annotated annotated,
-            Class<A> annotationType) {
+    public static <A extends Annotation> Optional<A> getAnnotation(BeanManager beanManager, Annotated annotated, Class<A> annotationType) {
 
         annotated.getAnnotation(annotationType);
 
@@ -65,7 +65,11 @@ public class CdiUtils {
             }
 
             if (beanManager.isStereotype(annotation.annotationType())) {
-                annotations.addAll(beanManager.getStereotypeDefinition(annotation.annotationType()));
+                annotations.addAll(
+                    beanManager.getStereotypeDefinition(
+                        annotation.annotationType()
+                    )
+                );
             }
         }
 
@@ -78,8 +82,7 @@ public class CdiUtils {
         }
     }
 
-    public static <A extends Annotation> Optional<A> getAnnotation(BeanManager beanManager, Class<?> annotatedClass,
-            Class<A> annotationType) {
+    public static <A extends Annotation> Optional<A> getAnnotation(BeanManager beanManager, Class<?> annotatedClass, Class<A> annotationType) {
 
         if (annotatedClass.isAnnotationPresent(annotationType)) {
             return Optional.of(annotatedClass.getAnnotation(annotationType));
@@ -95,7 +98,11 @@ public class CdiUtils {
             }
 
             if (beanManager.isStereotype(annotation.annotationType())) {
-                annotations.addAll(beanManager.getStereotypeDefinition(annotation.annotationType()));
+                annotations.addAll(
+                    beanManager.getStereotypeDefinition(
+                        annotation.annotationType()
+                    )
+                );
             }
         }
 
@@ -108,7 +115,7 @@ public class CdiUtils {
      */
     public static BeanManager getBeanManager() throws IllegalStateException {
         try {
-            return jndiLookup("java:comp/BeanManager", "java:comp/env/BeanManager");
+            return jndiLookup("java:comp/BeanManager","java:comp/env/BeanManager");
         } catch (NamingException e) {
             throw new IllegalStateException("The CDI Bean Manager is not available.", e);
         }
@@ -159,7 +166,7 @@ public class CdiUtils {
     }
 
     public static <T> List<T> getBeanReferencesByType(Class<T> type, boolean optional) {
-        BeanManager beanManager = getBeanManager();
+        BeanManager beanManager =  getBeanManager();
 
         Set<Bean<?>> beans = getBeanDefinitions(type, optional, beanManager);
 
