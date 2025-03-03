@@ -30,6 +30,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.soteria.SoteriaServiceProviders;
+import org.glassfish.soteria.cdi.CdiUtils;
+import org.glassfish.soteria.cdi.RememberMeInterceptor;
 import org.glassfish.soteria.cdi.spi.BeanDecorator;
 import org.glassfish.soteria.cdi.spi.WebXmlLoginConfig;
 import org.glassfish.soteria.identitystores.DatabaseIdentityStore;
