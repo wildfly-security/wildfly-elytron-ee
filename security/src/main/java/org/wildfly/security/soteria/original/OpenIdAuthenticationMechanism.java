@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.glassfish.soteria.mechanisms.openid.OpenIdCredential;
 import org.glassfish.soteria.mechanisms.openid.OpenIdState;
 import org.glassfish.soteria.mechanisms.openid.domain.LogoutConfiguration;
 import org.glassfish.soteria.mechanisms.openid.domain.OpenIdConfiguration;
