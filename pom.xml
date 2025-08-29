@@ -36,6 +36,7 @@
 
     <name>WildFly Elytron - Jakarta EE</name>
     <description>WildFly Security - Jakarta EE 8</description>
+    <url>https://wildfly-security.github.io/wildfly-elytron/</url>
 
     <issueManagement>
         <system>Jira</system>
@@ -49,8 +50,18 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Darran Lofthouse</name>
+            <email>darran.lofthouse@jboss.com</email>
+            <organization>WildFly</organization>
+            <organizationUrl>https://www.wildfly.org/</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</connection>
+        <developerConnection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</developerConnection>
         <url>https://github.com/wildfly-security/wildfly-elytron-ee</url>
     </scm>
 
@@ -58,6 +69,11 @@
         <jdk.min.version>11</jdk.min.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- Nexus Settings -->
+        <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
+        <nexus.staging.tag>elytron-ee-${project.version}</nexus.staging.tag>
+        <nexus.repository.release>wildfly-security</nexus.repository.release>
 
         <version.jakarta.authentication>3.0.0</version.jakarta.authentication>
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
