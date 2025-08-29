@@ -36,6 +36,7 @@
 
     <name>WildFly Elytron - Jakarta EE</name>
     <description>WildFly Security - Jakarta EE 8</description>
+    <url>https://wildfly-security.github.io/wildfly-elytron/</url>
 
     <issueManagement>
         <system>Jira</system>
@@ -49,8 +50,18 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Darran Lofthouse</name>
+            <email>darran.lofthouse@jboss.com</email>
+            <organization>WildFly</organization>
+            <organizationUrl>https://www.wildfly.org/</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</connection>
+        <developerConnection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</developerConnection>
         <url>https://github.com/wildfly-security/wildfly-elytron-ee</url>
     </scm>
 
