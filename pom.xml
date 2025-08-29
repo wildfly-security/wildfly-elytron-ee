@@ -236,52 +236,6 @@
                     <version>${version.jar.plugin}</version>
                 </plugin>
 
-                <!-- Javadoc -->
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <notimestamp>true</notimestamp>
-                        <doclint>none</doclint>
-                        <show>protected</show>
-                        <sourcepath>
-                            ${project.basedir}/authentication/src/main/java/;
-                            ${project.basedir}/authorization/src/main/java/;
-                            ${project.basedir}/client/resteasy/src/main/java/;
-                            ${project.basedir}/client/webservices/src/main/java/;
-                        </sourcepath>
-                        <sourceFileExcludes>
-                            <exclude>org/wildfly/security/manager/JDKSpecific.java</exclude>
-                        </sourceFileExcludes>
-                    </configuration>
-                    <executions>
-                        <execution><!-- mvn javadoc:aggregate@api-javadoc -->
-                            <id>api-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>api-javadoc</destDir>
-                                <sourceFileIncludes>
-                                    <include>org/wildfly/security/auth/jaspi/*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                        <execution><!-- mvn javadoc:aggregate@full-javadoc -->
-                            <id>full-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>full-javadoc</destDir>
-                                <show>private</show>
-                                <sourceFileIncludes>
-                                    <include>**\/\*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
                 <!-- Checkstyle -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
