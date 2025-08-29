@@ -3,9 +3,7 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - 1.x
-      - 2.x
-      - 3.x
+      - 3.0.x
 
 jobs:
   build:
@@ -29,7 +27,7 @@ jobs:
       #    docker-machine create --driver virtualbox default
       #    docker --version
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
