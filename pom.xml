@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>38</version>
+        <version>50</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -58,7 +58,7 @@
         <jdk.min.version>11</jdk.min.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        
+
         <version.jakarta.authentication>3.0.0</version.jakarta.authentication>
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
@@ -82,7 +82,7 @@
         <version.org.wildfly.security.elytron>2.2.0.Final</version.org.wildfly.security.elytron>
         <!-- wildfly-elytron-jaspi was removed in Elytron 2.x so need to compare against 1.x -->
         <compatibility-version>1.20.2.Final</compatibility-version>
-                
+
         <test.level>INFO</test.level>
         <!-- Checkstyle configuration -->
         <linkXRef>false</linkXRef>
@@ -111,7 +111,7 @@
             </resource>
         </resources>
 
-        <plugins>        
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -134,8 +134,8 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>        
-        
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -190,13 +190,13 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>com.github.ferstl</groupId>
                 <artifactId>depgraph-maven-plugin</artifactId>
                 <version>3.2.2</version>
             </plugin>
-            
+
         </plugins>
 
         <pluginManagement>
@@ -234,52 +234,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${version.jar.plugin}</version>
-                </plugin>
-
-                <!-- Javadoc -->
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <notimestamp>true</notimestamp>
-                        <doclint>none</doclint>
-                        <show>protected</show>
-                        <sourcepath>
-                            ${project.basedir}/authentication/src/main/java/;
-                            ${project.basedir}/authorization/src/main/java/;
-                            ${project.basedir}/client/resteasy/src/main/java/;
-                            ${project.basedir}/client/webservices/src/main/java/;
-                        </sourcepath>
-                        <sourceFileExcludes>
-                            <exclude>org/wildfly/security/manager/JDKSpecific.java</exclude>
-                        </sourceFileExcludes>
-                    </configuration>
-                    <executions>
-                        <execution><!-- mvn javadoc:aggregate@api-javadoc -->
-                            <id>api-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>api-javadoc</destDir>
-                                <sourceFileIncludes>
-                                    <include>org/wildfly/security/auth/jaspi/*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                        <execution><!-- mvn javadoc:aggregate@full-javadoc -->
-                            <id>full-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>full-javadoc</destDir>
-                                <show>private</show>
-                                <sourceFileIncludes>
-                                    <include>**\/\*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <!-- Checkstyle -->
@@ -340,7 +294,7 @@
                 <artifactId>jakarta-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            
+
             <!-- Elytron Modules -->
             <dependency>
                 <groupId>org.wildfly.security</groupId>
@@ -434,7 +388,7 @@
                 <version>${version.jakarta.jaxrs}</version>
                 <scope>provided</scope>
             </dependency>
-            
+
             <!-- Other Modules -->
             <dependency>
                 <groupId>com.nimbusds</groupId>
@@ -471,7 +425,7 @@
                 <artifactId>jboss-logging</artifactId>
                 <version>${version.org.jboss.logging}</version>
                 <scope>provided</scope>
-            </dependency>        
+            </dependency>
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging-processor</artifactId>
@@ -509,7 +463,7 @@
                 <version>${version.org.jboss.ws.jbossws-spi}</version>
                 <scope>provided</scope>
             </dependency>
-                    
+
             <!-- Test Modules -->
             <dependency>
                 <groupId>org.wildfly.security</groupId>
