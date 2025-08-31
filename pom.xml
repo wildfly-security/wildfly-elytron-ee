@@ -611,6 +611,62 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>aggregate-javadoc</id>
+            <activation>
+                <property>
+                    <name>aggregate-javadoc</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <notimestamp>true</notimestamp>
+                            <doclint>none</doclint>
+                            <show>protected</show>
+                            <sourcepath>
+                                ${project.basedir}/authentication/src/main/java/;
+                                ${project.basedir}/authorization/src/main/java/;
+                                ${project.basedir}/client/resteasy/src/main/java/;
+                                ${project.basedir}/client/webservices/src/main/java/;
+                            </sourcepath>
+                            <sourceFileExcludes>
+                                <exclude>org/wildfly/security/manager/JDKSpecific.java</exclude>
+                            </sourceFileExcludes>
+                        </configuration>
+                        <executions>
+                            <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@api-javadoc -->
+                                <id>api-javadoc</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <destDir>api-javadoc</destDir>
+                                    <sourceFileIncludes>
+                                        <include>org/wildfly/security/auth/jaspi/*.java</include>
+                                    </sourceFileIncludes>
+                                </configuration>
+                            </execution>
+                            <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@full-javadoc -->
+                                <id>full-javadoc</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <destDir>full-javadoc</destDir>
+                                    <show>private</show>
+                                    <sourceFileIncludes>
+                                        <include>**\/\*.java</include>
+                                    </sourceFileIncludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <repositories>
