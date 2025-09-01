@@ -29,7 +29,7 @@
 
     <groupId>org.wildfly.security.jakarta</groupId>
     <artifactId>elytron-ee</artifactId>
-    <version>3.2.0.Alpha1</version>
+    <version>3.2.0.CR1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>WildFly Elytron - Jakarta EE</name>
