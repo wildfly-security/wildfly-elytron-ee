@@ -17,9 +17,7 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.jboss</groupId>
@@ -31,7 +29,7 @@
 
     <groupId>org.wildfly.security.jakarta</groupId>
     <artifactId>elytron-ee</artifactId>
-    <version>3.1.5.CR1-SNAPSHOT</version>
+    <version>3.1.5.Alpha1</version>
     <packaging>pom</packaging>
 
     <name>WildFly Elytron - Jakarta EE</name>
@@ -63,7 +61,8 @@
         <connection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</developerConnection>
         <url>https://github.com/wildfly-security/wildfly-elytron-ee</url>
-    </scm>
+      <tag>3.1.5.Alpha1</tag>
+  </scm>
 
     <properties>
         <jdk.min.version>21</jdk.min.version>
@@ -104,8 +103,8 @@
         <linkXRef>false</linkXRef>
 
         <!-- Modularized JDK support (various workarounds) - activated via profile -->
-        <modular.jdk.args/>
-        <modular.jdk.props/>
+        <modular.jdk.args />
+        <modular.jdk.props />
     </properties>
 
     <build>
@@ -275,7 +274,7 @@
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        <useFile/>
+                        <useFile />
                         <excludes>**/*$logger.java,**/*$bundle.java</excludes>
                     </configuration>
                     <dependencies>
@@ -548,8 +547,8 @@
                 </property>
             </activation>
             <properties>
-                <modular.jdk.args/>
-                <modular.jdk.props/>
+                <modular.jdk.args />
+                <modular.jdk.props />
             </properties>
             <build>
                 <plugins>
@@ -583,8 +582,8 @@
                 </property>
             </activation>
             <properties>
-                <modular.jdk.args/>
-                <modular.jdk.props/>
+                <modular.jdk.args />
+                <modular.jdk.props />
             </properties>
             <build>
                 <plugins>
