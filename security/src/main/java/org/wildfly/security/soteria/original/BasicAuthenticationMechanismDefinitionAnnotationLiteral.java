@@ -21,15 +21,13 @@ import static org.glassfish.soteria.cdi.AnnotationELPProcessor.evalImmediate;
 
 import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
-import org.glassfish.soteria.cdi.AnnotationELPProcessor;
 
 /**
  * An annotation literal for <code>@BasicAuthenticationMechanismDefinition</code>.
  *
  */
 @SuppressWarnings("all")
-public class BasicAuthenticationMechanismDefinitionAnnotationLiteral
-        extends AnnotationLiteral<BasicAuthenticationMechanismDefinition> implements BasicAuthenticationMechanismDefinition {
+public class BasicAuthenticationMechanismDefinitionAnnotationLiteral extends AnnotationLiteral<BasicAuthenticationMechanismDefinition> implements BasicAuthenticationMechanismDefinition {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,8 +44,9 @@ public class BasicAuthenticationMechanismDefinitionAnnotationLiteral
             return in;
         }
 
-        BasicAuthenticationMechanismDefinitionAnnotationLiteral out = new BasicAuthenticationMechanismDefinitionAnnotationLiteral(
-                evalImmediate(in.realmName()));
+        BasicAuthenticationMechanismDefinitionAnnotationLiteral out =
+            new BasicAuthenticationMechanismDefinitionAnnotationLiteral(
+                    evalImmediate(in.realmName()));
 
         out.setHasDeferredExpressions(hasAnyELExpression(out));
 
@@ -55,12 +54,13 @@ public class BasicAuthenticationMechanismDefinitionAnnotationLiteral
     }
 
     public static boolean hasAnyELExpression(BasicAuthenticationMechanismDefinition in) {
-        return AnnotationELPProcessor.hasAnyELExpression(in.realmName());
+        return AnnotationELPProcessor.hasAnyELExpression(
+                in.realmName());
     }
 
     @Override
     public String realmName() {
-        return hasDeferredExpressions ? evalELExpression(realmName) : realmName;
+        return hasDeferredExpressions? evalELExpression(realmName) : realmName;
     }
 
     public boolean isHasDeferredExpressions() {
@@ -70,5 +70,7 @@ public class BasicAuthenticationMechanismDefinitionAnnotationLiteral
     public void setHasDeferredExpressions(boolean hasDeferredExpressions) {
         this.hasDeferredExpressions = hasDeferredExpressions;
     }
+
+
 
 }
