@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>47</version>
+        <version>50</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -36,6 +36,7 @@
 
     <name>WildFly Elytron - Jakarta EE</name>
     <description>WildFly Security - Jakarta EE 8</description>
+    <url>https://wildfly-security.github.io/wildfly-elytron/</url>
 
     <issueManagement>
         <system>Jira</system>
@@ -49,8 +50,18 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Darran Lofthouse</name>
+            <email>darran.lofthouse@jboss.com</email>
+            <organization>WildFly</organization>
+            <organizationUrl>https://www.wildfly.org/</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</connection>
+        <developerConnection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</developerConnection>
         <url>https://github.com/wildfly-security/wildfly-elytron-ee</url>
     </scm>
 
@@ -59,6 +70,11 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
+        <!-- Nexus Settings -->
+        <nexus.repository.staging>wildfly-staging</nexus.repository.staging>
+        <nexus.staging.tag>elytron-ee-${project.version}</nexus.staging.tag>
+        <nexus.repository.release>wildfly-security</nexus.repository.release>
+
         <version.jakarta.authentication>3.1.0</version.jakarta.authentication>
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
@@ -66,7 +82,7 @@
         <version.jakarta.security>3.0.0</version.jakarta.security>
         <version.jakarta.servlet>6.1.0</version.jakarta.servlet>
 
-        <version.com.nimbus>9.37.3</version.com.nimbus>
+        <version.com.nimbus>10.3</version.com.nimbus>
         <version.junit.junit>4.13.1</version.junit.junit>
         <version.org.glassfish.soteria>3.0.3</version.org.glassfish.soteria>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
@@ -197,6 +213,19 @@
                 <version>3.2.2</version>
             </plugin>
 
+            <plugin>
+                <!-- Release Plugin Configuration -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <!-- Prepare -->
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <pushChanges>false</pushChanges>
+                    <!-- Perform -->
+                    <localCheckout>true</localCheckout>
+                </configuration>
+            </plugin>
         </plugins>
 
         <pluginManagement>
@@ -234,52 +263,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${version.jar.plugin}</version>
-                </plugin>
-
-                <!-- Javadoc -->
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <notimestamp>true</notimestamp>
-                        <doclint>none</doclint>
-                        <show>protected</show>
-                        <sourcepath>
-                            ${project.basedir}/authentication/src/main/java/;
-                            ${project.basedir}/authorization/src/main/java/;
-                            ${project.basedir}/client/resteasy/src/main/java/;
-                            ${project.basedir}/client/webservices/src/main/java/;
-                        </sourcepath>
-                        <sourceFileExcludes>
-                            <exclude>org/wildfly/security/manager/JDKSpecific.java</exclude>
-                        </sourceFileExcludes>
-                    </configuration>
-                    <executions>
-                        <execution><!-- mvn javadoc:aggregate@api-javadoc -->
-                            <id>api-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>api-javadoc</destDir>
-                                <sourceFileIncludes>
-                                    <include>org/wildfly/security/auth/jaspi/*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                        <execution><!-- mvn javadoc:aggregate@full-javadoc -->
-                            <id>full-javadoc</id>
-                            <goals>
-                                <goal>aggregate</goal>
-                            </goals>
-                            <configuration>
-                                <destDir>full-javadoc</destDir>
-                                <show>private</show>
-                                <sourceFileIncludes>
-                                    <include>**\/\*.java</include>
-                                </sourceFileIncludes>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <!-- Checkstyle -->
@@ -622,6 +605,62 @@
                                         <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
                                         <additionalClasspathElement>${java9.home}/lib/tools.jar</additionalClasspathElement>
                                     </additionalClasspathElements>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>aggregate-javadoc</id>
+            <activation>
+                <property>
+                    <name>aggregate-javadoc</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <notimestamp>true</notimestamp>
+                            <doclint>none</doclint>
+                            <show>protected</show>
+                            <sourcepath>
+                                ${project.basedir}/authentication/src/main/java/;
+                                ${project.basedir}/authorization/src/main/java/;
+                                ${project.basedir}/client/resteasy/src/main/java/;
+                                ${project.basedir}/client/webservices/src/main/java/;
+                            </sourcepath>
+                            <sourceFileExcludes>
+                                <exclude>org/wildfly/security/manager/JDKSpecific.java</exclude>
+                            </sourceFileExcludes>
+                        </configuration>
+                        <executions>
+                            <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@api-javadoc -->
+                                <id>api-javadoc</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <destDir>api-javadoc</destDir>
+                                    <sourceFileIncludes>
+                                        <include>org/wildfly/security/auth/jaspi/*.java</include>
+                                    </sourceFileIncludes>
+                                </configuration>
+                            </execution>
+                            <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@full-javadoc -->
+                                <id>full-javadoc</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                                <configuration>
+                                    <destDir>full-javadoc</destDir>
+                                    <show>private</show>
+                                    <sourceFileIncludes>
+                                        <include>**\/\*.java</include>
+                                    </sourceFileIncludes>
                                 </configuration>
                             </execution>
                         </executions>
