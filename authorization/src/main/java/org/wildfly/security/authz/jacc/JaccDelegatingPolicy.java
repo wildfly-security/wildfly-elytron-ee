@@ -17,17 +17,13 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import static java.lang.System.getSecurityManager;
-import static java.security.AccessController.doPrivileged;
 import static org.wildfly.security.authz.jacc.ElytronMessages.log;
-import static org.wildfly.security.authz.jacc.PolicyUtil.SM_SUPPORTED;
 
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.Policy;
 import java.security.Principal;
-import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -35,7 +31,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.wildfly.common.Assert;
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.authz.Roles;
@@ -60,7 +55,6 @@ import jakarta.security.jacc.WebUserDataPermission;
  */
 public class JaccDelegatingPolicy extends Policy {
 
-    private static final PrivilegedAction<Policy> GET_POLICY_ACTION = PolicyUtil::getPolicy;
     private static final String ANY_AUTHENTICATED_USER_ROLE = "**";
 
     private final Policy delegate;
@@ -71,7 +65,7 @@ public class JaccDelegatingPolicy extends Policy {
      * calls.
      */
     public JaccDelegatingPolicy() {
-        this(getSecurityManager() != null ? doPrivileged(GET_POLICY_ACTION) : Policy.getPolicy());
+        this(PolicyUtil.getPolicy());
     }
 
     /**
@@ -80,7 +74,7 @@ public class JaccDelegatingPolicy extends Policy {
      * @param delegate the policy that will be used to delegate method calls
      */
     public JaccDelegatingPolicy(Policy delegate) {
-        this.delegate = SM_SUPPORTED ? Assert.checkNotNullParam("delegate", delegate) : delegate;
+        this.delegate = delegate;
         this.supportedPermissionTypes.add(WebResourcePermission.class);
         this.supportedPermissionTypes.add(WebRoleRefPermission.class);
         this.supportedPermissionTypes.add(WebUserDataPermission.class);

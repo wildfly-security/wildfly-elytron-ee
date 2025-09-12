@@ -17,10 +17,6 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
-
-import java.security.PrivilegedAction;
-
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
 
@@ -43,7 +39,7 @@ class SecurityIdentityHandler implements PolicyContextHandler {
     @Override
     public Object getContext(String key, Object data) throws PolicyContextException {
         if (supports(key)) {
-            SecurityDomain securityDomain = doPrivileged((PrivilegedAction<SecurityDomain>) SecurityDomain::getCurrent);
+            SecurityDomain securityDomain = SecurityDomain.getCurrent();
 
             if (securityDomain != null) {
                 return securityDomain.getCurrentSecurityIdentity();

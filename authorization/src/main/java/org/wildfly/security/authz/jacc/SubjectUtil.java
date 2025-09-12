@@ -16,14 +16,9 @@
 
 package org.wildfly.security.authz.jacc;
 
-import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
-
-import java.security.PrivilegedAction;
-
 import javax.security.auth.Subject;
 
 import org.wildfly.common.Assert;
-import org.wildfly.security.auth.server.IdentityCredentials;
 import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.credential.Credential;
 import org.wildfly.security.credential.KeyPairCredential;
@@ -66,7 +61,7 @@ final class SubjectUtil {
             }
         }
 
-        for (Credential credential : doPrivileged((PrivilegedAction<IdentityCredentials>) securityIdentity::getPrivateCredentials)) {
+        for (Credential credential : securityIdentity.getPrivateCredentials()) {
             if (credential instanceof PasswordCredential) {
                 addPrivateCredential(subject, credential.castAs(PasswordCredential.class).getPassword());
             }
@@ -91,10 +86,7 @@ final class SubjectUtil {
     }
 
     static void addPrivateCredential(final Subject subject, final Object credential) {
-        doPrivileged((PrivilegedAction<Void>) () -> {
-            subject.getPrivateCredentials().add(credential);
-            return null;
-        });
+        subject.getPrivateCredentials().add(credential);
     }
 
 }
