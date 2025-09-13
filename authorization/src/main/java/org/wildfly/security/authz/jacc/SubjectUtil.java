@@ -16,7 +16,6 @@
 
 package org.wildfly.security.authz.jacc;
 
-import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
 
 import java.security.PrivilegedAction;
@@ -41,23 +40,6 @@ import org.wildfly.security.credential.X509CertificateChainPublicCredential;
  */
 final class SubjectUtil {
 
-    private static final boolean CONVERT_ROLES_TO_GROUP;
-
-    static {
-        /*
-         * TODO - Once we can build the project using Java 17 we can likely
-         * address this in a multi-release jar.
-         */
-        boolean convertRolesToGroup = false;
-        try {
-            Class.forName("java.security.acl.Group");
-            convertRolesToGroup = true;
-        } catch (ClassNotFoundException e) {
-            log.trace("Class 'java.security.acl.Group' is not available, role to group mapping disabled.");
-        }
-        CONVERT_ROLES_TO_GROUP = convertRolesToGroup;
-    }
-
     /**
      * Converts the supplied {@link SecurityIdentity} into a {@link Subject}.
      *
@@ -68,10 +50,6 @@ final class SubjectUtil {
         Assert.checkNotNullParam("securityIdentity", securityIdentity);
         Subject subject = new Subject();
         subject.getPrincipals().add(securityIdentity.getPrincipal());
-
-        if (CONVERT_ROLES_TO_GROUP) {
-            subject.getPrincipals().addAll(RoleToGroupMapper.convert(securityIdentity.getPrincipal(), securityIdentity.getRoles()));
-        }
 
         // process the identity's public and private credentials.
         for (Credential credential : securityIdentity.getPublicCredentials()) {
