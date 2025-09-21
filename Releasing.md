@@ -17,7 +17,11 @@ Prior to releasing you should ensure you have your own GPG signing key set up, p
 
 Execute:
 
-    mvn release:prepare -Pjboss-release
+    mvn release:prepare
+
+> [!NOTE]
+> When releasing the older maintenance branches before 2.x this command will also need the release
+> profile activating with `-Pjboss-release`.
 
 Enter the version being released:
 
@@ -41,7 +45,11 @@ If everything is Ok perform the release which will deploy to Nexus.
 
 Execute:
 
-    mvn release:perform -Pjboss-release
+    mvn release:perform
+
+> [!NOTE]
+> When releasing the older maintenance branches before 2.x this command will also need the release
+> profile activating with `-Pjboss-release`.
 
 This will deploy the release to the `wildfly-staging` repository.
 

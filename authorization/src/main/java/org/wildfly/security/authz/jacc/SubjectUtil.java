@@ -51,6 +51,8 @@ final class SubjectUtil {
         Subject subject = new Subject();
         subject.getPrincipals().add(securityIdentity.getPrincipal());
 
+        subject.getPrincipals().addAll(RoleToGroupMapper.convert(securityIdentity.getPrincipal(), securityIdentity.getRoles()));
+
         // process the identity's public and private credentials.
         for (Credential credential : securityIdentity.getPublicCredentials()) {
             if (credential instanceof PublicKeyCredential) {
