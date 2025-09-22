@@ -5,6 +5,8 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Utility to enable registration for Jakarta Authorization.
  *
@@ -17,9 +19,9 @@ public class AuthorizationRegistration {
      *
      * @return {@code true} if this method supports dynamic registration and completes it successfully,
      * {@code false} if this method does not support dynamic registration.
-     * @throws {@code SecurityException} if dynamic registration is attempted but fails.
+     * @throws {@code GeneralSecurityException} if dynamic registration is attempted but fails.
      */
-    public static boolean register() throws SecurityException {
+    public static boolean register() throws GeneralSecurityException {
         // By default we do not support dynamic registration.
         return false;
     }
