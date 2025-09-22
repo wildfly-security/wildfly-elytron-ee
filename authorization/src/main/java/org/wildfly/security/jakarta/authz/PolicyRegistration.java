@@ -5,6 +5,8 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import java.security.GeneralSecurityException;
+
 /**
  * Utility responsible for registering the Policy for a context-id.
  *
@@ -20,18 +22,18 @@ public class PolicyRegistration {
      *
      * @param contextId The Jakarta Authorization context id being processed.
      * @param deploymentClassLoader The {@code ClassLoader} of the deployment.
-     * @throws SecurityException If any error occurs performing the initialsiation.
+     * @throws {@code GeneralSecurityException} If any error occurs performing the initialisation.
      */
-    public static void beginContextPolicy(final String contextId, final ClassLoader deploymentClassLoader) throws SecurityException {
+    public static void beginContextPolicy(final String contextId, final ClassLoader deploymentClassLoader) throws GeneralSecurityException {
     }
 
     /**
      * Clean up any previously initialised Policy for the context specified.
      *
      * @param contextId The Jakarta Authorization context to clean up.
-     * @throws SecurityException If any error occurs performing the cleanup.
+     * @throws {@code GeneralSecurityException} If any error occurs performing the cleanup.
      */
-    public static void endContextPolicy(final String contextId) throws SecurityException {
+    public static void endContextPolicy(final String contextId) throws GeneralSecurityException {
     }
 
 }
