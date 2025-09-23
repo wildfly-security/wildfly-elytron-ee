@@ -18,6 +18,7 @@ package org.wildfly.security.authz.jacc;
 import java.security.Permission;
 import java.security.Policy;
 import java.security.ProtectionDomain;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Utility for setting and using the underlying Policy.
@@ -31,17 +32,13 @@ public final class PolicyUtil {
 
     static final Boolean SM_SUPPORTED = Runtime.version().feature() < 24;
 
-    private static final ThreadLocal<Policy> CURRENT_POLICY = new ThreadLocal<>();
+    private static final AtomicReference<Policy> CURRENT_POLICY = new AtomicReference<>();
 
     public static void setPolicy(final Policy policy) {
         if (SM_SUPPORTED) {
             Policy.setPolicy(policy);
         } else {
-            if (policy == null) {
-                CURRENT_POLICY.remove();
-            } else {
-                CURRENT_POLICY.set(policy);
-            }
+            CURRENT_POLICY.set(policy);
         }
     }
 
