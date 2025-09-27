@@ -5,9 +5,8 @@
 
 package org.wildfly.security.jakarta.authz;
 
-import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
-
 import static jakarta.security.jacc.PolicyContext.registerHandler;
+import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
 import static org.wildfly.security.authz.jacc.ElytronPolicyContextHandlerFactory.getPolicyContextHandlers;
 
 import java.security.GeneralSecurityException;
@@ -15,6 +14,8 @@ import java.util.List;
 
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
+import jakarta.security.jacc.PolicyFactory;
+import org.wildfly.security.authz.jacc.ElytronPolicyFactory;
 
 /**
  * Utility to enable registration for Jakarta Authorization.
@@ -42,6 +43,8 @@ public class AuthorizationRegistration {
         // PolicyFactory //
         ///////////////////
 
+        PolicyFactory.setPolicyFactory(new ElytronPolicyFactory());
+
         //////////////////////////
         // PolicyContextHandler //
         //////////////////////////
@@ -58,6 +61,7 @@ public class AuthorizationRegistration {
                 throw eeLog.unableToCompletePolicyContextHandlerRegistration(e);
             }
         }
+
 
         ////////////////////////////////
         // PolicyConfigurationFactory //

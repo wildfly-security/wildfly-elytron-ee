@@ -5,7 +5,16 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
+
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
+
+import jakarta.security.jacc.Policy;
+import jakarta.security.jacc.PolicyFactory;
+import org.wildfly.security.OneTimeSecurityFactory;
+import org.wildfly.security.SecurityFactory;
+import org.wildfly.security.authz.jacc.ElytronPolicy;
 
 /**
  * Utility responsible for registering the Policy for a context-id.
@@ -14,8 +23,38 @@ import java.security.GeneralSecurityException;
  */
 public class PolicyRegistration {
 
-    // For Jakarta Authorization 2.1 the Policy is global and not per-context
-    // so the first implementation of this SPI is no-op.
+    private static final String POLICY_PROVIDER = "jakarta.security.jacc.policy.provider";
+
+    /**
+     * A {@code SecurityFactory} to supply the context specific {@code Policy} instance.
+     */
+    private static final SecurityFactory<Policy> policyFactory;
+
+    static {
+        // We know no SecurityManager as EE 11.
+        String policyProvider = System.getProperty(POLICY_PROVIDER);
+        policyFactory = policyProvider == null ? new OneTimeSecurityFactory<>(ElytronPolicy::new) : () -> newPolicy(policyProvider);
+    }
+
+    private static Policy newPolicy(final String policyProvider) throws GeneralSecurityException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        try {
+            Object policyInstance = classLoader.loadClass(policyProvider)
+                .getDeclaredConstructor()
+                .newInstance();
+
+            if (policyInstance instanceof Policy) {
+                return (Policy) policyInstance;
+            }
+
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+            throw eeLog.unableToCreatePolicy(e);
+        }
+
+        throw eeLog.invalidPolicyClass(policyProvider, Policy.class.getName());
+    }
 
     /**
      * Initialise the Policy for the specified context.
@@ -25,6 +64,7 @@ public class PolicyRegistration {
      * @throws {@code GeneralSecurityException} If any error occurs performing the initialisation.
      */
     public static void beginContextPolicy(final String contextId, final ClassLoader deploymentClassLoader) throws GeneralSecurityException {
+        PolicyFactory.getPolicyFactory().setPolicy(policyFactory.create());
     }
 
     /**
@@ -34,6 +74,8 @@ public class PolicyRegistration {
      * @throws {@code GeneralSecurityException} If any error occurs performing the cleanup.
      */
     public static void endContextPolicy(final String contextId) throws GeneralSecurityException {
+        // Always clear the Policy
+        PolicyFactory.getPolicyFactory().setPolicy(contextId, null);
     }
 
 }

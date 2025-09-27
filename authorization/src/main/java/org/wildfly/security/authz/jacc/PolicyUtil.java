@@ -16,11 +16,11 @@
 package org.wildfly.security.authz.jacc;
 
 import static jakarta.security.jacc.PolicyContext.SUBJECT;
+import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
 
 import java.security.Permission;
 import java.security.Policy;
 import java.security.ProtectionDomain;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.security.auth.Subject;
 
@@ -28,44 +28,35 @@ import jakarta.security.jacc.PolicyContext;
 import jakarta.security.jacc.PolicyFactory;
 
 /**
- * Utility for setting and using the underlying Policy.
+ * Utility for passing policy checks to the appropriate Policy instance.
  *
- * This class does not include any doPrivileged calls as the caller is
- * expected to have the required permissions.
+ * In Jakarta EE 10 this class did maintain the Policy reference, however now this
+ * class uses the {@code PolicyFactory} directly.
  *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public final class PolicyUtil {
 
-    static final Boolean SM_SUPPORTED = Runtime.version().feature() < 24;
+    private static final PolicyUtil INSTANCE = new PolicyUtil();
 
-    private static final AtomicReference<Policy> CURRENT_POLICY = new AtomicReference<>();
-
+    /*
+     * Static Methods.
+     */
+    @Deprecated(forRemoval = true)
     public static void setPolicy(final Policy policy) {
-        if (SM_SUPPORTED) {
-            Policy.setPolicy(policy);
-        } else {
-            CURRENT_POLICY.set(policy);
-        }
+        throw eeLog.noLegacyPolicyAccess();
     }
 
+    @Deprecated(forRemoval = true)
     public static Policy getPolicy() {
-        if (SM_SUPPORTED) {
-            return Policy.getPolicy();
-        } else {
-            return CURRENT_POLICY.get();
-        }
+        throw eeLog.noLegacyPolicyAccess();
     }
 
     public static PolicyUtil getPolicyUtil() {
-        return new PolicyUtil(getPolicy());
+        return INSTANCE;
     }
 
-    private final Policy policy;
-
-    PolicyUtil(final Policy policy) {
-        this.policy = policy;
-    }
+    PolicyUtil() {}
 
     /**
      * @deprecated Implementations should migrate to {@code PolicyUtil#implies(Permission, Subject)}.
@@ -90,6 +81,7 @@ public final class PolicyUtil {
 
         return (jaccPolicy != null && subject != null) ? jaccPolicy.implies(permission, subject) : false;
     }
+
 
     @Deprecated
     public void refresh() {}

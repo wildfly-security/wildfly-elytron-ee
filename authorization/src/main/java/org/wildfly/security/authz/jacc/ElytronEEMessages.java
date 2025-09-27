@@ -30,7 +30,14 @@ public interface ElytronEEMessages extends BasicLogger {
 
     ElytronEEMessages eeLog = Logger.getMessageLogger(ElytronEEMessages.class, "org.wildfly.security.ee");
 
+    @Message(id = 1000, value = "No legacy Policy access from Jakarta EE 11 and later.")
+    UnsupportedOperationException noLegacyPolicyAccess();
 
+    @Message(id = 1001, value = "Unable to create Policy instance.")
+    GeneralSecurityException unableToCreatePolicy(@Cause Exception cause);
+
+    @Message(id = 1002, value = "Class %s does not implement %s")
+    GeneralSecurityException invalidPolicyClass(String className, String expectedType);
 
     @Message(id = 1003, value = "Unable to complete PolicyContextHandler registration.")
     GeneralSecurityException unableToCompletePolicyContextHandlerRegistration(@Cause PolicyContextException cause);
