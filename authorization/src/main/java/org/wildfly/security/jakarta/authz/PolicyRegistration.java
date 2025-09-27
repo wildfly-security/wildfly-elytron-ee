@@ -64,7 +64,7 @@ public class PolicyRegistration {
      * @throws {@code GeneralSecurityException} If any error occurs performing the initialisation.
      */
     public static void beginContextPolicy(final String contextId, final ClassLoader deploymentClassLoader) throws GeneralSecurityException {
-        PolicyFactory.getPolicyFactory().setPolicy(policyFactory.create());
+        PolicyFactory.getPolicyFactory().setPolicy(contextId, policyFactory.create());
     }
 
     /**

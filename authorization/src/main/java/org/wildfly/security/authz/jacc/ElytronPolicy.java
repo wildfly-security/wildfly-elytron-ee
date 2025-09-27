@@ -73,13 +73,6 @@ public class ElytronPolicy implements Policy {
 
     @Override
     public boolean implies(Permission permission, Subject subject) {
-        PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
-        Principal principal = principalMapper.getCallerPrincipal(subject);
-
-        if (principal == null) {
-            return false;
-        }
-
         try {
             if (isJaccPermission(permission)) {
                 ElytronPolicyConfiguration policyConfiguration = ElytronPolicyConfigurationFactory.getCurrentPolicyConfiguration();
@@ -104,10 +97,20 @@ public class ElytronPolicy implements Policy {
             }
 
         } catch (Exception e) {
-            log.authzFailedToCheckPermission(principal, permission, e);
+            log.authzFailedToCheckPermission(toPrincipal(subject), permission, e);
         }
 
         return false;
+    }
+
+    private static Principal toPrincipal(final Subject subject) {
+        if (subject == null) {
+            return null;
+        }
+
+        PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
+
+        return principalMapper.getCallerPrincipal(subject);
     }
 
     @Override

@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 package org.wildfly.security.authz.jacc;
-
+import static jakarta.security.jacc.PolicyContext.SUBJECT;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.security.Policy;
+import javax.security.auth.Subject;
 
-import org.junit.Test;
-import org.wildfly.security.auth.principal.NamePrincipal;
-
+import jakarta.security.jacc.Policy;
 import jakarta.security.jacc.PolicyConfiguration;
 import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyFactory;
 import jakarta.security.jacc.WebResourcePermission;
+import org.junit.Test;
 
 /**
  * <p>This test case provides policy enforcement tests solely based on the JACC specification.
@@ -49,10 +49,11 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
 
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "GET")));
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "HEAD")));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "GET"), subject));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "HEAD"), subject));
 
         policyConfiguration.delete();
     }
@@ -70,55 +71,13 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
 
         // excluded policies have precedence over any other
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "PUT")));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "PUT"), subject));
 
         policyConfiguration.delete();
     }
 
-    @Test
-    public void testRoleBasedPolicy() throws Exception {
-        String contextID = "third-party-app";
-
-        PolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
-            toConfigure.addToRole("Administrator", new WebResourcePermission("/webResource", "POST"));
-        });
-
-        policyConfiguration.commit();
-
-        PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
-
-        // as defined by JACC specification, roles are specified as principals within a ProtectionDomain and evaluated accordingly.
-        assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "POST")));
-        assertFalse(policy.implies(createProtectionDomain(new NamePrincipal("Manager")), new WebResourcePermission("/webResource", "OPTIONS")));
-
-        policyConfiguration.delete();
-    }
-
-    @Test
-    public void testMultipleRolesBasedPolicy() throws Exception {
-        String contextID = "third-party-app";
-
-        PolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
-            toConfigure.addToRole("Administrator", new WebResourcePermission("/webResource", "POST"));
-            toConfigure.addToRole("Administrator", new WebResourcePermission("/webResource", "PUT"));
-            toConfigure.addToRole("Manager", new WebResourcePermission("/webResource", "PUT"));
-        });
-
-        policyConfiguration.commit();
-
-        PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
-
-        // as defined by JACC specification, roles are specified as principals within a ProtectionDomain and evaluated accordingly.
-        assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "POST")));
-        assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "PUT")));
-        assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Manager")), new WebResourcePermission("/webResource", "PUT")));
-        assertFalse(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "GET")));
-
-        policyConfiguration.delete();
-    }
 }

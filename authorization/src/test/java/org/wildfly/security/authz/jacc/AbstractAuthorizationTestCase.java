@@ -18,11 +18,12 @@
 package org.wildfly.security.authz.jacc;
 
 import java.io.IOException;
-import java.security.Policy;
-import java.security.Principal;
-import java.security.ProtectionDomain;
+import java.security.GeneralSecurityException;
 import java.util.HashSet;
 
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContextException;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.wildfly.security.auth.permission.RunAsPrincipalPermission;
@@ -30,11 +31,9 @@ import org.wildfly.security.auth.realm.LegacyPropertiesSecurityRealm;
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityRealm;
 import org.wildfly.security.authz.Roles;
+import org.wildfly.security.jakarta.authz.AuthorizationRegistration;
+import org.wildfly.security.jakarta.authz.PolicyRegistration;
 import org.wildfly.security.permission.PermissionVerifier;
-
-import jakarta.security.jacc.PolicyConfiguration;
-import jakarta.security.jacc.PolicyConfigurationFactory;
-import jakarta.security.jacc.PolicyContextException;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
@@ -43,9 +42,8 @@ import jakarta.security.jacc.PolicyContextException;
 public abstract class AbstractAuthorizationTestCase {
 
     @BeforeClass
-    public static void onBeforeClass() {
-        System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
-        Policy.setPolicy(new JaccDelegatingPolicy());
+    public static void onBeforeClass() throws Exception {
+        AuthorizationRegistration.register();
     }
 
     @Rule
@@ -86,7 +84,16 @@ public abstract class AbstractAuthorizationTestCase {
         return builder.build();
     }
 
+    protected void beginContextPolicy(final String contextId) {
+        try {
+            PolicyRegistration.beginContextPolicy(contextId, null);
+        } catch (GeneralSecurityException e) {
+            throw new SecurityException(e);
+        }
+    }
+
     protected ElytronPolicyConfiguration createPolicyConfiguration(String contextID, ConfigurePoliciesAction configurationAction) throws ClassNotFoundException, PolicyContextException {
+        beginContextPolicy(contextID);
         ElytronPolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID);
 
         configurationAction.configure(policyConfiguration);
@@ -95,19 +102,17 @@ public abstract class AbstractAuthorizationTestCase {
     }
 
     protected ElytronPolicyConfiguration createPolicyConfiguration(String contextID) throws ClassNotFoundException, PolicyContextException {
+        beginContextPolicy(contextID);
         ElytronPolicyConfigurationFactory policyConfigurationFactory = (ElytronPolicyConfigurationFactory) PolicyConfigurationFactory.getPolicyConfigurationFactory();
 
         return (ElytronPolicyConfiguration) policyConfigurationFactory.getPolicyConfiguration(contextID, false);
     }
 
     protected ElytronPolicyConfiguration createPolicyConfiguration(String contextID, boolean create) throws ClassNotFoundException, PolicyContextException {
+        beginContextPolicy(contextID);
         ElytronPolicyConfigurationFactory policyConfigurationFactory = (ElytronPolicyConfigurationFactory) PolicyConfigurationFactory.getPolicyConfigurationFactory();
 
         return (ElytronPolicyConfiguration) policyConfigurationFactory.getPolicyConfiguration(contextID, create);
-    }
-
-    protected ProtectionDomain createProtectionDomain(Principal... principals) {
-        return new ProtectionDomain(null, getClass().getProtectionDomain().getPermissions(), null, principals);
     }
 
     protected interface ConfigurePoliciesAction {

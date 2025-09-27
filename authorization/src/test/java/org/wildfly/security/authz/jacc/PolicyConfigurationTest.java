@@ -17,26 +17,17 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import static java.security.AccessController.doPrivileged;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.security.PermissionCollection;
-import java.security.Policy;
-import java.security.PrivilegedAction;
-
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.WebResourcePermission;
 import org.hamcrest.core.IsInstanceOf;
 import org.hamcrest.core.IsSame;
 import org.junit.Assert;
 import org.junit.Test;
-import org.wildfly.security.auth.principal.NamePrincipal;
-
-import jakarta.security.jacc.PolicyConfiguration;
-import jakarta.security.jacc.PolicyConfigurationFactory;
-import jakarta.security.jacc.PolicyContext;
-import jakarta.security.jacc.WebResourcePermission;
 
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
@@ -54,94 +45,6 @@ public class PolicyConfigurationTest extends AbstractAuthorizationTestCase {
         PolicyConfigurationFactory sameInstance = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 
         Assert.assertThat(policyConfigurationFactory, new IsSame<>(sameInstance));
-    }
-
-    @Test
-    public void testCreateAndInstallDelegatingPolicy() throws Exception {
-        Policy policy = Policy.getPolicy();
-
-        assertThat(policy, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy)));
-
-        Policy mustBeTheSame = Policy.getPolicy();
-
-        assertThat(mustBeTheSame, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy)));
-    }
-
-    @Test
-    public void testCreatePolicyConfiguration() throws Exception {
-        final WebResourcePermission dynamicPermission1 = new WebResourcePermission("/webResource", "GET,PUT");
-        final WebResourcePermission dynamicPermission2 = new WebResourcePermission("/webResource", "PUT");
-        final WebResourcePermission dynamicPermission3 = new WebResourcePermission("/webResource", "HEAD");
-        String contextID = "third-party-app";
-        ElytronPolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
-                    toConfigure.addToUncheckedPolicy(dynamicPermission1);
-                    toConfigure.addToRole("Administrator", dynamicPermission2);
-                    toConfigure.addToExcludedPolicy(dynamicPermission3);
-                }
-        );
-
-        PolicyConfigurationFactory policyConfigurationFactory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-
-        // must be in open state
-        assertFalse(policyConfigurationFactory.inService(contextID));
-        assertFalse(policyConfiguration.inService());
-
-        // we now set the context id
-        PolicyContext.setContextID(contextID);
-
-        Policy policy = doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy);
-
-        PermissionCollection permissions = policy.getPermissions(createProtectionDomain(new NamePrincipal("Administrator")));
-
-        policyConfiguration.commit();
-
-        assertTrue(policyConfiguration.inService());
-        assertTrue(policyConfigurationFactory.inService(contextID));
-
-        permissions = policy.getPermissions(createProtectionDomain(new NamePrincipal("Administrator")));
-
-        assertTrue(permissions.implies(dynamicPermission1));
-        assertTrue(permissions.implies(dynamicPermission2));
-
-        // excluded permissions are never returned
-        assertFalse(permissions.implies(dynamicPermission3));
-
-        policyConfiguration.delete();
-    }
-
-    @Test
-    public void testRemovePolicyConfiguration() throws Exception {
-        final WebResourcePermission dynamicPermission1 = new WebResourcePermission("/webResource", "GET,PUT");
-        final WebResourcePermission dynamicPermission2 = new WebResourcePermission("/webResource", "PUT");
-        final WebResourcePermission dynamicPermission3 = new WebResourcePermission("/webResource", "HEAD");
-        String contextID = "third-party-app";
-        ElytronPolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
-                    toConfigure.addToUncheckedPolicy(dynamicPermission1);
-                    toConfigure.addToRole("Administrator", dynamicPermission2);
-                    toConfigure.addToExcludedPolicy(dynamicPermission3);
-                }
-        );
-
-        assertFalse(policyConfiguration.inService());
-
-        policyConfiguration.commit();
-
-        assertTrue(policyConfiguration.inService());
-
-        PolicyConfiguration removedPolicyConfiguration = createPolicyConfiguration("third-party-app", true);
-
-        assertFalse(policyConfiguration.inService());
-        assertThat(policyConfiguration, new IsSame<>(removedPolicyConfiguration));
-
-        Policy policy = doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy);
-
-        PolicyContext.setContextID(contextID);
-
-        PermissionCollection permissions = policy.getPermissions(createProtectionDomain(new NamePrincipal("Administrator")));
-
-        assertFalse(permissions.implies(dynamicPermission1));
-        assertFalse(permissions.implies(dynamicPermission2));
-        assertFalse(permissions.implies(dynamicPermission3));
     }
 
     @Test

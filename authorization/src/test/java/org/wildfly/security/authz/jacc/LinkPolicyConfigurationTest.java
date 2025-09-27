@@ -17,25 +17,30 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static jakarta.security.jacc.PolicyContext.SUBJECT;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.security.Policy;
-import java.security.Principal;
-import java.security.ProtectionDomain;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
 
+import javax.security.auth.Subject;
+
+import jakarta.security.jacc.Policy;
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyFactory;
+import jakarta.security.jacc.WebResourcePermission;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.wildfly.security.auth.principal.NamePrincipal;
 import org.wildfly.security.auth.realm.SimpleMapBackedSecurityRealm;
 import org.wildfly.security.auth.realm.SimpleRealmEntry;
 import org.wildfly.security.auth.server.SecurityDomain;
@@ -51,11 +56,6 @@ import org.wildfly.security.password.WildFlyElytronPasswordProvider;
 import org.wildfly.security.password.interfaces.ClearPassword;
 import org.wildfly.security.password.spec.ClearPasswordSpec;
 
-import jakarta.security.jacc.PolicyConfiguration;
-import jakarta.security.jacc.PolicyConfigurationFactory;
-import jakarta.security.jacc.PolicyContext;
-import jakarta.security.jacc.WebResourcePermission;
-
 /**
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
  */
@@ -68,7 +68,6 @@ public class LinkPolicyConfigurationTest {
     @BeforeClass
     public static void onBeforeClass() {
         System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
-        Policy.setPolicy(new JaccDelegatingPolicy());
         Security.addProvider(provider);
     }
 
@@ -121,7 +120,7 @@ public class LinkPolicyConfigurationTest {
 
         // let's check now permissions for first child module
         PolicyContext.setContextID(child1ContextID);
-        Policy policy = Policy.getPolicy();
+        Policy child1ContextPolicy = PolicyFactory.getPolicyFactory().getPolicy();
 
         ServerAuthenticationContext authenticationContext = child1SecurityDomain.createNewAuthenticationContext();
         authenticationContext.setAuthenticationName("john");
@@ -130,7 +129,8 @@ public class LinkPolicyConfigurationTest {
 
         // john is known by first child module, it should pass
         johnIdentity.runAs(() -> {
-            assertTrue(policy.implies(createProtectionDomain(), child1Permission));
+            Subject subject = PolicyContext.get(SUBJECT);
+            assertTrue(child1ContextPolicy.implies(child1Permission, subject));
         });
 
         authenticationContext = child2SecurityDomain.createNewAuthenticationContext();
@@ -138,37 +138,41 @@ public class LinkPolicyConfigurationTest {
         authenticationContext.succeed();
         SecurityIdentity smithIdentity = authenticationContext.getAuthorizedIdentity();
         PolicyContext.setContextID(child2ContextID);
+        Policy child2ContextPolicy = PolicyFactory.getPolicyFactory().getPolicy();
 
         // smith is not know by first module, but by second module. As they share the same role mapping, smith should be known by first module as well
         smithIdentity.runAs(() -> {
-            assertTrue(policy.implies(createProtectionDomain(), child1Permission));
+            Subject subject = PolicyContext.get(SUBJECT);
+            assertTrue(child2ContextPolicy.implies(child1Permission, subject));
         });
 
         // same thing above, but using mary which is known only by parent module
-        assertTrue(policy.implies(createProtectionDomain(), child1Permission));
+        Subject subject = PolicyContext.get(SUBJECT);
+        assertTrue(child2ContextPolicy.implies(child1Permission, subject));
 
-        PolicyContext.setContextID(child2ContextID);
+        //PolicyContext.setContextID(child2ContextID);
 
         // smith is known by first child module, it should pass
-        assertTrue(policy.implies(createProtectionDomain(), child2Permission));
+        assertTrue(child2ContextPolicy.implies(child2Permission, subject));
 
         // john is not know by first module, but by first module. As they share the same role mapping, john should be known by second module as well
-        assertTrue(policy.implies(createProtectionDomain(), child2Permission));
+        assertTrue(child2ContextPolicy.implies(child2Permission, subject));
 
         // same thing above, but using mary which is known only by parent module. However, in this case we don't have a permission for mary/Administrator in the second module
-        assertFalse(policy.implies(createProtectionDomain(), child2Permission));
+        assertFalse(child2ContextPolicy.implies(child2Permission, subject));
 
         PolicyContext.setContextID(parentContextID);
+        Policy parentContextPolicy = PolicyFactory.getPolicyFactory().getPolicy();
 
-        assertTrue(policy.implies(createProtectionDomain(), parentPermission));
-        assertFalse(policy.implies(createProtectionDomain(), parentPermission));
+        assertTrue(parentContextPolicy.implies(parentPermission, subject));
+        assertFalse(parentContextPolicy.implies(parentPermission, subject));
 
         parentPolicyConfiguration.delete();
 
         PolicyContext.setContextID(child1ContextID);
 
         // parent module was deleted, mary is longer resolvable
-        assertFalse(policy.implies(createProtectionDomain(), child1Permission));
+        assertFalse(child1ContextPolicy.implies(child1Permission, subject));
     }
 
     private SecurityDomain createSecurityDomain(String userName, String... roles) throws Exception {
@@ -209,11 +213,4 @@ public class LinkPolicyConfigurationTest {
         parentPolicyConfiguration.commit();
     }
 
-    private Principal createPrincipal(final String name) {
-        return new NamePrincipal(name);
-    }
-
-    private ProtectionDomain createProtectionDomain(Principal... principals) {
-        return new ProtectionDomain(null, getClass().getProtectionDomain().getPermissions(), null, principals);
-    }
 }
