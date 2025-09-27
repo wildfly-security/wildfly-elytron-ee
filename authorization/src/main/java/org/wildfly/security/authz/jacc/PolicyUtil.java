@@ -15,10 +15,17 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static jakarta.security.jacc.PolicyContext.SUBJECT;
+
 import java.security.Permission;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.security.auth.Subject;
+
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyFactory;
 
 /**
  * Utility for setting and using the underlying Policy.
@@ -60,14 +67,31 @@ public final class PolicyUtil {
         this.policy = policy;
     }
 
+    /**
+     * @deprecated Implementations should migrate to {@code PolicyUtil#implies(Permission, Subject)}.
+     */
+    @Deprecated(forRemoval = true)
     public boolean implies(final ProtectionDomain domain, final Permission permission) {
-        return policy != null && policy.implies(domain, permission);
+        return implies(permission, PolicyContext.get(SUBJECT));
     }
 
-    public void refresh() {
-        if (policy != null) {
-            policy.refresh();
-        }
+    /**
+     * Perform the required {@code Permission} check for the current caller.
+     *
+     * @param permission the {@code Permission} to be checked.
+     * @param subject the {@code Subject} representation of the caller.
+     * @return {@code true} if the caller has been granted the {@code Permission}, {@code false} otherwise.
+     */
+    public boolean implies(final Permission permission, final Subject subject) {
+        // We did consider if we should be passed the SecurityIdentity here but we know the target APIs
+        // do need a Subject and it is a once line call for our caller to obtain the Subject.
+        PolicyFactory policyFactory = PolicyFactory.getPolicyFactory();
+        jakarta.security.jacc.Policy jaccPolicy = policyFactory.getPolicy();
+
+        return (jaccPolicy != null && subject != null) ? jaccPolicy.implies(permission, subject) : false;
     }
+
+    @Deprecated
+    public void refresh() {}
 
 }

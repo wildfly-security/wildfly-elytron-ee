@@ -22,8 +22,9 @@ import static org.jboss.logging.Logger.Level.DEBUG;
 import static org.jboss.logging.Logger.Level.ERROR;
 
 import java.security.Permission;
-import java.security.ProtectionDomain;
+import java.security.Principal;
 
+import jakarta.security.jacc.PolicyContextException;
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
@@ -32,8 +33,6 @@ import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
 import org.jboss.logging.annotations.ValidIdRanges;
-
-import jakarta.security.jacc.PolicyContextException;
 
 /**
  * Log messages and exceptions for Elytron.
@@ -56,8 +55,8 @@ interface ElytronMessages extends BasicLogger {
     SecurityException readOnlyPermissionCollection();
 
     @LogMessage(level = ERROR)
-    @Message(id = 8500, value = "Failed to check permissions for protection domain [%s] and permission [%s].")
-    void authzFailedToCheckPermission(ProtectionDomain domain, Permission permission, @Cause Throwable cause);
+    @Message(id = 8500, value = "Failed to check permissions for principal [%s] and permission [%s].")
+    void authzFailedToCheckPermission(Principal principal, Permission permission, @Cause Throwable cause);
 
     @Message(id = 8501, value = "Invalid state [%s] for operation.")
     UnsupportedOperationException authzInvalidStateForOperation(String actualState);

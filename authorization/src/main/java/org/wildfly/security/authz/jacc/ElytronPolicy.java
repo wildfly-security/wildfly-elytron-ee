@@ -17,64 +17,53 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static jakarta.security.jacc.PolicyContext.PRINCIPAL_MAPPER;
 import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 
-import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
-import java.security.Policy;
 import java.security.Principal;
-import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.wildfly.security.auth.server.SecurityDomain;
-import org.wildfly.security.auth.server.SecurityIdentity;
-import org.wildfly.security.authz.Roles;
+import javax.security.auth.Subject;
 
 import jakarta.security.jacc.EJBMethodPermission;
 import jakarta.security.jacc.EJBRoleRefPermission;
+import jakarta.security.jacc.Policy;
 import jakarta.security.jacc.PolicyContext;
 import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.PrincipalMapper;
 import jakarta.security.jacc.WebResourcePermission;
 import jakarta.security.jacc.WebRoleRefPermission;
 import jakarta.security.jacc.WebUserDataPermission;
+import org.wildfly.security.auth.server.SecurityDomain;
+import org.wildfly.security.auth.server.SecurityIdentity;
 
 /**
  * <p>A {@link Policy} implementation that knows how to process JACC permissions.
  *
- * <p>Elytron's JACC implementation is fully integrated with the Permission Mapping API, which allows users to specify custom permissions
+ * <p>Elytron's JakartaAuthorization implementation is fully integrated with the Permission Mapping API, which allows users to specify custom permissions
  * for a {@link SecurityDomain} and its identities by configuring a {@link org.wildfly.security.authz.PermissionMapper}. In this case,
  * the permissions are evaluated considering both JACC-specific permissions (as defined by the specs) and also the ones associated with the current
  * and authorized {@link SecurityIdentity}.
  *
  * @author <a href="mailto:psilva@redhat.com">Pedro Igor</a>
+ * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
-public class JaccDelegatingPolicy extends Policy {
+public class ElytronPolicy implements Policy {
 
     private static final String ANY_AUTHENTICATED_USER_ROLE = "**";
-
-    private final Policy delegate;
     private final Set<Class<? extends Permission>> supportedPermissionTypes = new HashSet<>();
 
     /**
-     * Create a new instance. In this case, the current policy will be automatically obtained and used to delegate method
-     * calls.
-     */
-    public JaccDelegatingPolicy() {
-        this(PolicyUtil.getPolicy());
-    }
-
-    /**
-     * Create a new instance based on the given {@code delegate}.
+     * Create a new instance.
      *
-     * @param delegate the policy that will be used to delegate method calls
      */
-    public JaccDelegatingPolicy(Policy delegate) {
-        this.delegate = delegate;
+    public ElytronPolicy() {
         this.supportedPermissionTypes.add(WebResourcePermission.class);
         this.supportedPermissionTypes.add(WebRoleRefPermission.class);
         this.supportedPermissionTypes.add(WebUserDataPermission.class);
@@ -83,7 +72,14 @@ public class JaccDelegatingPolicy extends Policy {
     }
 
     @Override
-    public boolean implies(ProtectionDomain domain, Permission permission) {
+    public boolean implies(Permission permission, Subject subject) {
+        PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
+        Principal principal = principalMapper.getCallerPrincipal(subject);
+
+        if (principal == null) {
+            return false;
+        }
+
         try {
             if (isJaccPermission(permission)) {
                 ElytronPolicyConfiguration policyConfiguration = ElytronPolicyConfigurationFactory.getCurrentPolicyConfiguration();
@@ -96,70 +92,42 @@ public class JaccDelegatingPolicy extends Policy {
                     return true;
                 }
 
-                if (impliesRolePermission(domain, permission, policyConfiguration)) {
-                    return true;
-                }
-
-                // Here we check the permissions mapped to the current identity.
-                // We only perform this check for JACC permissions otherwise we intercept all
-                // SecurityManager checks.
-                if (impliesIdentityPermission(permission)) {
+                if (impliesRolePermission(subject, permission, policyConfiguration)) {
                     return true;
                 }
             }
 
+            // We can now check all permissions here as we are no longer intercepting
+            // SecurityManager permission checks.
+            if (impliesIdentityPermission(permission)) {
+                return true;
+            }
+
         } catch (Exception e) {
-            log.authzFailedToCheckPermission(domain, permission, e);
+            log.authzFailedToCheckPermission(principal, permission, e);
         }
 
-        return delegate != null && this.delegate.implies(domain, permission);
+        return false;
     }
 
     @Override
-    public PermissionCollection getPermissions(ProtectionDomain domain) {
-        final PermissionCollection delegatePermissions =
-            delegate != null ? delegate.getPermissions(domain) : null;
+    public PermissionCollection getPermissionCollection(Subject subject) {
         return new PermissionCollection() {
             @Override
             public void add(Permission permission) {
-                if (isJaccPermission(permission) || delegatePermissions == null) {
-                    throw ElytronMessages.log.readOnlyPermissionCollection();
-                } else {
-                    delegatePermissions.add(permission);
-                }
+                throw ElytronMessages.log.readOnlyPermissionCollection();
             }
 
             @Override
             public boolean implies(Permission permission) {
-                if (!isJaccPermission(permission) &&
-                        delegatePermissions != null &&
-                        delegatePermissions.implies(permission)) {
-                    return true;
-                }
-
-                return JaccDelegatingPolicy.this.implies(domain, permission);
+                return ElytronPolicy.this.implies(permission, subject);
             }
 
             @Override
             public Enumeration<Permission> elements() {
-                return delegatePermissions != null ?
-                    delegatePermissions.elements() :
-                    Collections.emptyEnumeration();
+                return Collections.emptyEnumeration();
             }
         };
-    }
-
-    @Override
-    public PermissionCollection getPermissions(CodeSource codeSource) {
-        return codeSource == null ? Policy.UNSUPPORTED_EMPTY_COLLECTION : getPermissions(new ProtectionDomain(codeSource, null));
-    }
-
-    @Override
-    public void refresh() {
-        //TODO: we can probably provide some caching for permissions and checks. In this case, we can use this method to refresh the cache.
-        if (delegate != null) {
-            this.delegate.refresh();
-        }
     }
 
     private boolean impliesIdentityPermission(Permission permission) {
@@ -177,39 +145,9 @@ public class JaccDelegatingPolicy extends Policy {
         return null;
     }
 
-    private void extractRolesFromCurrentIdentity(Set<String> roles) throws PolicyContextException, ClassNotFoundException {
-        SecurityIdentity identity = getCurrentSecurityIdentity();
-
-        if (identity != null) {
-            Roles identityRoles = identity.getRoles();
-
-            if (identityRoles != null) {
-                for (String roleName : identityRoles) {
-                    roles.add(roleName);
-                }
-            }
-        }
-    }
-
-    private void extractRolesFromProtectionDomain(ProtectionDomain domain, Set<String> roles) {
-        Principal[] domainPrincipals = domain.getPrincipals();
-
-        if (domainPrincipals != null) {
-            for (Principal principal : domainPrincipals) {
-                roles.add(principal.getName());
-            }
-        }
-    }
-
-    private boolean impliesRolePermission(ProtectionDomain domain, Permission permission, ElytronPolicyConfiguration policyConfiguration) throws PolicyContextException, ClassNotFoundException {
-        Set<String> roles = new HashSet<>();
-
-        // keep JACC behavior where roles are obtained as Principal instances from a ProtectionDomain
-        extractRolesFromProtectionDomain(domain, roles);
-
-        // obtain additional roles from the current authenticated identity.
-        // in this case the a RoleMapper will be used to map roles from the authenticated identity
-        extractRolesFromCurrentIdentity(roles);
+    private boolean impliesRolePermission(Subject subject, Permission permission, ElytronPolicyConfiguration policyConfiguration) throws PolicyContextException, ClassNotFoundException {
+        PrincipalMapper principalMapper = PolicyContext.get(PRINCIPAL_MAPPER);
+        Set<String> roles = principalMapper.getMappedRoles(subject);
 
         roles.add(ANY_AUTHENTICATED_USER_ROLE);
 
