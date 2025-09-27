@@ -5,6 +5,7 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import static jakarta.security.jacc.PolicyConfigurationFactory.setPolicyConfigurationFactory;
 import static jakarta.security.jacc.PolicyContext.registerHandler;
 import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
 import static org.wildfly.security.authz.jacc.ElytronPolicyContextHandlerFactory.getPolicyContextHandlers;
@@ -15,6 +16,7 @@ import java.util.List;
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
 import jakarta.security.jacc.PolicyFactory;
+import org.wildfly.security.authz.jacc.ElytronPolicyConfigurationFactory;
 import org.wildfly.security.authz.jacc.ElytronPolicyFactory;
 
 /**
@@ -67,7 +69,7 @@ public class AuthorizationRegistration {
         // PolicyConfigurationFactory //
         ////////////////////////////////
 
-        // This is also set by the Elytron subsystem at the moment.
+        setPolicyConfigurationFactory(new ElytronPolicyConfigurationFactory());
 
         return true;
     }
