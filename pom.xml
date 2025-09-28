@@ -78,7 +78,7 @@
         <version.jakarta.authorization>2.1.0</version.jakarta.authorization>
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
         <version.jakarta.jaxrs>3.1.0</version.jakarta.jaxrs>
-        <version.jakarta.security>3.0.0</version.jakarta.security>
+        <version.jakarta.security>4.0.0</version.jakarta.security>
         <version.jakarta.servlet>6.1.0</version.jakarta.servlet>
 
         <version.com.nimbus>10.3</version.com.nimbus>
