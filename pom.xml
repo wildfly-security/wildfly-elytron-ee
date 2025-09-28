@@ -83,7 +83,7 @@
 
         <version.com.nimbus>10.3</version.com.nimbus>
         <version.junit.junit>4.13.1</version.junit.junit>
-        <version.org.glassfish.soteria>3.0.3</version.org.glassfish.soteria>
+        <version.org.glassfish.soteria>4.0.2</version.org.glassfish.soteria>
         <version.org.jboss.logging>3.4.2.Final</version.org.jboss.logging>
         <version.org.jboss.logging.tools>2.2.1.Final</version.org.jboss.logging.tools>
         <version.org.jboss.spec.jakarta.xml.ws>1.0.1.Final</version.org.jboss.spec.jakarta.xml.ws>
@@ -429,7 +429,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.soteria</groupId>
-                <artifactId>jakarta.security.enterprise</artifactId>
+                <artifactId>soteria</artifactId>
                 <version>${version.org.glassfish.soteria}</version>
                 <scope>provided</scope>
                 <exclusions>

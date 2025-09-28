@@ -103,7 +103,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.soteria</groupId>
-            <artifactId>jakarta.security.enterprise</artifactId>
+            <artifactId>soteria</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -127,5 +127,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
 </project>
