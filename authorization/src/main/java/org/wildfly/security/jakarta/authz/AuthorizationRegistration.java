@@ -15,15 +15,27 @@ import java.security.GeneralSecurityException;
 public class AuthorizationRegistration {
 
     /**
-     * Perform any static registration for Jakarta Authorization.
+     * Check if this implementation supports self registration.
      *
-     * @return {@code true} if this method supports dynamic registration and completes it successfully,
-     * {@code false} if this method does not support dynamic registration.
-     * @throws {@code GeneralSecurityException} if dynamic registration is attempted but fails.
+     * This is required as an application server may depend on different versions
+     * of this library, some of which do support self registration and others that
+     * do not.
+     *
+     * @return {@code true} if this supports self registration, false otherwise.
      */
-    public static boolean register() throws GeneralSecurityException {
+    public static boolean supportsSelfRegistration() {
         // By default we do not support dynamic registration.
         return false;
     }
+
+    /**
+     * Perform any static registration for Jakarta Authorization.
+     *
+     * If this method is called and the implementation does not support self registration
+     * this method should return without error.
+     *
+     * @throws {@code GeneralSecurityException} if dynamic registration is attempted but fails.
+     */
+    public static void register() throws GeneralSecurityException {}
 
 }
