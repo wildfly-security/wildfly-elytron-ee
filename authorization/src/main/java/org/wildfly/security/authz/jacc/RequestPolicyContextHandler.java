@@ -16,13 +16,8 @@
 
 package org.wildfly.security.authz.jacc;
 
-import static org.wildfly.security.authz.jacc.SecurityActions.doPrivileged;
-
-import java.security.PrivilegedAction;
-
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A {@code PolicyContextHandler} to return a {@code HttpServletRequest} from the current request.
@@ -33,16 +28,11 @@ class RequestPolicyContextHandler implements PolicyContextHandler {
 
     private static final String KEY = "jakarta.servlet.http.HttpServletRequest";
 
-    private final PrivilegedAction<HttpServletRequest> getRequestAction;
+    private final HttpServletRequestContext requestContext;
+
 
     RequestPolicyContextHandler(final HttpServletRequestContext requestContext) {
-        getRequestAction = new PrivilegedAction<HttpServletRequest>() {
-
-            @Override
-            public HttpServletRequest run() {
-                return requestContext.getCurrent();
-            }
-        };
+        this.requestContext = requestContext;
     }
 
     @Override
@@ -61,7 +51,7 @@ class RequestPolicyContextHandler implements PolicyContextHandler {
             return null;
         }
 
-        return doPrivileged(getRequestAction);
+        return requestContext.getCurrent();
     }
 
 }

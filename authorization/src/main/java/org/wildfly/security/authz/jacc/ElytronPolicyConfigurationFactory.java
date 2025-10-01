@@ -17,13 +17,10 @@
  */
 package org.wildfly.security.authz.jacc;
 
-import static java.lang.System.getSecurityManager;
-import static java.security.AccessController.doPrivileged;
 import static org.wildfly.common.Assert.checkNotNullParam;
 import static org.wildfly.security.authz.jacc.ElytronMessages.log;
 import static org.wildfly.security.authz.jacc.ElytronPolicyConfiguration.State.OPEN;
 
-import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,8 +45,6 @@ import jakarta.security.jacc.PolicyContextException;
  */
 public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactory {
 
-    public static final PrivilegedAction<String> GET_CONTEXT_ID = () -> PolicyContext.getContextID();
-
     /**
      * Holds all {@link jakarta.security.jacc.PolicyConfiguration} created in runtime.
      */
@@ -69,11 +64,7 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
     static <P extends PolicyConfiguration> P getCurrentPolicyConfiguration() throws PolicyContextException {
         String contextID;
 
-        if (getSecurityManager() != null) {
-            contextID = doPrivileged(GET_CONTEXT_ID);
-        } else {
-            contextID = PolicyContext.getContextID();
-        }
+        contextID = PolicyContext.getContextID();
 
         if (contextID == null) {
             throw log.authzContextIdentifierNotSet();

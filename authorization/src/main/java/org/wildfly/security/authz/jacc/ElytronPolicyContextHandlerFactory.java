@@ -42,6 +42,7 @@ public class ElytronPolicyContextHandlerFactory {
         if (httpServletRequestContext != null) {
             policyContextHandlers.add(new RequestPolicyContextHandler(httpServletRequestContext));
         }
+        policyContextHandlers.add(new PrincipalMapperContextHandler());
 
         return policyContextHandlers;
     }
@@ -61,4 +62,5 @@ public class ElytronPolicyContextHandlerFactory {
                 // explicitly ignored
             }
     }
+
 }

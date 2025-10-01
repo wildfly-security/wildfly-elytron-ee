@@ -17,12 +17,12 @@
  */
 package org.wildfly.security.authz.jacc;
 
+import static jakarta.security.jacc.PolicyContext.SUBJECT;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.security.PermissionCollection;
-import java.security.Policy;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Collections;
@@ -30,6 +30,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
+import jakarta.security.jacc.Policy;
+import jakarta.security.jacc.PolicyConfiguration;
+import jakarta.security.jacc.PolicyContext;
+import jakarta.security.jacc.PolicyContextException;
+import jakarta.security.jacc.PolicyFactory;
+import jakarta.security.jacc.WebResourcePermission;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,17 +49,13 @@ import org.wildfly.security.authz.MapAttributes;
 import org.wildfly.security.authz.RoleDecoder;
 import org.wildfly.security.credential.Credential;
 import org.wildfly.security.credential.PasswordCredential;
+import org.wildfly.security.jakarta.authz.AuthorizationRegistration;
 import org.wildfly.security.password.PasswordFactory;
 import org.wildfly.security.password.WildFlyElytronPasswordProvider;
 import org.wildfly.security.password.interfaces.ClearPassword;
 import org.wildfly.security.password.spec.ClearPasswordSpec;
 import org.wildfly.security.permission.PermissionUtil;
 import org.wildfly.security.permission.PermissionVerifier;
-
-import jakarta.security.jacc.PolicyConfiguration;
-import jakarta.security.jacc.PolicyContext;
-import jakarta.security.jacc.PolicyContextException;
-import jakarta.security.jacc.WebResourcePermission;
 
 /**
  * <p>This test case provides policy enforcement tests based on the JACC specification as well relying on Elytron's Permission
@@ -65,9 +69,8 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
     private static final Provider provider = WildFlyElytronPasswordProvider.getInstance();
 
     @BeforeClass
-    public static void onBeforeClass() {
-        System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
-        Policy.setPolicy(new JaccDelegatingPolicy());
+    public static void onBeforeClass() throws Exception {
+        AuthorizationRegistration.register();
         Security.addProvider(provider);
     }
 
@@ -75,8 +78,6 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
     public static void onAfter() throws Exception {
         Security.removeProvider(provider.getName());
     }
-
-    private static final String CONTEXT_ID = "third-party-app";
 
     @Override
     protected SecurityDomain createSecurityDomain() {
@@ -146,14 +147,15 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
 
         // this permission was defined using a PermissionMapper and it should be granted for user-admin
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "POST")));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "POST"), subject));
         // however, this one was set using JACC API, via PolicyConfiguration. It should be valid as well.
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "HEAD")));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "HEAD"), subject));
         // this one was not granted for user-admin
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "OPTIONS")));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "OPTIONS"), subject));
 
         policyConfiguration.delete();
     }
@@ -168,13 +170,14 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
 
         // these permissions were defined using a PermissionMapper and they should be granted for user-manager
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "POST")));
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "GET")));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "POST"), subject));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "GET"), subject));
         // this one was not granted for user-manager
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "PUT")));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "PUT"), subject));
 
         policyConfiguration.delete();
     }
@@ -189,13 +192,14 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
 
         // this permissions was defined using a PermissionMapper and they should be granted for user-user
-        assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "GET")));
+        assertTrue(policy.implies(new WebResourcePermission("/webResource", "GET"), subject));
         // this one was not granted for user-manager
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "PUT")));
-        assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "POST")));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "PUT"), subject));
+        assertFalse(policy.implies(new WebResourcePermission("/webResource", "POST"), subject));
 
         policyConfiguration.delete();
     }
