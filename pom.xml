@@ -640,25 +640,25 @@
                             </sourceFileExcludes>
                         </configuration>
                         <executions>
+                                       <!-- mvn -Paggregate-javadoc javadoc:aggregate-jar@api-javadoc -->
                             <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@api-javadoc -->
                                 <id>api-javadoc</id>
                                 <goals>
                                     <goal>aggregate</goal>
                                 </goals>
                                 <configuration>
-                                    <destDir>api-javadoc</destDir>
                                     <sourceFileIncludes>
                                         <include>org/wildfly/security/auth/jaspi/*.java</include>
                                     </sourceFileIncludes>
                                 </configuration>
                             </execution>
+                            <!-- mvn -Paggregate-javadoc javadoc:aggregate-jar@full-javadoc -->
                             <execution><!-- mvn -Paggregate-javadoc javadoc:aggregate@full-javadoc -->
                                 <id>full-javadoc</id>
                                 <goals>
                                     <goal>aggregate</goal>
                                 </goals>
                                 <configuration>
-                                    <destDir>full-javadoc</destDir>
                                     <show>private</show>
                                     <sourceFileIncludes>
                                         <include>**\/\*.java</include>
