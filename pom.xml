@@ -29,7 +29,7 @@
 
     <groupId>org.wildfly.security.jakarta</groupId>
     <artifactId>elytron-ee</artifactId>
-    <version>4.0.0.Beta4-SNAPSHOT</version>
+    <version>4.0.0.Beta4</version>
     <packaging>pom</packaging>
 
     <name>WildFly Elytron - Jakarta EE</name>
@@ -61,7 +61,7 @@
         <connection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</connection>
         <developerConnection>scm:git:git@github.com:wildfly-security/wildfly-elytron-ee.git</developerConnection>
         <url>https://github.com/wildfly-security/wildfly-elytron-ee</url>
-      <tag>HEAD</tag>
+      <tag>4.0.0.Beta4</tag>
   </scm>
 
     <properties>
