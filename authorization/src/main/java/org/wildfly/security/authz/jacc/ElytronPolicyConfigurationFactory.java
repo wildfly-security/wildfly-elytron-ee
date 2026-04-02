@@ -96,7 +96,7 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
         }
     }
 
-    private PolicyConfiguration getPolicyConfiguration(String contextID, boolean create, boolean remove) throws PolicyContextException {
+    private PolicyConfiguration getPolicyConfiguration(String contextID, boolean create, boolean remove, boolean transition) throws PolicyContextException {
         checkNotNullParam("contextID", contextID);
 
         synchronized (configurationRegistry) {
@@ -110,7 +110,9 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
                 policyConfiguration.delete();
             }
 
-            policyConfiguration.transitionTo(OPEN);
+            if (transition) {
+                policyConfiguration.transitionTo(OPEN);
+            }
 
             return policyConfiguration;
         }
@@ -118,13 +120,13 @@ public class ElytronPolicyConfigurationFactory extends PolicyConfigurationFactor
 
     @Override
     public PolicyConfiguration getPolicyConfiguration(String contextID, boolean remove) throws PolicyContextException {
-        return getPolicyConfiguration(contextID, true, remove);
+        return getPolicyConfiguration(contextID, true, remove, true);
     }
 
     @Override
     public PolicyConfiguration getPolicyConfiguration(String contextID) {
         try {
-            return getPolicyConfiguration(contextID, false, false);
+            return getPolicyConfiguration(contextID, false, false, false);
         } catch (PolicyContextException e) {
             // This is unexpected as the exception would only be thrown if removal fails.
             log.trace("Unexpected exception caught", e);
