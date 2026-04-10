@@ -7,6 +7,7 @@ package org.wildfly.security.jakarta.authz;
 
 import java.security.GeneralSecurityException;
 
+import jakarta.security.jacc.Policy;
 import jakarta.security.jacc.PolicyFactory;
 
 /**
@@ -25,6 +26,10 @@ public class PolicyRegistration {
      */
     public static void beginContextPolicy(final String contextId, final ClassLoader deploymentClassLoader) throws GeneralSecurityException {
         // By default allow all contexts to fall back to the default Policy.
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy(contextId);
+        if (policy != null) {
+            policy.refresh();
+        }
     }
 
     /**
