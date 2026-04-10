@@ -10,12 +10,15 @@ import static jakarta.security.jacc.PolicyContext.registerHandler;
 import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
 import static org.wildfly.security.authz.jacc.ElytronPolicyContextHandlerFactory.getPolicyContextHandlers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+import jakarta.security.jacc.Policy;
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
 import jakarta.security.jacc.PolicyFactory;
+import org.wildfly.security.authz.jacc.ElytronPolicy;
 import org.wildfly.security.authz.jacc.ElytronPolicyConfigurationFactory;
 import org.wildfly.security.authz.jacc.ElytronPolicyFactory;
 
@@ -25,6 +28,8 @@ import org.wildfly.security.authz.jacc.ElytronPolicyFactory;
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public class AuthorizationRegistration {
+
+    private static final String POLICY_PROVIDER = "jakarta.security.jacc.policy.provider";
 
     /**
      * Check if this implementation supports self registration.
@@ -60,7 +65,7 @@ public class AuthorizationRegistration {
         // PolicyFactory //
         ///////////////////
 
-        PolicyFactory.setPolicyFactory(new ElytronPolicyFactory());
+        PolicyFactory.setPolicyFactory(new ElytronPolicyFactory(newPolicy()));
 
         //////////////////////////
         // PolicyContextHandler //
@@ -85,6 +90,33 @@ public class AuthorizationRegistration {
         ////////////////////////////////
 
         setPolicyConfigurationFactory(new ElytronPolicyConfigurationFactory());
+    }
+
+    private static Policy newPolicy() throws GeneralSecurityException {
+        // We know no SecurityManager as EE 11.
+        String policyProvider = System.getProperty(POLICY_PROVIDER);
+
+        return policyProvider == null ? new ElytronPolicy() : newPolicy(policyProvider);
+    }
+
+    private static Policy newPolicy(final String policyProvider) throws GeneralSecurityException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        try {
+            Object policyInstance = classLoader.loadClass(policyProvider)
+                .getDeclaredConstructor()
+                .newInstance();
+
+            if (policyInstance instanceof Policy) {
+                return (Policy) policyInstance;
+            }
+
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+            throw eeLog.unableToCreatePolicy(e);
+        }
+
+        throw eeLog.invalidPolicyClass(policyProvider, Policy.class.getName());
     }
 
 }
