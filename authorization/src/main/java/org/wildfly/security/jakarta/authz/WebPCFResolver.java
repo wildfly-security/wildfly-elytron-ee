@@ -5,7 +5,14 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
+
+import java.lang.reflect.Constructor;
+import java.security.GeneralSecurityException;
+import java.util.List;
+
 import jakarta.security.jacc.PolicyConfigurationFactory;
+import org.jboss.metadata.javaee.spec.ParamValueMetaData;
 import org.jboss.metadata.web.jboss.JBossWebMetaData;
 
 /**
@@ -27,12 +34,68 @@ public class WebPCFResolver {
      * @param webApppMetaData the meta data of the web application being deployed.
      * @param deploymentClassLoader the class loader of the deployment to load any replacement.
      * @return the resolved {@code PolicyConfigurationFactory}.
+     * @throws GeneralSecurityException if unable to load or instantiate the custom factory.
      */
     public static PolicyConfigurationFactory resolvePolicyConfigurationFactory(PolicyConfigurationFactory original,
                                                                                 JBossWebMetaData webApppMetaData,
-                                                                                ClassLoader deploymentClassLoader) {
-        // This initial implementation just returns the original, later implementations will add dynamic loading etc..
-        return original;
+                                                                                ClassLoader deploymentClassLoader) throws GeneralSecurityException {
+        // For Jakarta Authorization 3.0 the PolicyConfigurationFactory can be overridden by a context param in the web.xml.
+
+        // Get the context parameters from the web application metadata
+        List<ParamValueMetaData> params = webApppMetaData.getContextParams();
+        if (params == null) {
+            return original;
+        }
+
+        // Search for the PolicyConfigurationFactory provider parameter
+        String factoryClassName = null;
+        for (ParamValueMetaData param : params) {
+            if (PolicyConfigurationFactory.FACTORY_NAME.equals(param.getParamName())) {
+                factoryClassName = param.getParamValue();
+                break;
+            }
+        }
+
+        // If not found, return the original factory
+        if (factoryClassName == null) {
+            return original;
+        }
+
+        // Load the class using the deployment ClassLoader
+        Class<?> loadedClass;
+        try {
+            loadedClass = deploymentClassLoader.loadClass(factoryClassName);
+        } catch (ClassNotFoundException e) {
+            throw eeLog.unableToLoadPolicyConfigurationFactory(factoryClassName, e);
+        }
+
+        // Validate it extends PolicyConfigurationFactory
+        if (!PolicyConfigurationFactory.class.isAssignableFrom(loadedClass)) {
+            throw eeLog.invalidPolicyConfigurationFactoryClass(factoryClassName);
+        }
+
+        // Cast to the correct type
+        Class<? extends PolicyConfigurationFactory> factoryClass = loadedClass.asSubclass(PolicyConfigurationFactory.class);
+
+        // Try wrapping constructor first, then fallback to no-arg constructor
+        PolicyConfigurationFactory newFactory;
+        try {
+            // Try wrapping constructor first
+            try {
+                Constructor<? extends PolicyConfigurationFactory> wrappingConstructor =
+                        factoryClass.getConstructor(PolicyConfigurationFactory.class);
+                newFactory = wrappingConstructor.newInstance(original);
+            } catch (NoSuchMethodException e) {
+                // Fallback to no-arg constructor
+                Constructor<? extends PolicyConfigurationFactory> defaultConstructor =
+                        factoryClass.getDeclaredConstructor();
+                newFactory = defaultConstructor.newInstance();
+            }
+        } catch (ReflectiveOperationException e) {
+            throw eeLog.unableToInstantiatePolicyConfigurationFactory(factoryClassName, e);
+        }
+
+        return newFactory;
     }
 
 }
