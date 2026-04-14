@@ -98,4 +98,15 @@ public class WebPCFResolver {
         return newFactory;
     }
 
+    /**
+     * Replace the globally registered {@code PolicyConfigurationFactory}.
+     *
+     * @param pcf the {@code PolicyConfigurationFactory} to register globally.
+     * @throws {@code UnsupportedOperationException} if called for Jakarta Authorization 2.1
+     */
+    public static void setGlobalPolicyConfigurationFactory(final PolicyConfigurationFactory pcf) {
+        // This method is not supported when running Jakarta Authorization 2.1
+        throw new UnsupportedOperationException();
+    }
+
 }
