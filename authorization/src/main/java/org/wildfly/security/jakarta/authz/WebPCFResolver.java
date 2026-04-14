@@ -5,6 +5,7 @@
 
 package org.wildfly.security.jakarta.authz;
 
+import static jakarta.security.jacc.PolicyConfigurationFactory.setPolicyConfigurationFactory;
 import static org.wildfly.security.authz.jacc.ElytronEEMessages.eeLog;
 
 import java.lang.reflect.Constructor;
@@ -102,11 +103,9 @@ public class WebPCFResolver {
      * Replace the globally registered {@code PolicyConfigurationFactory}.
      *
      * @param pcf the {@code PolicyConfigurationFactory} to register globally.
-     * @throws {@code UnsupportedOperationException} if called for Jakarta Authorization 2.1
      */
     public static void setGlobalPolicyConfigurationFactory(final PolicyConfigurationFactory pcf) {
-        // This method is not supported when running Jakarta Authorization 2.1
-        throw new UnsupportedOperationException();
+        setPolicyConfigurationFactory(pcf);
     }
 
 }
