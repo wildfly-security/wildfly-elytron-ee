@@ -12,6 +12,7 @@ import jakarta.security.jacc.PolicyContextException;
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
+import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
 import org.jboss.logging.annotations.ValidIdRange;
@@ -41,5 +42,9 @@ public interface ElytronEEMessages extends BasicLogger {
 
     @Message(id = 1003, value = "Unable to complete PolicyContextHandler registration.")
     GeneralSecurityException unableToCompletePolicyContextHandlerRegistration(@Cause PolicyContextException cause);
+
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 1007, value = "RunAs principal '%s' does not exist in security domain. Creating ad-hoc identity with only the persona role '%s'. Define the principal in your security domain configuration for full role mapping.")
+    void runAsPrincipalNotFoundInDomain(String principalName, String runAsRoleName);
 
 }
