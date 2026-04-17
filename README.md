@@ -20,11 +20,71 @@ To use dependencies from JBoss.org, you need to add the JBoss Maven Repositories
 Build with Maven
 ----------------
 
+### Requirements
+
+- **Java 25** or later (for building)
+- **Maven 3.6.0** or later
+
+The project builds with Java 25 and targets Java 17 bytecode for backwards compatibility.
+
+### Basic Build
+
 The command below builds the project and runs the embedded suite.
 
 ```console
 $ mvn clean install
 ```
+
+### Multi-Version Testing
+
+This project supports testing against multiple Java versions (17, 21, and 25) using Maven Toolchains.
+
+#### Setup Toolchains
+
+1. Copy the toolchains template:
+   ```console
+   $ cp toolchains.xml.template ~/.m2/toolchains.xml
+   ```
+
+2. Edit `~/.m2/toolchains.xml` and update the `<jdkHome>` paths to match your JDK installations.
+
+3. Verify your toolchains configuration:
+   ```console
+   $ mvn toolchains:display-toolchains
+   ```
+
+For automated JDK installation using SDKMAN!, see the comments in `toolchains.xml.template`.
+
+#### Testing with Specific Java Versions
+
+Test with a specific Java version:
+```console
+$ mvn clean test -Djdk.test.version=17
+$ mvn clean test -Djdk.test.version=21
+$ mvn clean test -Djdk.test.version=25
+```
+
+Test with a specific JDK vendor (Temurin or Semeru):
+```console
+$ mvn clean test -Djdk.test.version=21 -Djdk.test.vendor=semeru
+```
+
+#### Comprehensive Multi-Version Testing
+
+Test against all supported Java versions (17, 21, 25) in sequence:
+```console
+$ mvn clean install -Ptest-all-versions
+```
+
+Test with Semeru distribution:
+```console
+$ mvn clean install -Ptest-all-versions -Djdk.test.vendor=semeru
+```
+
+This will create separate test report directories for each Java version:
+- `target/surefire-reports-java17-temurin/`
+- `target/surefire-reports-java21-temurin/`
+- `target/surefire-reports-java25-temurin/`
 
 Issue Tracking
 --------------
