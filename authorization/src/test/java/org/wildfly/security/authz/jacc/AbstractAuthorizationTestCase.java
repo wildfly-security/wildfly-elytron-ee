@@ -18,7 +18,6 @@
 package org.wildfly.security.authz.jacc;
 
 import java.io.IOException;
-import java.security.Policy;
 import java.security.Principal;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
@@ -45,7 +44,7 @@ public abstract class AbstractAuthorizationTestCase {
     @BeforeClass
     public static void onBeforeClass() {
         System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
-        Policy.setPolicy(new JaccDelegatingPolicy());
+        PolicyUtil.setPolicy(new JaccDelegatingPolicy());
     }
 
     @Rule

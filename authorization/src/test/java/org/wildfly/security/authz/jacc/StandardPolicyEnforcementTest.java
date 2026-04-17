@@ -49,7 +49,7 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "GET")));
         assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "HEAD")));
@@ -70,7 +70,7 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // excluded policies have precedence over any other
         assertFalse(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "PUT")));
@@ -89,7 +89,7 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // as defined by JACC specification, roles are specified as principals within a ProtectionDomain and evaluated accordingly.
         assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "POST")));
@@ -111,7 +111,7 @@ public class StandardPolicyEnforcementTest extends AbstractAuthorizationTestCase
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // as defined by JACC specification, roles are specified as principals within a ProtectionDomain and evaluated accordingly.
         assertTrue(policy.implies(createProtectionDomain(new NamePrincipal("Administrator")), new WebResourcePermission("/webResource", "POST")));

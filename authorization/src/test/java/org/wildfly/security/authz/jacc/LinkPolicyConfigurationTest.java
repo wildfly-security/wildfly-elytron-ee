@@ -121,7 +121,7 @@ public class LinkPolicyConfigurationTest {
 
         // let's check now permissions for first child module
         PolicyContext.setContextID(child1ContextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         ServerAuthenticationContext authenticationContext = child1SecurityDomain.createNewAuthenticationContext();
         authenticationContext.setAuthenticationName("john");
