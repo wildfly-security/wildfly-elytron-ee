@@ -20,6 +20,9 @@ import org.jboss.logging.annotations.ValidIdRanges;
 /**
  * Log messages and exceptions for Elytron EE.
  *
+ * This class was introduced in the 4.x branch so we do not need to reserve ranges
+ * for earlier branches.
+ *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 @MessageLogger(projectCode = "ELYEE", length = 5)
@@ -41,5 +44,14 @@ public interface ElytronEEMessages extends BasicLogger {
 
     @Message(id = 1003, value = "Unable to complete PolicyContextHandler registration.")
     GeneralSecurityException unableToCompletePolicyContextHandlerRegistration(@Cause PolicyContextException cause);
+
+    @Message(id = 1004, value = "Unable to load %s class %s")
+    GeneralSecurityException unableToLoadClass(String simpleTypeName, String className, @Cause Exception cause);
+
+    @Message(id = 1005, value = "Unable to instantiate %s class %s")
+    GeneralSecurityException unableToInstantiateClass(String simpleTypeName, String className, @Cause Exception cause);
+
+    @Message(id = 1006, value = "Class %s does not extend %s")
+    GeneralSecurityException invalidClass(String className, String simpleTypeName);
 
 }
