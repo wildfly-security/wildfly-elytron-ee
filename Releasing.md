@@ -3,11 +3,11 @@
 At this point in time the following branches are being maintained for the Elytron EE project:
 
  * 3.0.x (Requires Java 11)
- * 3.1.x
- * 3.x
- * 4.x
+ * 3.1.x (Requires Java 21)
+ * 3.x (default): Jakarta EE 10 integration
+ * 4.x: Jakarta EE 11 integration
 
-With the exception of the `3.0.x` branch all branches require Java 21 to build and release.
+With the exception of the `3.0.x` and `3.1.x` branches, all branches require **Java 25** to build and release.
 
 To release Elytron EE first checkout the project and ensure you are on the latest commit for the branch you are releasing with no local changes.
 
@@ -19,21 +19,17 @@ Execute:
 
     mvn release:prepare
 
-> [!NOTE]
-> When releasing the older maintenance branches before 2.x this command will also need the release
-> profile activating with `-Pjboss-release`.
-
 Enter the version being released:
 
-    What is the release version for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.0.4.CR1: 3.0.4.Alpha1
+    What is the release version for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.2.1.CR1: 3.2.1.Final
 
 The tag will default to the version:
 
-    What is the SCM release tag or label for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.0.4.Alpha1:
+    What is the SCM release tag or label for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.2.1.Final:
 
 Set the next version:
 
-    What is the new development version for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.0.5.Alpha1-SNAPSHOT: 3.0.4.CR1-SNAPSHOT
+    What is the new development version for "WildFly Elytron - Jakarta EE"? (elytron-ee) 3.2.2.Final-SNAPSHOT: 3.2.2.CR1-SNAPSHOT
 
 The release commit can be checked with:
 
@@ -46,10 +42,6 @@ If everything is Ok perform the release which will deploy to Nexus.
 Execute:
 
     mvn release:perform
-
-> [!NOTE]
-> When releasing the older maintenance branches before 2.x this command will also need the release
-> profile activating with `-Pjboss-release`.
 
 This will deploy the release to the `wildfly-staging` repository.
 
@@ -97,23 +89,45 @@ Reset your local Git checkout:
 
 # Forward Merging
 
-After releasing one of the maintenance branches the branch must also be merged to the next branch under active maintenance, if there are intermediate branches not listed above they can be ignored.
+After releasing the 3.x branch, the changes must be merged to the 4.x branch to keep both branches synchronized.
 
-The following example demonstrates merging from `3.0.x` to `3.1.x`:
+The following example demonstrates merging from `3.x` to `4.x`:
 
-    git checkout -b 3_1_x_sync -t upstream/3.1.x
+    git checkout -b 4_x_sync -t upstream/4.x
 
-Check the log from the 1.9.x branch and identify the last commit before the `[maven-release-plugin]` commits and merge it to this topic branch:
+Check the log from the 3.x branch and identify the last commit before the `[maven-release-plugin]` commits and merge it to this topic branch:
 
-    git merge 64e0bd99c9edb8e4456905a8e104bf129bcaa38b -m "Sync from 3.0.x"
+    git merge <COMMIT_SHA> -m "Sync from 3.x"
 
 At this stage you may need to resolve any merge conflicts, be careful to not rebase - this should be committed as a merge commit.
 
 Now we need to merge the release commits as well:
 
-    git merge -s ours 3.0.x -m "Sync version commits from 3.0.x"
+    git merge -s ours 3.x -m "Sync version commits from 3.x"
 
 For this last command we use `-s ours` as we don't want git to actually apply these changes but we do want git to record that we have handled that part of merging.
 
 This topic branch can now be submitted as a normal PR to kick off CI and merged once it passes. No review is required as this is merging previously approved changes unless you would like someone to verify especially if there were merge conflicts.
 
+# CI Testing
+
+The project uses GitHub Actions for continuous integration with comprehensive multi-version testing:
+
+## Pull Request Testing
+- Automatically runs on all pull requests
+- Tests on Linux with Java 17, 21, and 25 (Temurin and Semeru distributions)
+- 6 test permutations total
+
+## Nightly Testing (LTS Versions)
+- Scheduled daily at 2:00 AM UTC (3.x) and 2:30 AM UTC (4.x)
+- Tests on Linux, Windows, and macOS
+- Tests with Java 17, 21, and 25 (Temurin and Semeru distributions)
+- 36 test permutations total (18 per branch)
+
+## Non-LTS Testing
+- Scheduled daily at 3:00 AM UTC (3.x) and 3:30 AM UTC (4.x)
+- Tests on Linux with latest non-LTS Java version (currently 26)
+- Tests with Temurin, Semeru, and Oracle distributions
+- 6 test permutations total (3 per branch)
+
+All workflows can be triggered manually via GitHub Actions UI for testing purposes.

@@ -67,7 +67,7 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
     @BeforeClass
     public static void onBeforeClass() {
         System.setProperty("jakarta.security.jacc.PolicyConfigurationFactory.provider", ElytronPolicyConfigurationFactory.class.getName());
-        Policy.setPolicy(new JaccDelegatingPolicy());
+        PolicyUtil.setPolicy(new JaccDelegatingPolicy());
         Security.addProvider(provider);
     }
 
@@ -146,7 +146,7 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // this permission was defined using a PermissionMapper and it should be granted for user-admin
         assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "POST")));
@@ -168,7 +168,7 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // these permissions were defined using a PermissionMapper and they should be granted for user-manager
         assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "POST")));
@@ -189,7 +189,7 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.commit();
 
         PolicyContext.setContextID(contextID);
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
         // this permissions was defined using a PermissionMapper and they should be granted for user-user
         assertTrue(policy.implies(createProtectionDomain(), new WebResourcePermission("/webResource", "GET")));

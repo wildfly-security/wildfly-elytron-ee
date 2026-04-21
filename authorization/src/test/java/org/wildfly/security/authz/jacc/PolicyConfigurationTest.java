@@ -58,13 +58,13 @@ public class PolicyConfigurationTest extends AbstractAuthorizationTestCase {
 
     @Test
     public void testCreateAndInstallDelegatingPolicy() throws Exception {
-        Policy policy = Policy.getPolicy();
+        Policy policy = PolicyUtil.getPolicy();
 
-        assertThat(policy, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy)));
+        assertThat(policy, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) PolicyUtil::getPolicy)));
 
-        Policy mustBeTheSame = Policy.getPolicy();
+        Policy mustBeTheSame = PolicyUtil.getPolicy();
 
-        assertThat(mustBeTheSame, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy)));
+        assertThat(mustBeTheSame, new IsSame<>(doPrivileged((PrivilegedAction<Policy>) PolicyUtil::getPolicy)));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class PolicyConfigurationTest extends AbstractAuthorizationTestCase {
         // we now set the context id
         PolicyContext.setContextID(contextID);
 
-        Policy policy = doPrivileged((PrivilegedAction<Policy>) Policy::getPolicy);
+        Policy policy = doPrivileged((PrivilegedAction<Policy>) PolicyUtil::getPolicy);
 
         PermissionCollection permissions = policy.getPermissions(createProtectionDomain(new NamePrincipal("Administrator")));
 
