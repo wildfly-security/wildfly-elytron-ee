@@ -21,6 +21,9 @@ import org.jboss.logging.annotations.ValidIdRanges;
 /**
  * Log messages and exceptions for Elytron EE.
  *
+ * This class was introduced in the 4.x branch so we do not need to reserve ranges
+ * for earlier branches.
+ *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 @MessageLogger(projectCode = "ELYEE", length = 5)
@@ -43,8 +46,16 @@ public interface ElytronEEMessages extends BasicLogger {
     @Message(id = 1003, value = "Unable to complete PolicyContextHandler registration.")
     GeneralSecurityException unableToCompletePolicyContextHandlerRegistration(@Cause PolicyContextException cause);
 
+    @Message(id = 1004, value = "Unable to load %s class %s")
+    GeneralSecurityException unableToLoadClass(String simpleTypeName, String className, @Cause Exception cause);
+
+    @Message(id = 1005, value = "Unable to instantiate %s class %s")
+    GeneralSecurityException unableToInstantiateClass(String simpleTypeName, String className, @Cause Exception cause);
+
+    @Message(id = 1006, value = "Class %s does not extend %s")
+    GeneralSecurityException invalidClass(String className, String simpleTypeName);
+
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 1007, value = "RunAs principal '%s' does not exist in security domain. Creating ad-hoc identity with only the persona role '%s'. Define the principal in your security domain configuration for full role mapping.")
     void runAsPrincipalNotFoundInDomain(String principalName, String runAsRoleName);
-
 }
