@@ -28,12 +28,14 @@ public class WebPCFResolver {
      * @param original the currently defined {@code PolicyConfigurationFactory}.
      * @param webApppMetaData the meta data of the web application being deployed.
      * @param deploymentClassLoader the class loader of the deployment to load any replacement.
+     * @param contextId the JACC context ID for this deployment (not used in Jakarta Authorization 2.1).
      * @return the resolved {@code PolicyConfigurationFactory}.
      * @throws GeneralSecurityException if there is a problem resolving the {@code PolicyConfigurationFactory}.
      */
     public static PolicyConfigurationFactory resolvePolicyConfigurationFactory(PolicyConfigurationFactory original,
                                                                                 JBossWebMetaData webApppMetaData,
-                                                                                ClassLoader deploymentClassLoader)
+                                                                                ClassLoader deploymentClassLoader,
+                                                                                String contextId)
                                                                                 throws GeneralSecurityException {
         // This initial implementation just returns the original, later implementations will add dynamic loading etc..
         return original;
