@@ -1,0 +1,100 @@
+name: Non-LTS Java CI
+
+# This workflow tests with the latest non-LTS Java release (currently Java 26)
+# It can be disabled during LTS transition periods by commenting out the schedule trigger
+# and disabling the workflow in GitHub Actions settings
+
+on:
+  # Run nightly at 3:00 AM UTC
+  schedule:
+    - cron: '0 3 * * *'
+  
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      java_version:
+        description: 'Java version to test (default: 26)'
+        required: false
+        default: '26'
+        type: string
+
+jobs:
+  build-and-test:
+    name: Build and Test (Java ${{ github.event.inputs.java_version || '26' }})
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        distribution: [temurin, semeru, oracle]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK ${{ github.event.inputs.java_version || '26' }} (${{ matrix.distribution }})
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ github.event.inputs.java_version || '26' }}
+          distribution: ${{ matrix.distribution }}
+          cache: maven
+      
+      - name: Display Java Version
+        run: java -version
+      
+      - name: Build with Maven
+        run: mvn -B clean install -DskipTests
+      
+      - name: Test with Java ${{ github.event.inputs.java_version || '26' }} (${{ matrix.distribution }})
+        id: test
+        run: |
+          JAVA_VERSION="${{ github.event.inputs.java_version || '26' }}"
+          DISTRIBUTION="${{ matrix.distribution }}"
+          
+          echo "Testing with Java ${JAVA_VERSION} (${DISTRIBUTION})"
+          
+          # Run tests with separate report directory
+          mvn -B test \
+            -Dsurefire.reportsDirectory=target/surefire-reports-java${JAVA_VERSION}-${DISTRIBUTION} \
+            || echo "TEST_FAILED=true" >> $GITHUB_ENV
+      
+      - name: Upload Test Results on Failure
+        if: failure() || env.TEST_FAILED == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-java${{ github.event.inputs.java_version || '26' }}-${{ matrix.distribution }}-linux
+          path: |
+            **/target/surefire-reports-java${{ github.event.inputs.java_version || '26' }}-${{ matrix.distribution }}/**
+            **/target/surefire-reports/**
+          retention-days: 7
+      
+      - name: Publish Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            **/target/surefire-reports-java${{ github.event.inputs.java_version || '26' }}-${{ matrix.distribution }}/*.xml
+            **/target/surefire-reports/*.xml
+          check_name: "Test Results (Java ${{ github.event.inputs.java_version || '26' }} - ${{ matrix.distribution }} - Linux)"
+          comment_mode: off
+      
+      - name: Check Test Status
+        if: env.TEST_FAILED == 'true'
+        run: |
+          echo "Tests failed for Java ${{ github.event.inputs.java_version || '26' }} (${{ matrix.distribution }})"
+          exit 1
+  
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+    
+    steps:
+      - name: Check Overall Status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" != "success" ]; then
+            echo "One or more test permutations failed"
+            exit 1
+          fi
+          echo "All test permutations passed"
