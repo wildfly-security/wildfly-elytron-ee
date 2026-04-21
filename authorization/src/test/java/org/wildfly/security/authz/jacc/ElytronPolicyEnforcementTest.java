@@ -204,6 +204,73 @@ public class ElytronPolicyEnforcementTest extends AbstractAuthorizationTestCase 
         policyConfiguration.delete();
     }
 
+    @Test
+    @SecurityIdentityRule.RunAs("user-user")
+    public void testIsExcluded() throws Exception {
+        String contextID = "test-excluded";
+
+        PolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
+            toConfigure.addToExcludedPolicy(new WebResourcePermission("/excluded", "GET"));
+        });
+
+        policyConfiguration.commit();
+        PolicyContext.setContextID(contextID);
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+
+        // Permission in excluded policy should return true
+        assertTrue(policy.isExcluded(new WebResourcePermission("/excluded", "GET")));
+        // Permission not in excluded policy should return false
+        assertFalse(policy.isExcluded(new WebResourcePermission("/allowed", "GET")));
+
+        policyConfiguration.delete();
+    }
+
+    @Test
+    @SecurityIdentityRule.RunAs("user-user")
+    public void testIsUnchecked() throws Exception {
+        String contextID = "test-unchecked";
+
+        PolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
+            toConfigure.addToUncheckedPolicy(new WebResourcePermission("/public", "GET"));
+        });
+
+        policyConfiguration.commit();
+        PolicyContext.setContextID(contextID);
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+
+        // Permission in unchecked policy should return true
+        assertTrue(policy.isUnchecked(new WebResourcePermission("/public", "GET")));
+        // Permission not in unchecked policy should return false
+        assertFalse(policy.isUnchecked(new WebResourcePermission("/protected", "GET")));
+
+        policyConfiguration.delete();
+    }
+
+    @Test
+    @SecurityIdentityRule.RunAs("user-admin")
+    public void testImpliesByRole() throws Exception {
+        String contextID = "test-role";
+
+        PolicyConfiguration policyConfiguration = createPolicyConfiguration(contextID, toConfigure -> {
+            toConfigure.addToRole("Administrator", new WebResourcePermission("/admin", "GET"));
+            toConfigure.addToRole("Manager", new WebResourcePermission("/manager", "GET"));
+        });
+
+        policyConfiguration.commit();
+        PolicyContext.setContextID(contextID);
+        Policy policy = PolicyFactory.getPolicyFactory().getPolicy();
+        Subject subject = PolicyContext.get(SUBJECT);
+
+        // Permission granted to Administrator role (user-admin has this role)
+        assertTrue(policy.impliesByRole(new WebResourcePermission("/admin", "GET"), subject));
+        // Permission granted to Manager role (user-admin doesn't have this role directly in this config)
+        assertFalse(policy.impliesByRole(new WebResourcePermission("/manager", "GET"), subject));
+        // Permission not granted to any role
+        assertFalse(policy.impliesByRole(new WebResourcePermission("/other", "GET"), subject));
+
+        policyConfiguration.delete();
+    }
+
     private void addUser(Map<String, SimpleRealmEntry> securityRealm, String userName, String roles) {
         List<Credential> defaultInsecurePasswords;
 
