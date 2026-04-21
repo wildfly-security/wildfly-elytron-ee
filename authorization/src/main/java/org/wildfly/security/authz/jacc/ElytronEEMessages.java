@@ -45,13 +45,13 @@ public interface ElytronEEMessages extends BasicLogger {
     @Message(id = 1003, value = "Unable to complete PolicyContextHandler registration.")
     GeneralSecurityException unableToCompletePolicyContextHandlerRegistration(@Cause PolicyContextException cause);
 
-    @Message(id = 1004, value = "Unable to load PolicyConfigurationFactory class %s")
-    GeneralSecurityException unableToLoadPolicyConfigurationFactory(String className, @Cause Exception cause);
+    @Message(id = 1004, value = "Unable to load %s class %s")
+    GeneralSecurityException unableToLoadClass(String simpleTypeName, String className, @Cause Exception cause);
 
-    @Message(id = 1005, value = "Unable to instantiate PolicyConfigurationFactory class %s")
-    GeneralSecurityException unableToInstantiatePolicyConfigurationFactory(String className, @Cause Exception cause);
+    @Message(id = 1005, value = "Unable to instantiate %s class %s")
+    GeneralSecurityException unableToInstantiateClass(String simpleTypeName, String className, @Cause Exception cause);
 
-    @Message(id = 1006, value = "Class %s does not extend PolicyConfigurationFactory")
-    GeneralSecurityException invalidPolicyConfigurationFactoryClass(String className);
+    @Message(id = 1006, value = "Class %s does not extend %s")
+    GeneralSecurityException invalidClass(String className, String simpleTypeName);
 
 }

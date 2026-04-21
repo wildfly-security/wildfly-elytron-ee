@@ -13,6 +13,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import jakarta.security.jacc.PolicyConfigurationFactory;
+import jakarta.security.jacc.PolicyContext;
 import org.jboss.metadata.javaee.spec.ParamValueMetaData;
 import org.jboss.metadata.web.jboss.JBossWebMetaData;
 
@@ -34,12 +35,14 @@ public class WebPCFResolver {
      * @param original the currently defined {@code PolicyConfigurationFactory}.
      * @param webApppMetaData the meta data of the web application being deployed.
      * @param deploymentClassLoader the class loader of the deployment to load any replacement.
+     * @param contextId the JACC context ID for this deployment (needed during factory instantiation).
      * @return the resolved {@code PolicyConfigurationFactory}.
      * @throws GeneralSecurityException if unable to load or instantiate the custom factory.
      */
     public static PolicyConfigurationFactory resolvePolicyConfigurationFactory(PolicyConfigurationFactory original,
                                                                                 JBossWebMetaData webApppMetaData,
-                                                                                ClassLoader deploymentClassLoader) throws GeneralSecurityException {
+                                                                                ClassLoader deploymentClassLoader,
+                                                                                String contextId) throws GeneralSecurityException {
         // For Jakarta Authorization 3.0 the PolicyConfigurationFactory can be overridden by a context param in the web.xml.
 
         // Get the context parameters from the web application metadata
@@ -67,36 +70,46 @@ public class WebPCFResolver {
         try {
             loadedClass = deploymentClassLoader.loadClass(factoryClassName);
         } catch (ClassNotFoundException e) {
-            throw eeLog.unableToLoadPolicyConfigurationFactory(factoryClassName, e);
+            throw eeLog.unableToLoadClass("PolicyConfigurationFactory", factoryClassName, e);
         }
 
         // Validate it extends PolicyConfigurationFactory
         if (!PolicyConfigurationFactory.class.isAssignableFrom(loadedClass)) {
-            throw eeLog.invalidPolicyConfigurationFactoryClass(factoryClassName);
+            throw eeLog.invalidClass(factoryClassName, "PolicyConfigurationFactory");
         }
 
         // Cast to the correct type
         Class<? extends PolicyConfigurationFactory> factoryClass = loadedClass.asSubclass(PolicyConfigurationFactory.class);
 
-        // Try wrapping constructor first, then fallback to no-arg constructor
-        PolicyConfigurationFactory newFactory;
+        // Set the context ID before instantiating the factory
+        // Custom PolicyFactory constructors may call getPolicy() which relies on PolicyContext.getContextID()
+        String previousContextId = PolicyContext.getContextID();
         try {
-            // Try wrapping constructor first
-            try {
-                Constructor<? extends PolicyConfigurationFactory> wrappingConstructor =
-                        factoryClass.getConstructor(PolicyConfigurationFactory.class);
-                newFactory = wrappingConstructor.newInstance(original);
-            } catch (NoSuchMethodException e) {
-                // Fallback to no-arg constructor
-                Constructor<? extends PolicyConfigurationFactory> defaultConstructor =
-                        factoryClass.getDeclaredConstructor();
-                newFactory = defaultConstructor.newInstance();
-            }
-        } catch (ReflectiveOperationException e) {
-            throw eeLog.unableToInstantiatePolicyConfigurationFactory(factoryClassName, e);
-        }
+            PolicyContext.setContextID(contextId);
 
-        return newFactory;
+            // Try wrapping constructor first, then fallback to no-arg constructor
+            PolicyConfigurationFactory newFactory;
+            try {
+                // Try wrapping constructor first
+                try {
+                    Constructor<? extends PolicyConfigurationFactory> wrappingConstructor =
+                            factoryClass.getConstructor(PolicyConfigurationFactory.class);
+                    newFactory = wrappingConstructor.newInstance(original);
+                } catch (NoSuchMethodException e) {
+                    // Fallback to no-arg constructor
+                    Constructor<? extends PolicyConfigurationFactory> defaultConstructor =
+                            factoryClass.getDeclaredConstructor();
+                    newFactory = defaultConstructor.newInstance();
+                }
+            } catch (ReflectiveOperationException e) {
+                throw eeLog.unableToInstantiateClass("PolicyConfigurationFactory", factoryClassName, e);
+            }
+
+            return newFactory;
+        } finally {
+            // Restore the previous context ID
+            PolicyContext.setContextID(previousContextId);
+        }
     }
 
     /**

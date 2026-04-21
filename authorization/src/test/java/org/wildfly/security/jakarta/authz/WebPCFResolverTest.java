@@ -38,7 +38,7 @@ public class WebPCFResolverTest {
         // Don't set any context params (returns null)
 
         PolicyConfigurationFactory result = WebPCFResolver.resolvePolicyConfigurationFactory(
-                original, metadata, getClass().getClassLoader());
+                original, metadata, getClass().getClassLoader(), "test-context");
 
         assertSame("Should return original when no context params", original, result);
     }
@@ -60,7 +60,7 @@ public class WebPCFResolverTest {
         metadata.setContextParams(params);
 
         PolicyConfigurationFactory result = WebPCFResolver.resolvePolicyConfigurationFactory(
-                original, metadata, getClass().getClassLoader());
+                original, metadata, getClass().getClassLoader(), "test-context");
 
         assertSame("Should return original when PCF param not present", original, result);
     }
@@ -82,7 +82,7 @@ public class WebPCFResolverTest {
         metadata.setContextParams(params);
 
         PolicyConfigurationFactory result = WebPCFResolver.resolvePolicyConfigurationFactory(
-                original, metadata, getClass().getClassLoader());
+                original, metadata, getClass().getClassLoader(), "test-context");
 
         assertNotNull("Result should not be null", result);
         assertTrue("Should be instance of wrapping factory", result instanceof WrappingTestPolicyConfigurationFactory);
@@ -108,7 +108,7 @@ public class WebPCFResolverTest {
         metadata.setContextParams(params);
 
         PolicyConfigurationFactory result = WebPCFResolver.resolvePolicyConfigurationFactory(
-                original, metadata, getClass().getClassLoader());
+                original, metadata, getClass().getClassLoader(), "test-context");
 
         assertNotNull("Result should not be null", result);
         assertTrue("Should be instance of no-arg factory", result instanceof NoArgTestPolicyConfigurationFactory);
@@ -133,7 +133,7 @@ public class WebPCFResolverTest {
 
         try {
             WebPCFResolver.resolvePolicyConfigurationFactory(
-                    original, metadata, getClass().getClassLoader());
+                    original, metadata, getClass().getClassLoader(), "test-context");
             fail("Should throw GeneralSecurityException for non-existent class");
         } catch (GeneralSecurityException e) {
             assertTrue("Should contain ELYEE01004", e.getMessage().contains("ELYEE01004"));
@@ -159,7 +159,7 @@ public class WebPCFResolverTest {
 
         try {
             WebPCFResolver.resolvePolicyConfigurationFactory(
-                    original, metadata, getClass().getClassLoader());
+                    original, metadata, getClass().getClassLoader(), "test-context");
             fail("Should throw GeneralSecurityException for invalid factory class");
         } catch (GeneralSecurityException e) {
             assertTrue("Should contain ELYEE01006", e.getMessage().contains("ELYEE01006"));
@@ -185,7 +185,7 @@ public class WebPCFResolverTest {
 
         try {
             WebPCFResolver.resolvePolicyConfigurationFactory(
-                    original, metadata, getClass().getClassLoader());
+                    original, metadata, getClass().getClassLoader(), "test-context");
             fail("Should throw GeneralSecurityException for constructor failure");
         } catch (GeneralSecurityException e) {
             assertTrue("Should contain ELYEE01005", e.getMessage().contains("ELYEE01005"));
@@ -210,7 +210,7 @@ public class WebPCFResolverTest {
 
         try {
             WebPCFResolver.resolvePolicyConfigurationFactory(
-                    original, metadata, getClass().getClassLoader());
+                    original, metadata, getClass().getClassLoader(), "test-context");
             fail("Should throw GeneralSecurityException for private constructor");
         } catch (GeneralSecurityException e) {
             assertTrue("Should contain ELYEE01005", e.getMessage().contains("ELYEE01005"));
