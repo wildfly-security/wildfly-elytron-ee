@@ -190,5 +190,56 @@ public class ElytronPolicy implements Policy {
     private boolean isJaccPermission(Permission permission) {
         return this.supportedPermissionTypes.contains(permission.getClass());
     }
+
+    @Override
+    public boolean isExcluded(Permission permissionToBeChecked) {
+        try {
+            if (!isJaccPermission(permissionToBeChecked)) {
+                return false;  // Only JACC permissions can be excluded via PolicyConfiguration
+            }
+
+            ElytronPolicyConfiguration policyConfiguration =
+                ElytronPolicyConfigurationFactory.getCurrentPolicyConfiguration();
+
+            return impliesExcludedPermission(permissionToBeChecked, policyConfiguration);
+        } catch (Exception e) {
+            log.authzFailedToCheckPermission(null, permissionToBeChecked, e);
+            return false;  // Safe default - if we can't check, assume not excluded
+        }
+    }
+
+    @Override
+    public boolean isUnchecked(Permission permissionToBeChecked) {
+        try {
+            if (!isJaccPermission(permissionToBeChecked)) {
+                return false;  // Only JACC permissions can be unchecked via PolicyConfiguration
+            }
+
+            ElytronPolicyConfiguration policyConfiguration =
+                ElytronPolicyConfigurationFactory.getCurrentPolicyConfiguration();
+
+            return impliesUncheckedPermission(permissionToBeChecked, policyConfiguration);
+        } catch (Exception e) {
+            log.authzFailedToCheckPermission(null, permissionToBeChecked, e);
+            return false;  // Safe default - if we can't check, assume not unchecked
+        }
+    }
+
+    @Override
+    public boolean impliesByRole(Permission permissionToBeChecked, Subject subject) {
+        try {
+            if (!isJaccPermission(permissionToBeChecked)) {
+                return false;  // Only JACC permissions are role-based via PolicyConfiguration
+            }
+
+            ElytronPolicyConfiguration policyConfiguration =
+                ElytronPolicyConfigurationFactory.getCurrentPolicyConfiguration();
+
+            return impliesRolePermission(subject, permissionToBeChecked, policyConfiguration);
+        } catch (Exception e) {
+            log.authzFailedToCheckPermission(toPrincipal(subject), permissionToBeChecked, e);
+            return false;  // Safe default - deny access if unable to verify
+        }
+    }
 }
 
