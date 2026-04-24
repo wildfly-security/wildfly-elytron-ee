@@ -91,7 +91,16 @@ public class RunAsIdentityHelper {
 
         // Handle anonymous special case
         if (ANONYMOUS_PRINCIPAL.equals(principalName)) {
-            return securityDomain.getCurrentSecurityIdentity().createRunAsAnonymous();
+            if (runAsRoleName == null) {
+                // No @RunAs annotation, just propagateSecurity=false
+                // Create ad-hoc anonymous identity to avoid authorization failures
+                // when switching to anonymous (createRunAsAnonymous() may fail if not authorized)
+                return securityDomain.createAdHocIdentity(ANONYMOUS_PRINCIPAL);
+            }
+            // Anonymous with a role (unusual case: anonymous principal + persona role)
+            // Create ad-hoc anonymous identity and add the persona role
+            SecurityIdentity anonymousIdentity = securityDomain.createAdHocIdentity(ANONYMOUS_PRINCIPAL);
+            return addPersonaRole(anonymousIdentity, runAsRoleName);
         }
 
         SecurityIdentity currentIdentity = securityDomain.getCurrentSecurityIdentity();
