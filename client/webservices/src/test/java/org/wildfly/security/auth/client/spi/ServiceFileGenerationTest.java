@@ -29,8 +29,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class ServiceFileGenerationTest {
 
-    private static final String SERVICE_FILE = "META-INF/services/org.jboss.wsf.spi.security.ClientConfigProvider";
-    private static final String EXPECTED_IMPL = "org.wildfly.security.auth.client.spi.WebServicesClientConfigProviderImpl";
+    private static final String SERVICE_FILE = "META-INF/services/" + ClientConfigProvider.class.getName();
+    private static final String EXPECTED_IMPL = WebServicesClientConfigProviderImpl.class.getName();
 
     @Test
     public void testMetaInfServicesFileExists() {
