@@ -9,6 +9,7 @@ import org.wildfly.security.auth.server.RealmIdentity;
 import org.wildfly.security.auth.server.RealmUnavailableException;
 import org.wildfly.security.auth.server.SecurityDomain;
 import org.wildfly.security.auth.server.SecurityIdentity;
+import org.wildfly.security.authz.AuthorizationFailureException;
 
 /**
  * Helper utility for resolving and loading RunAs identities in Jakarta EE environments.
@@ -74,7 +75,13 @@ public class RunAsIdentityHelper {
 
         // Handle anonymous special case
         if (ANONYMOUS_PRINCIPAL.equals(principalName)) {
-            return currentIdentity.createRunAsAnonymous();
+            // Try with authorization check first, fall back to skipping check if not authorized
+            // This maintains backwards compatibility with environments that don't have authorization configured
+            try {
+                return currentIdentity.createRunAsAnonymous();
+            } catch (AuthorizationFailureException ex) {
+                return currentIdentity.createRunAsAnonymous(false);
+            }
         }
 
         // Check if principal exists, create ad-hoc identity if not, otherwise switch principal
