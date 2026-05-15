@@ -8,6 +8,7 @@ package org.wildfly.security.authz.jacc;
 import static jakarta.security.jacc.PolicyContext.PRINCIPAL_MAPPER;
 
 import java.security.Principal;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import javax.security.auth.Subject;
 import jakarta.security.jacc.PolicyContextException;
 import jakarta.security.jacc.PolicyContextHandler;
 import jakarta.security.jacc.PrincipalMapper;
+import org.wildfly.security.auth.principal.NamedGroup;
 import org.wildfly.security.auth.server.SecurityIdentity;
 import org.wildfly.security.authz.Roles;
 
@@ -64,6 +66,15 @@ class PrincipalMapperContextHandler implements PolicyContextHandler {
                 Roles originalRoles = securityIdentity.getRoles();
                 for (String currentRole : originalRoles) {
                     roles.add(currentRole);
+                }
+            } else {
+                for (Principal principal : subject.getPrincipals()) {
+                    if (principal instanceof NamedGroup && "Roles".equals(principal.getName())) {
+                        Enumeration<? extends Principal> members = ((NamedGroup) principal).members();
+                        while (members.hasMoreElements()) {
+                            roles.add(members.nextElement().getName());
+                        }
+                    }
                 }
             }
 
